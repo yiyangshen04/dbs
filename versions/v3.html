@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v3 — Editorial Magazine · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c9a84c;
+      --black: #111;
+      --off-white: #fafaf8;
+      --warm-gray: #8a8578;
+      --rule: #d4d0c8;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--off-white);
+      color: var(--black);
+      font-weight: 300;
+    }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      padding: 48px 40px 24px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .masthead__back {
+      font-size: 0.75rem;
+      color: var(--warm-gray);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .masthead__back:hover { color: var(--gold); }
+
+    .masthead__rule { width: 60px; height: 2px; background: var(--gold); margin: 20px auto; }
+
+    .masthead__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .masthead__subtitle {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--warm-gray);
+      margin-top: 12px;
+    }
+
+    .masthead__nav {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 24px;
+      padding-bottom: 4px;
+    }
+
+    .masthead__nav a {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--warm-gray);
+      text-decoration: none;
+      padding-bottom: 8px;
+      border-bottom: 1px solid transparent;
+    }
+
+    .masthead__nav a:hover {
+      color: var(--black);
+      border-bottom-color: var(--gold);
+    }
+
+    /* Hero Feature */
+    .hero {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero__visual {
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, #e8e2d4 0%, #d4cfc2 100%);
+      border: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero__visual-text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--gold);
+      opacity: 0.5;
+      transform: rotate(-5deg);
+    }
+
+    .hero__content {}
+
+    .hero__eyebrow {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .hero__headline {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.6rem;
+      font-weight: 600;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero__text {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #555;
+    }
+
+    .hero__text .dropcap {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 3.5rem;
+      float: left;
+      line-height: 1;
+      margin-right: 8px;
+      margin-top: 4px;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    /* Divider */
+    .divider {
+      text-align: center;
+      padding: 12px 0;
+      color: var(--gold);
+      font-size: 1.2rem;
+      letter-spacing: 0.5em;
+    }
+
+    /* Country Features — Magazine spread style */
+    .spread {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 40px;
+    }
+
+    .spread__header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 32px;
+      border-bottom: 2px solid var(--black);
+      padding-bottom: 12px;
+    }
+
+    .spread__country {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .spread__tagline {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      color: var(--warm-gray);
+      font-size: 1rem;
+    }
+
+    .spread__columns {
+      column-count: 2;
+      column-gap: 48px;
+      column-rule: 1px solid var(--rule);
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #444;
+    }
+
+    .spread__category-title {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 500;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    .spread__category-title:first-child { margin-top: 0; }
+
+    .spread__pullquote {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--black);
+      border-left: 3px solid var(--gold);
+      padding-left: 20px;
+      margin: 24px 0;
+      break-inside: avoid;
+    }
+
+    /* Comparison Grid */
+    .grid-section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 48px 40px;
+      border-top: 2px solid var(--black);
+    }
+
+    .grid-section__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .mini-card {
+      text-align: center;
+      padding: 32px 20px;
+      border: 1px solid var(--rule);
+    }
+
+    .mini-card__country {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .mini-card__detail {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .mini-card__art {
+      font-size: 0.85rem;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* Colophon / Footer */
+    .colophon {
+      text-align: center;
+      padding: 40px;
+      border-top: 1px solid var(--rule);
+      font-size: 0.8rem;
+      color: var(--warm-gray);
+    }
+
+    .colophon a { color: var(--warm-gray); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; gap: 32px; padding: 40px 24px; }
+      .hero__visual { max-height: 300px; }
+      .spread { padding: 32px 24px; }
+      .spread__columns { column-count: 1; }
+      .mini-grid { grid-template-columns: 1fr; gap: 16px; }
+      .masthead__nav { flex-wrap: wrap; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="masthead">
+    <a href="../index.html" class="masthead__back">← Back to Gallery</a>
+    <div class="masthead__rule"></div>
+    <h1 class="masthead__title">European Cultural Mosaic</h1>
+    <p class="masthead__subtitle">A Grand Tour of Architecture, Cuisine & Art</p>
+    <nav class="masthead__nav">
+      <a href="#france">France</a>
+      <a href="#italy">Italy</a>
+      <a href="#spain">Spain</a>
+      <a href="#germany">Germany</a>
+      <a href="#uk">United Kingdom</a>
+      <a href="#greece">Greece</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero__visual">
+      <span class="hero__visual-text">ECM</span>
+    </div>
+    <div class="hero__content">
+      <p class="hero__eyebrow">The Grand Tour — Issue No. 1</p>
+      <h2 class="hero__headline">Six Nations,<br>One Continent,<br>Infinite Stories</h2>
+      <p class="hero__text">
+        <span class="dropcap">E</span>urope is a continent where every cobblestone holds a story, every dish carries centuries of tradition, and every skyline is a conversation between past and future. In this issue, we traverse six nations — from the lavender fields of Provence to the sun-bleached shores of Santorini — exploring the architecture, cuisine, and cultural spirit that make each uniquely compelling.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">◆ ◆ ◆</div>
+
+  <article class="spread" id="france">
+    <div class="spread__header">
+      <h2 class="spread__country">France</h2>
+      <span class="spread__tagline">Where life is lived beautifully</span>
+    </div>
+    <div class="spread__columns">
+      <p class="spread__category-title">Architecture</p>
+      <p>The Gothic cathedrals of Chartres and Notre-Dame defined vertical ambition in stone. Centuries later, Baron Haussmann redesigned Paris with wide boulevards, uniform limestone facades, and zinc rooftops that give the city its distinctive silver-gray silhouette. Art Nouveau added organic ironwork, while Le Corbusier launched modernism from French soil.</p>
+      <div class="spread__pullquote">In France, even the everyday is designed with an eye for proportion and light.</div>
+      <p class="spread__category-title">Cuisine</p>
+      <p>French cuisine is both grand and intimate. Haute cuisine — born in the kitchens of Escoffier — coexists with rustic cassoulet and the simple perfection of a warm baguette. The notion of terroir — that food carries the character of its place — is deeply French. Wine, cheese, and bread are not accompaniments but pillars of culture.</p>
+      <p class="spread__category-title">Art & Lifestyle</p>
+      <p>Impressionism was born on French riverbanks. The café culture of Paris — sitting, watching, thinking — is itself an art form. Joie de vivre isn't hedonism; it's the French commitment to finding beauty in daily rituals, from a morning espresso to an evening stroll along the Seine.</p>
+    </div>
+  </article>
+
+  <div class="divider">◆ ◆ ◆</div>
+
+  <article class="spread" id="italy">
+    <div class="spread__header">
+      <h2 class="spread__country">Italy</h2>
+      <span class="spread__tagline">La dolce vita made visible</span>
+    </div>
+    <div class="spread__columns">
+      <p class="spread__category-title">Architecture</p>
+      <p>Italy is a living museum. The Roman Colosseum stands as engineering marvel and spectacle venue. Brunelleschi's dome in Florence solved the impossible. Palladio's symmetrical villas in the Veneto became the template for neoclassical buildings worldwide. Even decay is beautiful — Venice sinks with grace.</p>
+      <p class="spread__category-title">Cuisine</p>
+      <p>Italian cooking is regional pride distilled into recipes. Naples invented pizza; Bologna perfected ragù; Sicily wraps rice in golden arancini. The philosophy is radical simplicity: the best tomatoes, the freshest basil, the finest olive oil. Nothing more, nothing less.</p>
+      <div class="spread__pullquote">In Italy, the table is where family, history, and art converge every single day.</div>
+      <p class="spread__category-title">Art & Lifestyle</p>
+      <p>The Renaissance was born here — Michelangelo, Leonardo, Botticelli. But Italian artistry extends to fashion, design, and the passeggiata: the evening walk through town, dressed well, moving slowly, seeing and being seen. Life is the art form.</p>
+    </div>
+  </article>
+
+  <div class="divider">◆ ◆ ◆</div>
+
+  <article class="spread" id="spain">
+    <div class="spread__header">
+      <h2 class="spread__country">Spain</h2>
+      <span class="spread__tagline">Passion in every gesture</span>
+    </div>
+    <div class="spread__columns">
+      <p class="spread__category-title">Architecture</p>
+      <p>The Alhambra's geometric perfection reveals Moorish genius. Gaudí's Sagrada Família defies categorization — organic, sacred, still unfinished after 140 years. The white villages of Andalusia are minimalism born of necessity, while Santiago Calatrava's City of Arts and Sciences is Spain's futuristic statement.</p>
+      <p class="spread__category-title">Cuisine</p>
+      <p>Spanish dining is social ritual. Tapas — small plates shared among friends — turn every meal into a celebration. Paella from Valencia, pintxos from the Basque Country, gazpacho from Andalusia. The Spanish eat late, laugh loudly, and always make room for one more plate.</p>
+      <p class="spread__category-title">Art & Lifestyle</p>
+      <p>Velázquez, Goya, Picasso, Dalí — Spain's art swings between realism and dream. Flamenco embodies this duality: disciplined and wild, mournful and ecstatic. The siesta isn't laziness; it's respect for the rhythm of the sun and the priority of rest.</p>
+    </div>
+  </article>
+
+  <div class="divider">◆ ◆ ◆</div>
+
+  <article class="spread" id="germany">
+    <div class="spread__header">
+      <h2 class="spread__country">Germany</h2>
+      <span class="spread__tagline">Where order meets imagination</span>
+    </div>
+    <div class="spread__columns">
+      <p class="spread__category-title">Architecture</p>
+      <p>Cologne Cathedral's twin spires took 600 years to complete. The Bauhaus school in Dessau changed architecture forever with its gospel of function. Berlin's rebuilt Reichstag dome — modern glass atop historic stone — is a metaphor for the nation. Germany builds with purpose and precision.</p>
+      <p class="spread__category-title">Cuisine</p>
+      <p>German food is hearty and honest. Bavarian schweinshaxe with a cold weissbier. Nuremberg bratwurst. Black Forest cake layered with cherries and cream. Over 1,500 breweries uphold a beer tradition governed by the 500-year-old Reinheitsgebot purity law.</p>
+      <div class="spread__pullquote">Germany's genius is the marriage of craft and concept — whether in a Bauhaus chair or a Black Forest cake.</div>
+      <p class="spread__category-title">Art & Lifestyle</p>
+      <p>German Expressionism shattered comfortable perspectives. Gemütlichkeit — that untranslatable warmth of a cozy gathering — is the counterpoint to German efficiency. Christmas markets, forest walks, and the ritual of Kaffee und Kuchen prove that order and warmth are not opposites.</p>
+    </div>
+  </article>
+
+  <div class="divider">◆ ◆ ◆</div>
+
+  <article class="spread" id="uk">
+    <div class="spread__header">
+      <h2 class="spread__country">United Kingdom</h2>
+      <span class="spread__tagline">Tradition with a wry smile</span>
+    </div>
+    <div class="spread__columns">
+      <p class="spread__category-title">Architecture</p>
+      <p>Tudor half-timber, Georgian proportion, Victorian ambition, and the bold modernity of the Gherkin and Shard. British architecture carries the weight of empire and the cheek of reinvention. The terraced house is as iconic as any cathedral.</p>
+      <p class="spread__category-title">Cuisine</p>
+      <p>The Sunday roast is sacred. Fish and chips, wrapped in paper, eaten by the sea. Afternoon tea elevated the snack to ceremony. Today, London is one of the world's great food cities — curry, dim sum, and Michelin stars coexisting in joyful diversity.</p>
+      <p class="spread__category-title">Art & Lifestyle</p>
+      <p>Shakespeare, Turner, Banksy — the British create across centuries and styles with equal irreverence. The pub is a living room for the nation. Queuing is an art. Dry humor is a survival mechanism, and the garden is where the British soul truly flourishes.</p>
+    </div>
+  </article>
+
+  <div class="divider">◆ ◆ ◆</div>
+
+  <article class="spread" id="greece">
+    <div class="spread__header">
+      <h2 class="spread__country">Greece</h2>
+      <span class="spread__tagline">The light of the beginning</span>
+    </div>
+    <div class="spread__columns">
+      <p class="spread__category-title">Architecture</p>
+      <p>The Parthenon's Doric columns set the template for Western architecture. Cycladic houses — white cubes with blue shutters — are minimalism born from island light. Byzantine churches glow with golden mosaics. Greek architecture is the pursuit of proportion, harmony, and clarity.</p>
+      <div class="spread__pullquote">Greece is where architecture first became philosophy — the idea that a building could embody truth.</div>
+      <p class="spread__category-title">Cuisine</p>
+      <p>Greek food is the Mediterranean diet at its purest: olive oil, fresh vegetables, grilled fish, tangy feta, honey-drizzled yogurt. Meals are communal, generous, and unhurried. A Greek taverna by the sea is as close to perfect dining as one can get.</p>
+      <p class="spread__category-title">Art & Lifestyle</p>
+      <p>Classical sculpture defined the human ideal. Modern Greek life runs on philoxenia — the love of strangers — an ancient hospitality that turns visitors into family. The kafeneio (coffeehouse) is where politics, gossip, and philosophy blend over tiny cups of strong coffee.</p>
+    </div>
+  </article>
+
+  <section class="grid-section">
+    <h2 class="grid-section__title">Art Movements by Nation</h2>
+    <div class="mini-grid">
+      <div class="mini-card">
+        <h3 class="mini-card__country">France</h3>
+        <p class="mini-card__detail">Impressionism</p>
+        <p class="mini-card__art">Monet, Renoir, and Degas captured light and movement, breaking from academic tradition to paint the feeling of a moment.</p>
+      </div>
+      <div class="mini-card">
+        <h3 class="mini-card__country">Italy</h3>
+        <p class="mini-card__detail">Renaissance</p>
+        <p class="mini-card__art">Michelangelo, Leonardo, and Raphael rediscovered classical ideals and placed humanity at the center of art.</p>
+      </div>
+      <div class="mini-card">
+        <h3 class="mini-card__country">Spain</h3>
+        <p class="mini-card__detail">Surrealism</p>
+        <p class="mini-card__art">Dalí and Miró explored the subconscious, melting clocks and conjuring dreamscapes from the Spanish imagination.</p>
+      </div>
+      <div class="mini-card">
+        <h3 class="mini-card__country">Germany</h3>
+        <p class="mini-card__detail">Expressionism</p>
+        <p class="mini-card__art">Kirchner and Kandinsky distorted reality to express inner emotion, confronting viewers with raw psychological truth.</p>
+      </div>
+      <div class="mini-card">
+        <h3 class="mini-card__country">United Kingdom</h3>
+        <p class="mini-card__detail">Pre-Raphaelite</p>
+        <p class="mini-card__art">Rossetti and Millais rejected industrial modernity for medieval beauty, vivid color, and poetic storytelling.</p>
+      </div>
+      <div class="mini-card">
+        <h3 class="mini-card__country">Greece</h3>
+        <p class="mini-card__detail">Classical Sculpture</p>
+        <p class="mini-card__art">The kouros, the Venus de Milo, the Discus Thrower — Greek sculptors made stone breathe and defined beauty for millennia.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <p>European Cultural Mosaic · v3 Editorial Magazine · <a href="../index.html">← Gallery</a></p>
+  </footer>
+
+</body>
+</html>
