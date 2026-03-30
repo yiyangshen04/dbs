@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v14 — Modern Cards + Art Nouveau · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8d9a8;
+      --gold-pale: #f5efd8;
+      --green: #2d5a3d;
+      --cream: #faf8f3;
+      --white: #fff;
+      --text: #2a2218;
+      --text-dim: #7a7068;
+      --rule: #e8e2d8;
+      --shadow: rgba(92,74,50,0.08);
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      background: rgba(250,248,243,0.95);
+      padding: 8px 16px;
+      border: 1px solid var(--gold-light);
+      border-radius: 20px;
+    }
+    .back-link:hover { background: var(--gold-pale); color: var(--green); }
+
+    /* Ornament */
+    .ornament {
+      text-align: center;
+      color: var(--gold);
+      font-size: 1.2rem;
+      letter-spacing: 0.4em;
+      padding: 8px 0;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 72px 40px 40px;
+      background: linear-gradient(180deg, var(--white) 0%, var(--cream) 100%);
+      border-bottom: 2px solid var(--gold-light);
+      position: relative;
+    }
+
+    .header::before,
+    .header::after {
+      content: '❧';
+      position: absolute;
+      font-size: 1.8rem;
+      color: var(--gold-light);
+    }
+    .header::before { top: 32px; left: 40px; }
+    .header::after { top: 32px; right: 40px; transform: scaleX(-1); }
+
+    .header__label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .header__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 700;
+      font-style: italic;
+      color: var(--green);
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .header__subtitle {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* Cards Grid */
+    .cards {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 28px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px var(--shadow);
+      border: 1px solid var(--rule);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(92,74,50,0.12);
+    }
+
+    /* Gold top ornamental border */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    /* Corner ornaments */
+    .card::after {
+      content: '✦';
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 0.7rem;
+      color: var(--gold-light);
+    }
+
+    .card__header {
+      padding: 28px 28px 0;
+    }
+
+    .card__name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 2px;
+    }
+
+    .card__tagline {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .card__divider {
+      width: 36px;
+      height: 2px;
+      background: var(--gold-light);
+      margin: 16px 28px;
+    }
+
+    .card__body {
+      padding: 0 28px 28px;
+    }
+
+    .card__section { margin-bottom: 16px; }
+    .card__section:last-child { margin-bottom: 0; }
+
+    .card__label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .card__text {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text-dim);
+    }
+
+    /* Comparison Section */
+    .comparison {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px 48px;
+    }
+
+    .comparison__header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .comparison__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--green);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th {
+      text-align: left;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      font-weight: 600;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--gold-light);
+    }
+
+    td {
+      padding: 14px;
+      border-bottom: 1px solid var(--rule);
+      color: var(--text-dim);
+    }
+
+    td:first-child {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--green);
+    }
+
+    tr:hover td { background: var(--gold-pale); }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 36px 40px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      border-top: 2px solid var(--gold-light);
+    }
+
+    .footer a { color: var(--gold); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .cards { padding: 32px 20px; grid-template-columns: 1fr; }
+      .comparison { padding: 0 20px 40px; }
+      .header { padding: 56px 20px 32px; }
+      .header::before, .header::after { display: none; }
+      table { font-size: 0.78rem; }
+      th, td { padding: 10px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← Gallery</a>
+
+  <header class="header">
+    <p class="header__label">A Comparative Study</p>
+    <h1 class="header__title">European Cultural Mosaic</h1>
+    <p class="header__subtitle">Six nations, explored through architecture and cuisine — with modern card layout and Art Nouveau ornamental accents.</p>
+  </header>
+
+  <div class="ornament" style="padding: 24px 0;">✦ ❧ ✦</div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__name">France</h2>
+        <p class="card__tagline">Joie de vivre</p>
+      </div>
+      <div class="card__divider"></div>
+      <div class="card__body">
+        <div class="card__section">
+          <p class="card__label">Architecture</p>
+          <p class="card__text">Gothic cathedrals, Haussmann's boulevards, the Eiffel Tower. French architecture blends monumental ambition with elegant urban planning across centuries.</p>
+        </div>
+        <div class="card__section">
+          <p class="card__label">Cuisine</p>
+          <p class="card__text">Haute cuisine elevated to art. Croissants, coq au vin, crème brûlée — protected by tradition, defined by terroir, savored with ritual.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__name">Italy</h2>
+        <p class="card__tagline">La dolce vita</p>
+      </div>
+      <div class="card__divider"></div>
+      <div class="card__body">
+        <div class="card__section">
+          <p class="card__label">Architecture</p>
+          <p class="card__text">Roman ruins, Renaissance domes, Venetian palazzos. The Colosseum and Brunelleschi's dome defined Western architecture's vocabulary forever.</p>
+        </div>
+        <div class="card__section">
+          <p class="card__label">Cuisine</p>
+          <p class="card__text">Regional perfection through simplicity. Neapolitan pizza, hand-rolled pasta, fresh mozzarella — each ingredient treated with reverence.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__name">Spain</h2>
+        <p class="card__tagline">Pasión y vida</p>
+      </div>
+      <div class="card__divider"></div>
+      <div class="card__body">
+        <div class="card__section">
+          <p class="card__label">Architecture</p>
+          <p class="card__text">The Alhambra's geometric poetry, Gaudí's organic fantasies, white Andalusian villages. Architecture between Moorish precision and surreal imagination.</p>
+        </div>
+        <div class="card__section">
+          <p class="card__label">Cuisine</p>
+          <p class="card__text">Tapas culture — small plates shared late into the evening. Paella, jamón ibérico, gambas al ajillo, accompanied by Rioja and conversation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__name">Germany</h2>
+        <p class="card__tagline">Gemütlichkeit</p>
+      </div>
+      <div class="card__divider"></div>
+      <div class="card__body">
+        <div class="card__section">
+          <p class="card__label">Architecture</p>
+          <p class="card__text">Fairy-tale castles and Bauhaus clarity. From Neuschwanstein's romantic towers to Berlin's stark modernity — dream and discipline in equal measure.</p>
+        </div>
+        <div class="card__section">
+          <p class="card__label">Cuisine</p>
+          <p class="card__text">Hearty, honest, deeply regional. Bavarian pretzels, Rhineland sauerbraten, Black Forest cake. Beer culture as institution, with 1,500+ breweries.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__name">United Kingdom</h2>
+        <p class="card__tagline">Keep calm, carry on</p>
+      </div>
+      <div class="card__divider"></div>
+      <div class="card__body">
+        <div class="card__section">
+          <p class="card__label">Architecture</p>
+          <p class="card__text">Tudor half-timber, Georgian symmetry, Victorian grandeur. London's skyline is a timeline — Wren's domes to the Shard's crystalline spire.</p>
+        </div>
+        <div class="card__section">
+          <p class="card__label">Cuisine</p>
+          <p class="card__text">Sunday roast, afternoon tea, fish and chips by the sea. Comfort cuisine enriched by centuries of multicultural influence and new culinary ambition.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__name">Greece</h2>
+        <p class="card__tagline">Philoxenia</p>
+      </div>
+      <div class="card__divider"></div>
+      <div class="card__body">
+        <div class="card__section">
+          <p class="card__label">Architecture</p>
+          <p class="card__text">The Parthenon's perfect proportions, white-washed Cycladic cubes, golden Byzantine domes. Greek architecture is clarity, light, and the origin of the West.</p>
+        </div>
+        <div class="card__section">
+          <p class="card__label">Cuisine</p>
+          <p class="card__text">Olive oil, feta, grilled octopus, honey baklava. Mediterranean generosity distilled — the table is always set for one more guest.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ornament">✦ ✦ ✦</div>
+
+  <div class="comparison">
+    <div class="comparison__header">
+      <h2 class="comparison__title">At a Glance</h2>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Country</th><th>Architecture</th><th>Signature Dish</th><th>Art Movement</th><th>Spirit</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>France</td><td>Gothic · Haussmann · Art Deco</td><td>Coq au Vin</td><td>Impressionism</td><td>Joie de vivre</td></tr>
+        <tr><td>Italy</td><td>Roman · Renaissance · Baroque</td><td>Pasta al Ragù</td><td>Renaissance</td><td>La dolce vita</td></tr>
+        <tr><td>Spain</td><td>Moorish · Modernisme</td><td>Paella Valenciana</td><td>Surrealism</td><td>Pasión</td></tr>
+        <tr><td>Germany</td><td>Romanesque · Bauhaus</td><td>Schweinshaxe</td><td>Expressionism</td><td>Gemütlichkeit</td></tr>
+        <tr><td>UK</td><td>Tudor · Georgian · Victorian</td><td>Sunday Roast</td><td>Pre-Raphaelite</td><td>Understated</td></tr>
+        <tr><td>Greece</td><td>Classical · Cycladic · Byzantine</td><td>Moussaka</td><td>Classical sculpture</td><td>Philoxenia</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="footer">
+    <p>European Cultural Mosaic · v14 Modern Cards + Art Nouveau · <a href="../index.html">← Gallery</a></p>
+  </footer>
+
+</body>
+</html>
