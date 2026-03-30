@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v13 — Magazine + Pastel · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --lavender: #d8cce8;
+      --peach: #f2d5c0;
+      --sage: #c2d9b8;
+      --blush: #ecc4c8;
+      --sky: #b8d4e8;
+      --sand: #e8dcc8;
+      --cream: #fdf9f5;
+      --text: #2a2520;
+      --text-dim: #7a7068;
+      --gold: #c0a050;
+      --rule: #e8e2d8;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      font-weight: 400;
+      line-height: 1.65;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(253,249,245,0.95);
+      padding: 8px 16px;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+    }
+    .back-link:hover { color: var(--gold); border-color: var(--gold); }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      padding: 72px 40px 36px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .masthead__label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .masthead__rule { width: 50px; height: 2px; background: var(--gold); margin: 0 auto 20px; }
+
+    .masthead__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    .masthead__subtitle {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text-dim);
+      margin-top: 12px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Section Intro */
+    .section-intro {
+      text-align: center;
+      padding: 48px 40px 20px;
+    }
+
+    .section-intro__label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .section-intro__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.8rem;
+      font-weight: 600;
+      font-style: italic;
+    }
+
+    /* Country Articles — Magazine two-column with pastel accents */
+    .articles {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 40px 48px;
+    }
+
+    .article {
+      padding: 40px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .article:last-child { border-bottom: none; }
+
+    .article__header {
+      margin-bottom: 20px;
+    }
+
+    .article__color-bar {
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      margin-bottom: 12px;
+    }
+
+    .article--france .article__color-bar { background: var(--lavender); }
+    .article--italy .article__color-bar { background: var(--peach); }
+    .article--spain .article__color-bar { background: var(--blush); }
+    .article--germany .article__color-bar { background: var(--sage); }
+    .article--uk .article__color-bar { background: var(--sky); }
+    .article--greece .article__color-bar { background: var(--sand); }
+
+    .article__country {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .article__tagline {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--text-dim);
+    }
+
+    .article__columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 16px;
+    }
+
+    .article__col-title {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .article__col-text {
+      font-size: 0.92rem;
+      line-height: 1.75;
+      color: var(--text-dim);
+    }
+
+    /* Pull Quote */
+    .pull-quote {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .pull-quote__text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-style: italic;
+      line-height: 1.4;
+      color: var(--text);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .pull-quote__attr {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-top: 12px;
+    }
+
+    /* Lifestyle Grid */
+    .lifestyle {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 40px 48px;
+    }
+
+    .lifestyle__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .lifestyle__item {
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .lifestyle__item:nth-child(1) { background: rgba(216,204,232,0.25); }
+    .lifestyle__item:nth-child(2) { background: rgba(242,213,192,0.25); }
+    .lifestyle__item:nth-child(3) { background: rgba(236,196,200,0.25); }
+    .lifestyle__item:nth-child(4) { background: rgba(194,217,184,0.25); }
+    .lifestyle__item:nth-child(5) { background: rgba(184,212,232,0.25); }
+    .lifestyle__item:nth-child(6) { background: rgba(232,220,200,0.25); }
+
+    .lifestyle__country {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .lifestyle__phrase {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .lifestyle__desc {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 36px 40px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      border-top: 1px solid var(--rule);
+    }
+
+    .footer a { color: var(--gold); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .article__columns { grid-template-columns: 1fr; gap: 20px; }
+      .lifestyle__grid { grid-template-columns: repeat(2, 1fr); }
+      .articles, .lifestyle, .pull-quote { padding-left: 20px; padding-right: 20px; }
+      .masthead { padding: 56px 20px 28px; }
+    }
+
+    @media (max-width: 480px) {
+      .lifestyle__grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← Gallery</a>
+
+  <header class="masthead">
+    <p class="masthead__label">A Cultural Comparison</p>
+    <div class="masthead__rule"></div>
+    <h1 class="masthead__title">European Cultural Mosaic</h1>
+    <p class="masthead__subtitle">Architecture, cuisine, and the art of living — across six nations that shaped the world</p>
+  </header>
+
+  <div class="section-intro">
+    <p class="section-intro__label">The Nations</p>
+    <h2 class="section-intro__title">Architecture & Cuisine</h2>
+  </div>
+
+  <div class="articles">
+    <article class="article article--france">
+      <div class="article__header">
+        <div class="article__color-bar"></div>
+        <h2 class="article__country">France</h2>
+        <p class="article__tagline">Where beauty is a way of life</p>
+      </div>
+      <div class="article__columns">
+        <div>
+          <p class="article__col-title">Architecture</p>
+          <p class="article__col-text">Gothic cathedrals, Haussmann's rational boulevards, and the Eiffel Tower's iron poetry. French architecture layers centuries of ambition — from Versailles' gilded excess to Le Corbusier's modernist rigor.</p>
+        </div>
+        <div>
+          <p class="article__col-title">Cuisine</p>
+          <p class="article__col-text">Haute cuisine and countryside terroir intertwine. The morning croissant, the long lunch, the evening's perfectly sauced entrée — eating in France is daily ceremony, never mere sustenance.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="article article--italy">
+      <div class="article__header">
+        <div class="article__color-bar"></div>
+        <h2 class="article__country">Italy</h2>
+        <p class="article__tagline">La dolce vita in every detail</p>
+      </div>
+      <div class="article__columns">
+        <div>
+          <p class="article__col-title">Architecture</p>
+          <p class="article__col-text">The Colosseum's enduring arches, Brunelleschi's impossible dome, Venice's reflected palazzos. Italian architecture is the foundation of Western aesthetics — drama and proportion made timeless.</p>
+        </div>
+        <div>
+          <p class="article__col-title">Cuisine</p>
+          <p class="article__col-text">Three ingredients, perfect quality, no compromise. Neapolitan pizza, fresh pasta rolled by hand, gelato on a summer evening. Italian cooking is restraint elevated to philosophy.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="article article--spain">
+      <div class="article__header">
+        <div class="article__color-bar"></div>
+        <h2 class="article__country">Spain</h2>
+        <p class="article__tagline">Passion written in stone and spice</p>
+      </div>
+      <div class="article__columns">
+        <div>
+          <p class="article__col-title">Architecture</p>
+          <p class="article__col-text">The Alhambra's intricate geometry, Gaudí's organic fantasies, white Andalusian pueblos. Spanish architecture moves between Moorish mathematical perfection and Catalan surreal imagination.</p>
+        </div>
+        <div>
+          <p class="article__col-title">Cuisine</p>
+          <p class="article__col-text">Tapas shared at midnight, saffron paella by the coast, paper-thin jamón ibérico. Spanish food is communal joy — plates arriving in waves, conversation flowing with the wine.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="article article--germany">
+      <div class="article__header">
+        <div class="article__color-bar"></div>
+        <h2 class="article__country">Germany</h2>
+        <p class="article__tagline">Precision meets soul</p>
+      </div>
+      <div class="article__columns">
+        <div>
+          <p class="article__col-title">Architecture</p>
+          <p class="article__col-text">Neuschwanstein's fairy-tale romance, Bauhaus functional clarity, Berlin's raw rebuilt landscape. Germany builds between dream and discipline, always with exacting craft.</p>
+        </div>
+        <div>
+          <p class="article__col-title">Cuisine</p>
+          <p class="article__col-text">Hearty, honest, and proudly regional. Bavarian weisswurst with sweet mustard, Berlin currywurst, Black Forest cherry cake. Simple food, generous portions, world-class beer.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="article article--uk">
+      <div class="article__header">
+        <div class="article__color-bar"></div>
+        <h2 class="article__country">United Kingdom</h2>
+        <p class="article__tagline">Tradition with a modern edge</p>
+      </div>
+      <div class="article__columns">
+        <div>
+          <p class="article__col-title">Architecture</p>
+          <p class="article__col-text">Tudor beams, Georgian terraces, Victorian iron halls, and modern glass towers. The UK's architecture is a timeline — ancient stone to cutting-edge engineering, often side by side.</p>
+        </div>
+        <div>
+          <p class="article__col-title">Cuisine</p>
+          <p class="article__col-text">The Sunday roast, afternoon tea, fish and chips wrapped in paper. British comfort food anchors the soul, while a new generation of chefs draws on the world's pantry.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="article article--greece">
+      <div class="article__header">
+        <div class="article__color-bar"></div>
+        <h2 class="article__country">Greece</h2>
+        <p class="article__tagline">Where civilization began</p>
+      </div>
+      <div class="article__columns">
+        <div>
+          <p class="article__col-title">Architecture</p>
+          <p class="article__col-text">The Parthenon's harmonious columns, white-washed Cycladic cubes against azure sea, golden Byzantine domes. Greek architecture is light, clarity, and the West's first grammar of form.</p>
+        </div>
+        <div>
+          <p class="article__col-title">Cuisine</p>
+          <p class="article__col-text">Olive oil, crumbled feta, grilled fish minutes from the net, honey-drizzled baklava. Mediterranean generosity — the table always set, the welcome always warm.</p>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="pull-quote">
+    <p class="pull-quote__text">"The real voyage of discovery consists not in seeking new landscapes, but in having new eyes."</p>
+    <p class="pull-quote__attr">— Marcel Proust</p>
+  </div>
+
+  <div class="section-intro">
+    <p class="section-intro__label">The Art of Living</p>
+    <h2 class="section-intro__title">Lifestyle & Spirit</h2>
+  </div>
+
+  <div class="lifestyle">
+    <div class="lifestyle__grid">
+      <div class="lifestyle__item">
+        <p class="lifestyle__country">France</p>
+        <p class="lifestyle__phrase">Joie de vivre</p>
+        <p class="lifestyle__desc">The joy of living — long lunches, café terraces, art as daily life. Every moment savored.</p>
+      </div>
+      <div class="lifestyle__item">
+        <p class="lifestyle__country">Italy</p>
+        <p class="lifestyle__phrase">La dolce vita</p>
+        <p class="lifestyle__desc">The sweet life — family dinners, evening passeggiata, beauty woven into the everyday.</p>
+      </div>
+      <div class="lifestyle__item">
+        <p class="lifestyle__country">Spain</p>
+        <p class="lifestyle__phrase">Sobremesa</p>
+        <p class="lifestyle__desc">The time spent lingering at the table after a meal — conversation, laughter, no rush.</p>
+      </div>
+      <div class="lifestyle__item">
+        <p class="lifestyle__country">Germany</p>
+        <p class="lifestyle__phrase">Gemütlichkeit</p>
+        <p class="lifestyle__desc">Cozy belonging — warmth of a biergarten, Christmas markets, friends gathered close.</p>
+      </div>
+      <div class="lifestyle__item">
+        <p class="lifestyle__country">United Kingdom</p>
+        <p class="lifestyle__phrase">Stiff upper lip</p>
+        <p class="lifestyle__desc">Quiet resilience and dry wit. Tea in a crisis, understatement as art form.</p>
+      </div>
+      <div class="lifestyle__item">
+        <p class="lifestyle__country">Greece</p>
+        <p class="lifestyle__phrase">Philoxenia</p>
+        <p class="lifestyle__desc">Love of the stranger — radical hospitality. The door is always open, the table always full.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>European Cultural Mosaic · v13 Magazine + Pastel · <a href="../index.html">← Gallery</a></p>
+  </footer>
+
+</body>
+</html>
