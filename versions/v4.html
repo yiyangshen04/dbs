@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v4 — Brutalist · European Cultural Mosaic</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --green: #00ff41;
+      --black: #000;
+      --white: #fff;
+      --gray: #666;
+    }
+
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      background: var(--black);
+      color: var(--white);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    a { color: var(--green); }
+
+    /* Nav Bar */
+    .nav {
+      border-bottom: 3px solid var(--white);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .nav a { text-decoration: none; }
+
+    /* Hero */
+    .hero {
+      padding: 60px 20px 40px;
+      border-bottom: 3px solid var(--green);
+    }
+
+    .hero__title {
+      font-size: clamp(3rem, 10vw, 8rem);
+      font-weight: 700;
+      line-height: 0.95;
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+    }
+
+    .hero__title span { color: var(--green); }
+
+    .hero__sub {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--gray);
+      max-width: 600px;
+    }
+
+    .hero__sub span { color: var(--green); }
+
+    /* Data Block */
+    .data-block {
+      border-bottom: 1px solid #333;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 0;
+    }
+
+    .data-block:hover { background: #0a0a0a; }
+
+    .data-block__key {
+      color: var(--green);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      padding-top: 2px;
+    }
+
+    .data-block__val {
+      color: #ccc;
+      font-size: 13px;
+    }
+
+    /* Country Section */
+    .country-section {
+      border-bottom: 3px solid var(--white);
+    }
+
+    .country-header {
+      padding: 32px 20px 16px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .country-header__name {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .country-header__id {
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    .country-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .country-field {
+      padding: 20px;
+      border-right: 1px solid #222;
+      border-bottom: 1px solid #222;
+    }
+
+    .country-field__label {
+      color: var(--green);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .country-field__label::before { content: '> '; }
+
+    .country-field__text {
+      color: #aaa;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: flex;
+      border-bottom: 3px solid var(--green);
+    }
+
+    .stat {
+      flex: 1;
+      padding: 24px 20px;
+      border-right: 1px solid #333;
+      text-align: center;
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat__num {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .stat__label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    /* Comparison Matrix */
+    .matrix {
+      padding: 32px 20px;
+    }
+
+    .matrix__title {
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      color: var(--green);
+    }
+
+    .matrix__title::before { content: '// '; }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .matrix-table th {
+      text-align: left;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--green);
+      font-weight: 400;
+    }
+
+    .matrix-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #222;
+      color: #bbb;
+    }
+
+    .matrix-table tr:hover td { background: #0a0a0a; }
+
+    .matrix-table td:first-child {
+      color: var(--white);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* ASCII Divider */
+    .ascii-divider {
+      padding: 12px 20px;
+      color: #333;
+      font-size: 11px;
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: 1px solid #222;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 24px 20px;
+      font-size: 11px;
+      color: var(--gray);
+      border-top: 3px solid var(--white);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .data-block { grid-template-columns: 1fr; gap: 4px; }
+      .stats-row { flex-direction: column; }
+      .stat { border-right: none; border-bottom: 1px solid #333; }
+      .country-content { grid-template-columns: 1fr; }
+      .country-header__name { font-size: 1.8rem; }
+      .matrix-table { font-size: 11px; }
+      .matrix-table th, .matrix-table td { padding: 6px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="../index.html">← GALLERY</a>
+    <span>EUROPEAN_CULTURAL_MOSAIC // V4_BRUTALIST</span>
+  </nav>
+
+  <section class="hero">
+    <h1 class="hero__title">EUROPEAN<br>CULTURAL<br><span>MOSAIC_</span></h1>
+    <p class="hero__sub"><span>></span> A raw data dump of architecture, cuisine, art, and lifestyle across six European nations. No polish. No filter. Just the facts.</p>
+  </section>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat__num">06</div>
+      <div class="stat__label">Nations</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num">2K+</div>
+      <div class="stat__label">Years</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num">04</div>
+      <div class="stat__label">Categories</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num">∞</div>
+      <div class="stat__label">Depth</div>
+    </div>
+  </div>
+
+  <!-- France -->
+  <section class="country-section">
+    <div class="country-header">
+      <h2 class="country-header__name">FRANCE</h2>
+      <span class="country-header__id">[FR] 48.8566°N 2.3522°E</span>
+    </div>
+    <div class="country-content">
+      <div class="country-field">
+        <span class="country-field__label">Architecture</span>
+        <p class="country-field__text">Gothic cathedrals. Haussmann boulevards. Versailles excess. Le Corbusier brutalism. The Eiffel Tower — iron ego reaching 330m. Paris is a museum you live in.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Cuisine</span>
+        <p class="country-field__text">Haute cuisine codified by Escoffier. Croissants at dawn. Coq au vin at dusk. 246 types of cheese (de Gaulle's famous headache). Wine is identity, not beverage.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Art</span>
+        <p class="country-field__text">Impressionism: Monet's waterlilies. Matisse's cutouts. The Louvre holds 380,000 objects. France didn't invent art — it just acted like it did.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Lifestyle</span>
+        <p class="country-field__text">Joie de vivre. 35-hour work weeks. 2-hour lunches. Café culture as philosophy. The French don't rush — they curate their existence.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ascii-divider">═══════════════════════════════════════════════════════════════════════════════════════════════════════════════</div>
+
+  <!-- Italy -->
+  <section class="country-section">
+    <div class="country-header">
+      <h2 class="country-header__name">ITALY</h2>
+      <span class="country-header__id">[IT] 41.9028°N 12.4964°E</span>
+    </div>
+    <div class="country-content">
+      <div class="country-field">
+        <span class="country-field__label">Architecture</span>
+        <p class="country-field__text">Colosseum: 50,000 seats, 80 entrances, 2000 years. Brunelleschi's dome: 4M bricks, zero flying buttresses. Venice: 118 islands slowly drowning in beauty.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Cuisine</span>
+        <p class="country-field__text">Regional absolutism. Neapolitans own pizza. Bolognese own ragù. Put cream in carbonara and witness Italian rage. Simplicity is the highest form of sophistication.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Art</span>
+        <p class="country-field__text">The Renaissance: humanity's greatest creative explosion. Michelangelo painted the Sistine ceiling on his back for 4 years. Leonardo filled 13,000 pages of notebooks.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Lifestyle</span>
+        <p class="country-field__text">La dolce vita. The passeggiata. Espresso standing at the bar — never sitting (that costs extra). Style isn't optional. Living well is the best revenge.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ascii-divider">═══════════════════════════════════════════════════════════════════════════════════════════════════════════════</div>
+
+  <!-- Spain -->
+  <section class="country-section">
+    <div class="country-header">
+      <h2 class="country-header__name">SPAIN</h2>
+      <span class="country-header__id">[ES] 40.4168°N 3.7038°W</span>
+    </div>
+    <div class="country-content">
+      <div class="country-field">
+        <span class="country-field__label">Architecture</span>
+        <p class="country-field__text">Alhambra: 8,000+ geometric patterns, zero repeated. Sagrada Família: started 1882, ETA completion 2026. Gaudí died hit by a tram. Art demands sacrifice.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Cuisine</span>
+        <p class="country-field__text">Tapas: small plates, big arguments about origins. Jamón ibérico: pigs eat acorns, humans eat poetry. Paella: Valencia's gift. Don't add chorizo unless you want a fight.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Art</span>
+        <p class="country-field__text">Velázquez painted truth. Goya painted nightmares. Picasso broke everything. Dalí melted it. Spain's art is a fever dream with technical mastery.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Lifestyle</span>
+        <p class="country-field__text">Dinner at 10 PM. Siesta is productivity science. Flamenco is controlled explosion. The Spanish don't live for work — they work to fund living.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ascii-divider">═══════════════════════════════════════════════════════════════════════════════════════════════════════════════</div>
+
+  <!-- Germany -->
+  <section class="country-section">
+    <div class="country-header">
+      <h2 class="country-header__name">GERMANY</h2>
+      <span class="country-header__id">[DE] 52.5200°N 13.4050°E</span>
+    </div>
+    <div class="country-content">
+      <div class="country-field">
+        <span class="country-field__label">Architecture</span>
+        <p class="country-field__text">Cologne Cathedral: 632 years to build. Bauhaus: form follows function, less is more, ornament is crime. Berlin's Reichstag: old walls, new glass dome. Germany rebuilds.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Cuisine</span>
+        <p class="country-field__text">Schweinshaxe: a roasted pork knuckle the size of your head. 1,500+ breweries. Reinheitsgebot since 1516: water, barley, hops. Nothing else. Purity is obsession.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Art</span>
+        <p class="country-field__text">Expressionism: Kirchner, Nolde, Beckmann. Bauhaus wasn't just architecture — it was typography, furniture, everything. German art asks uncomfortable questions.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Lifestyle</span>
+        <p class="country-field__text">Ordnung muss sein. Trains run on time (theoretically). Gemütlichkeit: cozy warmth in cold climates. Christmas markets. Forest bathing. Efficiency with soul.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ascii-divider">═══════════════════════════════════════════════════════════════════════════════════════════════════════════════</div>
+
+  <!-- UK -->
+  <section class="country-section">
+    <div class="country-header">
+      <h2 class="country-header__name">UNITED KINGDOM</h2>
+      <span class="country-header__id">[GB] 51.5074°N 0.1278°W</span>
+    </div>
+    <div class="country-content">
+      <div class="country-field">
+        <span class="country-field__label">Architecture</span>
+        <p class="country-field__text">Tudor half-timber. Georgian symmetry. Victorian iron and glass — Crystal Palace held 14,000 exhibitors. The Gherkin and Shard: London's ego in steel and glass.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Cuisine</span>
+        <p class="country-field__text">Fish and chips: national identity in batter. Sunday roast: the weekly sacrament. Afternoon tea: scones, clotted cream, existential calm. London is now a global food capital.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Art</span>
+        <p class="country-field__text">Shakespeare wrote everything. Turner painted light before the Impressionists. Banksy sprays truth on walls. British art is polite revolution.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Lifestyle</span>
+        <p class="country-field__text">Keep calm. Queue properly. Complain about weather (constantly). The pub is parliament for the people. Dry humor is a national defense mechanism.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ascii-divider">═══════════════════════════════════════════════════════════════════════════════════════════════════════════════</div>
+
+  <!-- Greece -->
+  <section class="country-section">
+    <div class="country-header">
+      <h2 class="country-header__name">GREECE</h2>
+      <span class="country-header__id">[GR] 37.9838°N 23.7275°E</span>
+    </div>
+    <div class="country-content">
+      <div class="country-field">
+        <span class="country-field__label">Architecture</span>
+        <p class="country-field__text">Parthenon: 46 outer columns, each slightly curved to appear straight. Cycladic houses: white cubes against blue infinity. Byzantine churches: gold mosaics, divine geometry.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Cuisine</span>
+        <p class="country-field__text">Olive oil is blood. Feta is religion. Moussaka is comfort architecture. Greek salad has no lettuce — fight me. Dining is communal, generous, and always by the sea.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Art</span>
+        <p class="country-field__text">Invented sculpture, theater, and democracy (the ultimate performance art). The Venus de Milo has no arms but more presence than any complete statue.</p>
+      </div>
+      <div class="country-field">
+        <span class="country-field__label">Lifestyle</span>
+        <p class="country-field__text">Philoxenia: love of strangers, core national trait. The kafeneio is office, living room, and therapy session. Time is flexible. Connection is not.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="matrix">
+    <h2 class="matrix__title">COMPARISON MATRIX</h2>
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th>NATION</th>
+          <th>ARCH_STYLE</th>
+          <th>SIGNATURE_DISH</th>
+          <th>ART_MOVEMENT</th>
+          <th>VIBE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>FRANCE</td><td>Gothic/Haussmann</td><td>Coq au Vin</td><td>Impressionism</td><td>Elegant rebellion</td></tr>
+        <tr><td>ITALY</td><td>Roman/Renaissance</td><td>Pasta al Ragù</td><td>Renaissance</td><td>Beautiful chaos</td></tr>
+        <tr><td>SPAIN</td><td>Moorish/Gaudí</td><td>Paella</td><td>Surrealism</td><td>Passionate heat</td></tr>
+        <tr><td>GERMANY</td><td>Bauhaus/Gothic</td><td>Schweinshaxe</td><td>Expressionism</td><td>Precise warmth</td></tr>
+        <tr><td>UK</td><td>Tudor/Victorian</td><td>Sunday Roast</td><td>Pre-Raphaelite</td><td>Wry resilience</td></tr>
+        <tr><td>GREECE</td><td>Classical/Cycladic</td><td>Moussaka</td><td>Classical</td><td>Sunlit wisdom</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer class="footer">
+    <span>EUROPEAN_CULTURAL_MOSAIC // V4_BRUTALIST // EOF</span>
+    <a href="../index.html">← GALLERY</a>
+  </footer>
+
+</body>
+</html>
