@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v19 — Expandable Content · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8d9a8;
+      --green: #2d5a3d;
+      --green-light: #4a8c6a;
+      --cream: #f5f0e8;
+      --warm-white: #faf8f3;
+      --brown: #5c4a32;
+      --dark: #2a2218;
+
+      --france: #c9b8db;
+      --italy: #d4845a;
+      --spain: #d4727a;
+      --germany: #7ba07a;
+      --uk: #6a8caa;
+      --greece: #6aadcc;
+    }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--cream);
+      color: var(--dark);
+      line-height: 1.7;
+    }
+
+    .ornament {
+      text-align: center;
+      padding: 16px 0;
+      color: var(--gold);
+      font-size: 1.4rem;
+      letter-spacing: 0.3em;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      font-size: 0.8rem;
+      color: var(--brown);
+      text-decoration: none;
+      background: rgba(245,240,232,0.95);
+      padding: 8px 16px;
+      border: 1px solid var(--gold-light);
+      border-radius: 20px;
+    }
+    .back-link:hover { background: var(--gold-light); }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 96px 40px 64px;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(201,184,219,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(240,201,176,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(168,197,160,0.12) 0%, transparent 50%),
+        linear-gradient(180deg, var(--warm-white) 0%, var(--cream) 100%);
+      border-bottom: 3px solid var(--gold);
+      position: relative;
+    }
+
+    .hero::before, .hero::after {
+      content: '\2767';
+      position: absolute;
+      font-size: 2rem;
+      color: var(--gold);
+      opacity: 0.3;
+    }
+    .hero::before { top: 44px; left: 44px; }
+    .hero::after { top: 44px; right: 44px; transform: scaleX(-1); }
+
+    .hero__eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 20px;
+    }
+
+    .hero__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 700;
+      color: var(--green);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero__title em { color: var(--gold); font-style: italic; }
+
+    .hero__subtitle {
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--brown);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .hero__nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 36px;
+    }
+
+    .hero__nav a {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      text-decoration: none;
+      padding: 6px 16px;
+      border: 1px solid var(--gold-light);
+      border-radius: 20px;
+      transition: all 0.3s;
+    }
+
+    .hero__nav a:hover {
+      background: var(--gold);
+      color: var(--warm-white);
+      border-color: var(--gold);
+    }
+
+    /* ── Country Section ── */
+    .country {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 72px 48px;
+      border-bottom: 1px solid var(--gold-light);
+    }
+
+    .country:nth-child(odd) {
+      background:
+        radial-gradient(ellipse at 80% 40%, rgba(201,184,219,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 70%, rgba(168,197,160,0.06) 0%, transparent 50%);
+    }
+
+    .country:nth-child(even) {
+      background:
+        radial-gradient(ellipse at 20% 40%, rgba(240,201,176,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(168,200,224,0.06) 0%, transparent 50%);
+    }
+
+    .country__header-area {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 36px;
+    }
+
+    .country__header-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .country__header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .country__name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--green);
+      line-height: 1.15;
+      margin-bottom: 4px;
+    }
+
+    .country__native {
+      font-style: italic;
+      color: var(--gold);
+      font-size: 0.95rem;
+    }
+
+    .country__tagline {
+      font-style: italic;
+      color: var(--brown);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    /* Key Facts Card */
+    .country__facts {
+      background: var(--cream);
+      border: 1.5px solid var(--gold-light);
+      border-radius: 10px;
+      padding: 18px 22px;
+      min-width: 200px;
+      max-width: 240px;
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+
+    .country__facts-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--gold-light);
+    }
+
+    .country__facts dt {
+      font-weight: 600;
+      color: var(--green);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .country__facts dt:first-of-type { margin-top: 0; }
+
+    .country__facts dd {
+      color: var(--brown);
+      margin-left: 0;
+    }
+
+    /* Per-country accent borders on facts cards */
+    .country--france .country__facts { border-left: 3px solid var(--france); }
+    .country--italy .country__facts { border-left: 3px solid var(--italy); }
+    .country--spain .country__facts { border-left: 3px solid var(--spain); }
+    .country--germany .country__facts { border-left: 3px solid var(--germany); }
+    .country--uk .country__facts { border-left: 3px solid var(--uk); }
+    .country--greece .country__facts { border-left: 3px solid var(--greece); }
+
+    /* Per-country accent on landmarks */
+    .country--france .landmark:hover { background: var(--france); border-color: var(--france); }
+    .country--italy .landmark:hover { background: var(--italy); border-color: var(--italy); }
+    .country--spain .landmark:hover { background: var(--spain); border-color: var(--spain); }
+    .country--germany .landmark:hover { background: var(--germany); border-color: var(--germany); }
+    .country--uk .landmark:hover { background: var(--uk); border-color: var(--uk); }
+    .country--greece .landmark:hover { background: var(--greece); border-color: var(--greece); }
+
+    /* Per-country accent on art cards */
+    .art-card--france { border-top: 3px solid var(--france); }
+    .art-card--italy { border-top: 3px solid var(--italy); }
+    .art-card--spain { border-top: 3px solid var(--spain); }
+    .art-card--germany { border-top: 3px solid var(--germany); }
+    .art-card--uk { border-top: 3px solid var(--uk); }
+    .art-card--greece { border-top: 3px solid var(--greece); }
+
+    /* Per-country accent on expandable borders */
+    .country--france .expandable__content { border-left-color: var(--france); }
+    .country--italy .expandable__content { border-left-color: var(--italy); }
+    .country--spain .expandable__content { border-left-color: var(--spain); }
+    .country--germany .expandable__content { border-left-color: var(--germany); }
+    .country--uk .expandable__content { border-left-color: var(--uk); }
+    .country--greece .expandable__content { border-left-color: var(--greece); }
+
+    .country__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 36px;
+    }
+
+    .country__image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid var(--gold-light);
+    }
+
+    .country__image-caption {
+      font-size: 0.75rem;
+      color: var(--brown);
+      font-style: italic;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .country__category { margin-bottom: 28px; }
+    .country__category:last-child { margin-bottom: 0; }
+
+    .country__label {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .country__label::before { content: '\2767'; font-size: 0.9rem; }
+
+    .country__text {
+      font-size: 0.95rem;
+      line-height: 1.85;
+      color: #555;
+    }
+
+    /* ── Ornamental Drop Caps ── */
+    .country__text--dropcap::first-letter {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 3.5rem;
+      float: left;
+      line-height: 0.85;
+      color: var(--gold);
+      font-weight: 700;
+      margin-right: 8px;
+      margin-top: 4px;
+    }
+
+    /* ── Expandable Details/Summary ── */
+    .expandable {
+      margin-bottom: 28px;
+      border: 1px solid var(--gold-light);
+      border-radius: 10px;
+      background: var(--warm-white);
+      overflow: hidden;
+    }
+
+    .expandable summary {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 16px 24px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      list-style: none;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .expandable summary::-webkit-details-marker { display: none; }
+    .expandable summary::marker { display: none; content: ''; }
+
+    .expandable summary::before {
+      content: '\25B8';
+      display: inline-block;
+      margin-right: 12px;
+      font-size: 0.9rem;
+      color: var(--gold);
+      transition: transform 0.2s;
+    }
+
+    .expandable[open] summary::before {
+      content: '\25BE';
+    }
+
+    .expandable summary:hover {
+      background: rgba(201,168,76,0.06);
+    }
+
+    .expandable__content {
+      padding: 4px 24px 20px 36px;
+      border-left: 2px solid var(--gold-light);
+      margin-left: 24px;
+      margin-right: 24px;
+      margin-bottom: 16px;
+    }
+
+    .expandable__content .country__text {
+      margin-top: 8px;
+    }
+
+    .expandable__content .cuisine-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0 0;
+    }
+
+    .expandable__content .cuisine-list li {
+      font-size: 0.92rem;
+      line-height: 1.85;
+      color: #555;
+      padding: 4px 0;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .expandable__content .cuisine-list li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 1.1rem;
+    }
+
+    .landmarks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .landmark {
+      font-size: 0.78rem;
+      padding: 6px 14px;
+      background: var(--warm-white);
+      border: 1px solid var(--gold-light);
+      border-radius: 20px;
+      color: var(--green);
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .landmark:hover {
+      background: var(--gold);
+      color: #fff;
+      border-color: var(--gold);
+    }
+
+    .landmark__icon { font-size: 0.85rem; }
+
+    /* ── Pull Quote ── */
+    .pullquote {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 56px 48px;
+      text-align: center;
+    }
+
+    .pullquote__inner {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 32px 0;
+      border-top: 2px solid var(--gold);
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .pullquote__text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.7rem;
+      font-style: italic;
+      color: var(--green);
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .pullquote__text::before, .pullquote__text::after {
+      font-size: 4rem;
+      color: var(--gold);
+      opacity: 0.5;
+      line-height: 0;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+
+    .pullquote__text::before { content: '\201C'; position: relative; top: 20px; margin-right: 6px; }
+    .pullquote__text::after { content: '\201D'; position: relative; top: 20px; margin-left: 6px; }
+
+    /* ── Art Movement Cards ── */
+    .art-section {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 64px 48px;
+    }
+
+    .art-section__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.8rem;
+      color: var(--green);
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .art-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .art-card {
+      background: var(--warm-white);
+      border: 1px solid var(--gold-light);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .art-card:hover { transform: translateY(-4px); }
+
+    .art-card__country {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+
+    .art-card__movement {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .art-card__desc {
+      font-size: 0.88rem;
+      color: #666;
+      line-height: 1.65;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 48px 48px;
+      border-top: 3px solid var(--gold);
+      font-size: 0.85rem;
+      color: var(--brown);
+    }
+
+    .footer a { color: var(--green); text-decoration: none; }
+    .footer a:hover { color: var(--gold); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .country { padding: 48px 20px; }
+      .country__header-area {
+        grid-template-columns: 1fr;
+      }
+      .country__facts {
+        max-width: 100%;
+        min-width: auto;
+      }
+      .country__grid { grid-template-columns: 1fr; }
+      .country__name { font-size: 2.2rem; }
+      .art-grid { grid-template-columns: 1fr; }
+      .hero { padding: 72px 20px 48px; }
+      .hero::before, .hero::after { display: none; }
+      .art-section { padding: 44px 20px; }
+      .pullquote { padding: 36px 20px; }
+      .footer { padding: 40px 20px; }
+      .expandable summary { padding: 14px 18px; font-size: 0.95rem; }
+      .expandable__content { margin-left: 18px; margin-right: 18px; padding-left: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">&larr; Gallery</a>
+
+  <header class="hero">
+    <p class="hero__eyebrow">A Cultural Exploration of Europe</p>
+    <h1 class="hero__title">European Cultural <em>Mosaic</em></h1>
+    <p class="hero__subtitle">Architecture, cuisine, art, and the rhythms of daily life across six iconic nations &mdash; told with ornamental beauty and photographic richness.</p>
+    <nav class="hero__nav">
+      <a href="#france">France</a>
+      <a href="#italy">Italy</a>
+      <a href="#spain">Spain</a>
+      <a href="#germany">Germany</a>
+      <a href="#uk">United Kingdom</a>
+      <a href="#greece">Greece</a>
+    </nav>
+  </header>
+
+  <div class="ornament">&#10087; &#10022; &#10087;</div>
+
+  <!-- ════════ France ════════ -->
+  <section class="country country--france" id="france">
+    <div class="country__header-area">
+      <div class="country__header-text">
+        <div class="country__header">
+          <h2 class="country__name">France</h2>
+          <span class="country__native">R&eacute;publique Fran&ccedil;aise</span>
+        </div>
+        <p class="country__tagline">Where beauty is cultivated like a garden &mdash; with patience, precision, and passion.</p>
+      </div>
+      <aside class="country__facts">
+        <p class="country__facts-title">Key Facts</p>
+        <dl>
+          <dt>Capital</dt><dd>Paris</dd>
+          <dt>Population</dt><dd>67M</dd>
+          <dt>Famous For</dt><dd>Wine, Fashion, Philosophy</dd>
+        </dl>
+      </aside>
+    </div>
+
+    <div class="country__grid">
+      <div>
+        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&h=400&fit=crop" alt="Eiffel Tower and Paris skyline at sunset" class="country__image">
+        <p class="country__image-caption">The Eiffel Tower at golden hour &mdash; Paris</p>
+      </div>
+      <div>
+        <div class="country__category">
+          <p class="country__label">Architecture</p>
+          <p class="country__text country__text--dropcap">From the flying buttresses of Notre-Dame to Haussmann's uniform boulevards, French architecture balances grandeur with proportion. Gothic cathedrals reach heavenward; Versailles stretches endlessly along the horizon.</p>
+        </div>
+        <div class="country__category">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">Haute cuisine was born here &mdash; Escoffier codified the kitchen brigade. But France's soul is in its terroir: a warm baguette, unpasteurized Camembert, a glass of Bordeaux. Every region has its own identity on the plate.</p>
+        </div>
+      </div>
+    </div>
+
+    <details class="expandable">
+      <summary>Art &amp; Lifestyle &#10087;</summary>
+      <div class="expandable__content">
+        <p class="country__text">Impressionism emerged from French riverbanks &mdash; Monet, Renoir, and Degas capturing light in motion. Joie de vivre isn't hedonism; it's the daily practice of savoring: a morning caf&eacute; cr&egrave;me, an evening stroll, the art of doing nothing beautifully.</p>
+      </div>
+    </details>
+
+    <details class="expandable">
+      <summary>Cuisine Highlights &#10087;</summary>
+      <div class="expandable__content">
+        <ul class="cuisine-list">
+          <li>Croissants &amp; pain au chocolat</li>
+          <li>Coq au vin &amp; cassoulet</li>
+          <li>400+ varieties of cheese</li>
+          <li>Wine regions: Bordeaux, Burgundy, Champagne</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="landmarks">
+      <a href="https://maps.google.com/?q=Eiffel+Tower+Paris" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Eiffel Tower</a>
+      <a href="https://maps.google.com/?q=Notre-Dame+de+Paris" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Notre-Dame</a>
+      <a href="https://maps.google.com/?q=Palace+of+Versailles" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Versailles</a>
+      <a href="https://maps.google.com/?q=Louvre+Museum+Paris" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> The Louvre</a>
+      <a href="https://maps.google.com/?q=Mont+Saint-Michel" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Mont Saint-Michel</a>
+      <a href="https://maps.google.com/?q=Sacre+Coeur+Paris" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Sacr&eacute;-C&oelig;ur</a>
+    </div>
+  </section>
+
+  <div class="ornament">&#10087; &#10022; &#10087;</div>
+
+  <!-- ════════ Italy ════════ -->
+  <section class="country country--italy" id="italy">
+    <div class="country__header-area">
+      <div class="country__header-text">
+        <div class="country__header">
+          <h2 class="country__name">Italy</h2>
+          <span class="country__native">Repubblica Italiana</span>
+        </div>
+        <p class="country__tagline">La dolce vita &mdash; where art, food, and life merge into a single, exquisite experience.</p>
+      </div>
+      <aside class="country__facts">
+        <p class="country__facts-title">Key Facts</p>
+        <dl>
+          <dt>Capital</dt><dd>Rome</dd>
+          <dt>Population</dt><dd>60M</dd>
+          <dt>Famous For</dt><dd>Art, Opera, Design</dd>
+        </dl>
+      </aside>
+    </div>
+
+    <div class="country__grid">
+      <div>
+        <div class="country__category">
+          <p class="country__label">Architecture</p>
+          <p class="country__text country__text--dropcap">The Colosseum's engineering still astounds after two millennia. Brunelleschi's dome solved the impossible. Palladio's villas became the blueprint for Western neoclassicism. Even Venice sinks with extraordinary grace.</p>
+        </div>
+        <div class="country__category">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">Italian cooking is regional devotion. Naples guards pizza, Bologna protects rag&ugrave;, Sicily treasures arancini. The philosophy: start with the best ingredients, then do as little as possible.</p>
+        </div>
+      </div>
+      <div>
+        <img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=600&h=400&fit=crop" alt="Venice canal with gondolas and colorful buildings" class="country__image">
+        <p class="country__image-caption">A quiet canal in Venice &mdash; timeless beauty on water</p>
+      </div>
+    </div>
+
+    <details class="expandable">
+      <summary>Art &amp; Lifestyle &#10087;</summary>
+      <div class="expandable__content">
+        <p class="country__text">The Renaissance was Italy's gift to humanity &mdash; Michelangelo, Leonardo, Botticelli reshaping what art could be. Modern Italian life preserves this spirit: the passeggiata, the espresso ritual, the conviction that beauty in daily life is necessity.</p>
+      </div>
+    </details>
+
+    <details class="expandable">
+      <summary>Cuisine Highlights &#10087;</summary>
+      <div class="expandable__content">
+        <ul class="cuisine-list">
+          <li>Neapolitan pizza margherita</li>
+          <li>Fresh pasta &amp; rag&ugrave; Bolognese</li>
+          <li>Gelato &amp; tiramis&ugrave;</li>
+          <li>Espresso culture</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="landmarks">
+      <a href="https://maps.google.com/?q=Colosseum+Rome" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Colosseum</a>
+      <a href="https://maps.google.com/?q=Florence+Cathedral" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Florence Duomo</a>
+      <a href="https://maps.google.com/?q=Rialto+Bridge+Venice" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Rialto Bridge</a>
+      <a href="https://maps.google.com/?q=Sistine+Chapel+Vatican" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Sistine Chapel</a>
+      <a href="https://maps.google.com/?q=Leaning+Tower+of+Pisa" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Tower of Pisa</a>
+      <a href="https://maps.google.com/?q=Pompeii+Italy" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Pompeii</a>
+    </div>
+  </section>
+
+  <div class="pullquote">
+    <div class="pullquote__inner">
+      <p class="pullquote__text">Europe is not merely a continent &mdash; it is a conversation between centuries, carried in stone, spice, and light.</p>
+    </div>
+  </div>
+
+  <!-- ════════ Spain ════════ -->
+  <section class="country country--spain" id="spain">
+    <div class="country__header-area">
+      <div class="country__header-text">
+        <div class="country__header">
+          <h2 class="country__name">Spain</h2>
+          <span class="country__native">Reino de Espa&ntilde;a</span>
+        </div>
+        <p class="country__tagline">Where Moorish geometry meets Gaud&iacute;'s dreams and the sun never sets on a good meal.</p>
+      </div>
+      <aside class="country__facts">
+        <p class="country__facts-title">Key Facts</p>
+        <dl>
+          <dt>Capital</dt><dd>Madrid</dd>
+          <dt>Population</dt><dd>47M</dd>
+          <dt>Famous For</dt><dd>Flamenco, Football, Festivals</dd>
+        </dl>
+      </aside>
+    </div>
+
+    <div class="country__grid">
+      <div>
+        <img src="https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&h=400&fit=crop" alt="La Sagrada Familia cathedral in Barcelona" class="country__image">
+        <p class="country__image-caption">Sagrada Fam&iacute;lia &mdash; Gaud&iacute;'s unfinished masterpiece</p>
+      </div>
+      <div>
+        <div class="country__category">
+          <p class="country__label">Architecture</p>
+          <p class="country__text country__text--dropcap">The Alhambra's 8,000+ geometric patterns never repeat. Gaud&iacute;'s Sagrada Fam&iacute;lia, started in 1882, still rises &mdash; organic, sacred, defiant. Andalusia's white villages are minimalism born of Mediterranean necessity.</p>
+        </div>
+        <div class="country__category">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">Tapas are social philosophy in small plates. Paella from Valencia, pintxos from Basque Country, gazpacho from Andalusia. The Spanish eat late, laugh loudly, and always make room for one more plate.</p>
+        </div>
+      </div>
+    </div>
+
+    <details class="expandable">
+      <summary>Art &amp; Lifestyle &#10087;</summary>
+      <div class="expandable__content">
+        <p class="country__text">Vel&aacute;zquez painted truth, Goya painted nightmares, Picasso shattered form, Dal&iacute; melted time. Flamenco is this duality made physical &mdash; discipline and wildness. The siesta isn't laziness; it's wisdom about rhythm and the sun.</p>
+      </div>
+    </details>
+
+    <details class="expandable">
+      <summary>Cuisine Highlights &#10087;</summary>
+      <div class="expandable__content">
+        <ul class="cuisine-list">
+          <li>Tapas &amp; pintxos</li>
+          <li>Paella Valenciana</li>
+          <li>Jam&oacute;n ib&eacute;rico</li>
+          <li>Churros con chocolate</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="landmarks">
+      <a href="https://maps.google.com/?q=La+Sagrada+Familia+Barcelona" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Sagrada Fam&iacute;lia</a>
+      <a href="https://maps.google.com/?q=Alhambra+Granada" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> The Alhambra</a>
+      <a href="https://maps.google.com/?q=Plaza+Mayor+Madrid" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Plaza Mayor</a>
+      <a href="https://maps.google.com/?q=Museo+del+Prado+Madrid" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Museo del Prado</a>
+      <a href="https://maps.google.com/?q=Park+Guell+Barcelona" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Park G&uuml;ell</a>
+      <a href="https://maps.google.com/?q=Mezquita+Cordoba" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Mezquita de C&oacute;rdoba</a>
+    </div>
+  </section>
+
+  <div class="ornament">&#10087; &#10022; &#10087;</div>
+
+  <!-- ════════ Germany ════════ -->
+  <section class="country country--germany" id="germany">
+    <div class="country__header-area">
+      <div class="country__header-text">
+        <div class="country__header">
+          <h2 class="country__name">Germany</h2>
+          <span class="country__native">Bundesrepublik Deutschland</span>
+        </div>
+        <p class="country__tagline">Where Bauhaus clarity meets fairy-tale castles and the art of Gem&uuml;tlichkeit.</p>
+      </div>
+      <aside class="country__facts">
+        <p class="country__facts-title">Key Facts</p>
+        <dl>
+          <dt>Capital</dt><dd>Berlin</dd>
+          <dt>Population</dt><dd>83M</dd>
+          <dt>Famous For</dt><dd>Engineering, Music, Beer</dd>
+        </dl>
+      </aside>
+    </div>
+
+    <div class="country__grid">
+      <div>
+        <div class="country__category">
+          <p class="country__label">Architecture</p>
+          <p class="country__text country__text--dropcap">Cologne Cathedral took 632 years to complete. The Bauhaus school changed the world with its gospel of function. Berlin's rebuilt Reichstag &mdash; historic stone crowned by modern glass &mdash; embodies Germany's talent for transformation.</p>
+        </div>
+        <div class="country__category">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">Schweinshaxe the size of your ambition. Over 1,500 breweries upholding the Reinheitsgebot. Black Forest cake layered with cherries and cream. Honest food for honest appetites.</p>
+        </div>
+      </div>
+      <div>
+        <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&h=400&fit=crop" alt="Neuschwanstein Castle in Bavaria surrounded by mountains" class="country__image">
+        <p class="country__image-caption">Neuschwanstein Castle &mdash; Bavaria's fairy-tale landmark</p>
+      </div>
+    </div>
+
+    <details class="expandable">
+      <summary>Art &amp; Lifestyle &#10087;</summary>
+      <div class="expandable__content">
+        <p class="country__text">German Expressionism shattered comfortable perspectives. But daily life balances intensity with Gem&uuml;tlichkeit: Christmas markets glowing with warmth, forest walks, Kaffee und Kuchen on Sunday afternoons.</p>
+      </div>
+    </details>
+
+    <details class="expandable">
+      <summary>Cuisine Highlights &#10087;</summary>
+      <div class="expandable__content">
+        <ul class="cuisine-list">
+          <li>Pretzels &amp; weisswurst</li>
+          <li>Schweinshaxe &amp; sauerbraten</li>
+          <li>Black Forest cake</li>
+          <li>1,500+ breweries</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="landmarks">
+      <a href="https://maps.google.com/?q=Neuschwanstein+Castle" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Neuschwanstein</a>
+      <a href="https://maps.google.com/?q=Brandenburg+Gate+Berlin" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Brandenburg Gate</a>
+      <a href="https://maps.google.com/?q=Cologne+Cathedral" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Cologne Cathedral</a>
+      <a href="https://maps.google.com/?q=Bauhaus+Dessau" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Bauhaus Dessau</a>
+      <a href="https://maps.google.com/?q=Heidelberg+Castle" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Heidelberg Castle</a>
+      <a href="https://maps.google.com/?q=Berlin+Wall+Memorial" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Berlin Wall Memorial</a>
+    </div>
+  </section>
+
+  <div class="pullquote">
+    <div class="pullquote__inner">
+      <p class="pullquote__text">To travel Europe is to walk through living pages of a book that has been written for three thousand years.</p>
+    </div>
+  </div>
+
+  <!-- ════════ United Kingdom ════════ -->
+  <section class="country country--uk" id="uk">
+    <div class="country__header-area">
+      <div class="country__header-text">
+        <div class="country__header">
+          <h2 class="country__name">United Kingdom</h2>
+          <span class="country__native">The United Kingdom</span>
+        </div>
+        <p class="country__tagline">Tradition with a wry smile &mdash; where empire, literature, and afternoon tea shaped a singular culture.</p>
+      </div>
+      <aside class="country__facts">
+        <p class="country__facts-title">Key Facts</p>
+        <dl>
+          <dt>Capital</dt><dd>London</dd>
+          <dt>Population</dt><dd>67M</dd>
+          <dt>Famous For</dt><dd>Literature, Music, Theatre</dd>
+        </dl>
+      </aside>
+    </div>
+
+    <div class="country__grid">
+      <div>
+        <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&h=400&fit=crop" alt="Tower Bridge and London skyline at twilight" class="country__image">
+        <p class="country__image-caption">Tower Bridge at dusk &mdash; London</p>
+      </div>
+      <div>
+        <div class="country__category">
+          <p class="country__label">Architecture</p>
+          <p class="country__text country__text--dropcap">Tudor half-timber, Georgian proportion, Victorian ambition, and bold modern icons. The British terraced house is as iconic as any cathedral &mdash; understated, practical, enduring.</p>
+        </div>
+        <div class="country__category">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">The Sunday roast is sacred. Fish and chips by the sea is national identity in batter. Afternoon tea elevated the snack to ceremony. London is now one of the world's great food cities.</p>
+        </div>
+      </div>
+    </div>
+
+    <details class="expandable">
+      <summary>Art &amp; Lifestyle &#10087;</summary>
+      <div class="expandable__content">
+        <p class="country__text">Shakespeare wrote everything first. Turner painted light before the Impressionists. Banksy sprays truth on walls. The pub is the nation's living room. And the garden &mdash; that is where the British soul truly flourishes.</p>
+      </div>
+    </details>
+
+    <details class="expandable">
+      <summary>Cuisine Highlights &#10087;</summary>
+      <div class="expandable__content">
+        <ul class="cuisine-list">
+          <li>Fish and chips</li>
+          <li>Full English breakfast</li>
+          <li>Afternoon tea &amp; scones</li>
+          <li>Cornish pasties</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="landmarks">
+      <a href="https://maps.google.com/?q=Tower+Bridge+London" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Tower Bridge</a>
+      <a href="https://maps.google.com/?q=Buckingham+Palace+London" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Buckingham Palace</a>
+      <a href="https://maps.google.com/?q=Stonehenge" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Stonehenge</a>
+      <a href="https://maps.google.com/?q=British+Museum+London" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> British Museum</a>
+      <a href="https://maps.google.com/?q=Edinburgh+Castle" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Edinburgh Castle</a>
+      <a href="https://maps.google.com/?q=Westminster+Abbey+London" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Westminster Abbey</a>
+    </div>
+  </section>
+
+  <div class="ornament">&#10087; &#10022; &#10087;</div>
+
+  <!-- ════════ Greece ════════ -->
+  <section class="country country--greece" id="greece">
+    <div class="country__header-area">
+      <div class="country__header-text">
+        <div class="country__header">
+          <h2 class="country__name">Greece</h2>
+          <span class="country__native">&#917;&#955;&#955;&#951;&#957;&#953;&#954;&#942; &#916;&#951;&#956;&#959;&#954;&#961;&#945;&#964;&#943;&#945;</span>
+        </div>
+        <p class="country__tagline">The light of the beginning &mdash; where philosophy, architecture, and hospitality were born.</p>
+      </div>
+      <aside class="country__facts">
+        <p class="country__facts-title">Key Facts</p>
+        <dl>
+          <dt>Capital</dt><dd>Athens</dd>
+          <dt>Population</dt><dd>10.4M</dd>
+          <dt>Famous For</dt><dd>Democracy, Olympics, Mythology</dd>
+        </dl>
+      </aside>
+    </div>
+
+    <div class="country__grid">
+      <div>
+        <div class="country__category">
+          <p class="country__label">Architecture</p>
+          <p class="country__text country__text--dropcap">The Parthenon's Doric columns set the standard for Western civilization. Cycladic houses &mdash; white cubes against infinite sea &mdash; are minimalism born from Mediterranean light. Byzantine churches glow golden within.</p>
+        </div>
+        <div class="country__category">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">The Mediterranean diet at its purest: olive oil as life-blood, tangy feta, grilled octopus, honey-drizzled yogurt. Meals are communal, generous, unhurried. A taverna by the sea is perfect dining.</p>
+        </div>
+      </div>
+      <div>
+        <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&h=400&fit=crop" alt="Santorini white and blue buildings overlooking the sea" class="country__image">
+        <p class="country__image-caption">Santorini &mdash; where white meets blue meets infinity</p>
+      </div>
+    </div>
+
+    <details class="expandable">
+      <summary>Art &amp; Lifestyle &#10087;</summary>
+      <div class="expandable__content">
+        <p class="country__text">Classical sculpture defined the human ideal for millennia. Modern Greek life runs on philoxenia &mdash; the love of strangers &mdash; turning visitors into family. The kafeneio blends politics, gossip, and philosophy over tiny cups of strong coffee.</p>
+      </div>
+    </details>
+
+    <details class="expandable">
+      <summary>Cuisine Highlights &#10087;</summary>
+      <div class="expandable__content">
+        <ul class="cuisine-list">
+          <li>Moussaka &amp; souvlaki</li>
+          <li>Greek salad with feta</li>
+          <li>Baklava &amp; loukoumades</li>
+          <li>Ouzo &amp; retsina</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="landmarks">
+      <a href="https://maps.google.com/?q=Parthenon+Athens" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> The Parthenon</a>
+      <a href="https://maps.google.com/?q=Santorini+Greece" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Santorini</a>
+      <a href="https://maps.google.com/?q=Delphi+Greece" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Delphi</a>
+      <a href="https://maps.google.com/?q=Meteora+Greece" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Meteora</a>
+      <a href="https://maps.google.com/?q=Acropolis+Museum+Athens" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Acropolis Museum</a>
+      <a href="https://maps.google.com/?q=Mykonos+Greece" target="_blank" class="landmark"><span class="landmark__icon">&#x1F4CD;</span> Mykonos</a>
+    </div>
+  </section>
+
+  <div class="ornament">&#10087; &#10022; &#10087;</div>
+
+  <!-- ════════ Art Movements ════════ -->
+  <section class="art-section">
+    <h2 class="art-section__title">Art Movements Across Europe</h2>
+    <div class="art-grid">
+      <div class="art-card art-card--france">
+        <h3 class="art-card__country">France</h3>
+        <p class="art-card__movement">Impressionism</p>
+        <p class="art-card__desc">Monet, Renoir, and Degas captured fleeting light and emotion, breaking free from academic rigidity to paint how the world feels.</p>
+      </div>
+      <div class="art-card art-card--italy">
+        <h3 class="art-card__country">Italy</h3>
+        <p class="art-card__movement">Renaissance</p>
+        <p class="art-card__desc">Michelangelo, Leonardo, and Raphael placed humanity at the center of creation &mdash; art as divine investigation.</p>
+      </div>
+      <div class="art-card art-card--spain">
+        <h3 class="art-card__country">Spain</h3>
+        <p class="art-card__movement">Surrealism</p>
+        <p class="art-card__desc">Dal&iacute; and Mir&oacute; melted reality into dreamscape, exploring the subconscious with technical brilliance.</p>
+      </div>
+      <div class="art-card art-card--germany">
+        <h3 class="art-card__country">Germany</h3>
+        <p class="art-card__movement">Expressionism</p>
+        <p class="art-card__desc">Kirchner and Kandinsky distorted form to express raw emotion &mdash; art as psychological confrontation.</p>
+      </div>
+      <div class="art-card art-card--uk">
+        <h3 class="art-card__country">United Kingdom</h3>
+        <p class="art-card__movement">Pre-Raphaelite</p>
+        <p class="art-card__desc">Rossetti and Millais rejected industrial ugliness for medieval beauty, vivid color, and poetic storytelling.</p>
+      </div>
+      <div class="art-card art-card--greece">
+        <h3 class="art-card__country">Greece</h3>
+        <p class="art-card__movement">Classical Sculpture</p>
+        <p class="art-card__desc">The Venus de Milo, the Discus Thrower &mdash; Greek sculptors made stone breathe and defined beauty for all time.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="ornament" style="margin-bottom: 16px;">&#10087; &#10022; &#10087;</div>
+    <p>European Cultural Mosaic &middot; v19 Expandable Content &middot; <a href="../index.html">&larr; Back to Gallery</a></p>
+  </footer>
+
+</body>
+</html>
