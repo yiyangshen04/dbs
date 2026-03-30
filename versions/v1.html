@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v1 — Swiss Minimalism · European Cultural Mosaic</title>
+  <style>
+    /* Swiss / International Typographic Style */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red: #e63946;
+      --black: #1a1a1a;
+      --gray: #888;
+      --light: #f8f8f8;
+      --rule: #ddd;
+    }
+
+    body {
+      font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--black);
+      background: #fff;
+      line-height: 1.5;
+    }
+
+    /* Grid System */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /* Header */
+    .header {
+      padding: 60px 0 40px;
+      border-bottom: 3px solid var(--red);
+    }
+
+    .header__back {
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 32px;
+    }
+
+    .header__back:hover { color: var(--red); }
+
+    .header__title {
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+
+    .header__title span { color: var(--red); }
+
+    .header__subtitle {
+      font-size: 1.1rem;
+      color: var(--gray);
+      max-width: 500px;
+      font-weight: 400;
+    }
+
+    /* Country Grid */
+    .country-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-left: 1px solid var(--rule);
+    }
+
+    .country {
+      padding: 40px;
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .country__name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .country__native {
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+    }
+
+    .country__section {
+      margin-bottom: 20px;
+    }
+
+    .country__label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--red);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .country__text {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    /* Stats Bar */
+    .stats {
+      display: flex;
+      gap: 48px;
+      padding: 40px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .stat__number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .stat__label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray);
+    }
+
+    /* Comparison Table */
+    .comparison {
+      padding: 48px 0;
+    }
+
+    .comparison__title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      letter-spacing: -0.01em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th {
+      text-align: left;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray);
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--black);
+      font-weight: 600;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+
+    tr:hover td { background: var(--light); }
+
+    /* Footer */
+    .footer {
+      padding: 40px 0;
+      border-top: 3px solid var(--red);
+      font-size: 0.8rem;
+      color: var(--gray);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .country-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats { flex-wrap: wrap; gap: 24px; }
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 0 20px; }
+      .country-grid { grid-template-columns: 1fr; }
+      .stats { flex-direction: column; }
+      table { font-size: 0.8rem; }
+      th, td { padding: 10px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header class="header">
+      <a href="../index.html" class="header__back">← Back to Gallery</a>
+      <h1 class="header__title">European<br>Cultural <span>Mosaic</span></h1>
+      <p class="header__subtitle">A comparative study of architecture, cuisine, art, and lifestyle across six European nations.</p>
+    </header>
+
+    <div class="stats">
+      <div>
+        <div class="stat__number">6</div>
+        <div class="stat__label">Countries</div>
+      </div>
+      <div>
+        <div class="stat__number">2,000+</div>
+        <div class="stat__label">Years of History</div>
+      </div>
+      <div>
+        <div class="stat__number">4</div>
+        <div class="stat__label">Cultural Pillars</div>
+      </div>
+      <div>
+        <div class="stat__number">∞</div>
+        <div class="stat__label">Stories to Tell</div>
+      </div>
+    </div>
+
+    <div class="country-grid">
+      <div class="country">
+        <h2 class="country__name">France</h2>
+        <p class="country__native">République Française</p>
+        <div class="country__section">
+          <p class="country__label">Architecture</p>
+          <p class="country__text">From Gothic cathedrals to Haussmann's Paris boulevards. The Eiffel Tower, Notre-Dame, and Versailles define centuries of ambition in stone and iron.</p>
+        </div>
+        <div class="country__section">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">The birthplace of haute cuisine. Croissants, coq au vin, crème brûlée — food elevated to art form, protected by tradition and terroir.</p>
+        </div>
+      </div>
+
+      <div class="country">
+        <h2 class="country__name">Italy</h2>
+        <p class="country__native">Repubblica Italiana</p>
+        <div class="country__section">
+          <p class="country__label">Architecture</p>
+          <p class="country__text">Roman ruins, Renaissance domes, Venetian palazzos. The Colosseum, Florence's Duomo, and Palladio's villas shaped Western architecture forever.</p>
+        </div>
+        <div class="country__section">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">Regional perfection: Neapolitan pizza, Bolognese ragù, Sicilian arancini. Italian cooking celebrates simplicity and the quality of each ingredient.</p>
+        </div>
+      </div>
+
+      <div class="country">
+        <h2 class="country__name">Spain</h2>
+        <p class="country__native">Reino de España</p>
+        <div class="country__section">
+          <p class="country__label">Architecture</p>
+          <p class="country__text">Moorish palaces, Gaudí's organic fantasies, stark white Andalusian villages. The Alhambra and Sagrada Família represent two poles of Spanish imagination.</p>
+        </div>
+        <div class="country__section">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">Tapas culture, paella, jamón ibérico. Spanish dining is social — small plates shared late into the evening, with wine and conversation.</p>
+        </div>
+      </div>
+
+      <div class="country">
+        <h2 class="country__name">Germany</h2>
+        <p class="country__native">Bundesrepublik Deutschland</p>
+        <div class="country__section">
+          <p class="country__label">Architecture</p>
+          <p class="country__text">Romanesque churches, Baroque palaces, Bauhaus modernism. From Neuschwanstein's fairy-tale towers to Berlin's raw, rebuilt cityscape.</p>
+        </div>
+        <div class="country__section">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">Hearty and regional: Bavarian pretzels, Rhineland sauerbraten, Black Forest cake. Beer culture is an institution, with over 1,500 breweries.</p>
+        </div>
+      </div>
+
+      <div class="country">
+        <h2 class="country__name">United Kingdom</h2>
+        <p class="country__native">The United Kingdom</p>
+        <div class="country__section">
+          <p class="country__label">Architecture</p>
+          <p class="country__text">Tudor half-timber, Georgian symmetry, Victorian grandeur, and modern icons like the Gherkin. London's skyline is a timeline of empire.</p>
+        </div>
+        <div class="country__section">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">Fish and chips, Sunday roast, afternoon tea. A cuisine of comfort, tradition, and an increasingly vibrant multicultural food scene.</p>
+        </div>
+      </div>
+
+      <div class="country">
+        <h2 class="country__name">Greece</h2>
+        <p class="country__native">Ελληνική Δημοκρατία</p>
+        <div class="country__section">
+          <p class="country__label">Architecture</p>
+          <p class="country__text">White-washed Cycladic houses, ancient temples with Doric columns, Byzantine churches. The Parthenon remains the ultimate symbol of Western civilization.</p>
+        </div>
+        <div class="country__section">
+          <p class="country__label">Cuisine</p>
+          <p class="country__text">Mediterranean simplicity: olive oil, feta, grilled fish, moussaka. Greek food is sun-soaked, shared generously, and deeply tied to the land and sea.</p>
+        </div>
+      </div>
+    </div>
+
+    <section class="comparison">
+      <h2 class="comparison__title">At a Glance</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th>Architecture Style</th>
+            <th>Signature Dish</th>
+            <th>Art Movement</th>
+            <th>Lifestyle</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>France</strong></td>
+            <td>Gothic, Haussmann, Art Deco</td>
+            <td>Coq au Vin</td>
+            <td>Impressionism</td>
+            <td>Joie de vivre</td>
+          </tr>
+          <tr>
+            <td><strong>Italy</strong></td>
+            <td>Roman, Renaissance, Baroque</td>
+            <td>Pasta al Ragù</td>
+            <td>Renaissance</td>
+            <td>La dolce vita</td>
+          </tr>
+          <tr>
+            <td><strong>Spain</strong></td>
+            <td>Moorish, Modernisme, White villages</td>
+            <td>Paella Valenciana</td>
+            <td>Surrealism</td>
+            <td>Siesta y fiesta</td>
+          </tr>
+          <tr>
+            <td><strong>Germany</strong></td>
+            <td>Romanesque, Bauhaus, Industrial</td>
+            <td>Schweinshaxe</td>
+            <td>Expressionism</td>
+            <td>Ordnung & Gemütlichkeit</td>
+          </tr>
+          <tr>
+            <td><strong>UK</strong></td>
+            <td>Tudor, Georgian, Victorian</td>
+            <td>Sunday Roast</td>
+            <td>Pre-Raphaelite</td>
+            <td>Keep calm, carry on</td>
+          </tr>
+          <tr>
+            <td><strong>Greece</strong></td>
+            <td>Classical, Cycladic, Byzantine</td>
+            <td>Moussaka</td>
+            <td>Classical sculpture</td>
+            <td>Philoxenia (hospitality)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="footer">
+      <span>European Cultural Mosaic · v1 Swiss Minimalism</span>
+      <a href="../index.html" class="header__back">← Gallery</a>
+    </footer>
+  </div>
+
+</body>
+</html>
