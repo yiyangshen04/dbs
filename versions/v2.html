@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v2 — Vintage Travel Poster · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --mustard: #d4a84b;
+      --teal: #2a7f62;
+      --burnt-orange: #c75a3a;
+      --navy: #1a3a5c;
+      --cream: #faf5eb;
+      --wine: #8b2346;
+      --sky: #5b99b0;
+    }
+
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: var(--cream);
+      color: #2a2a2a;
+    }
+
+    /* Back Link */
+    .back {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 0.8rem;
+      color: #888;
+      text-decoration: none;
+      z-index: 100;
+      background: rgba(250,245,235,0.9);
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid #ddd;
+    }
+
+    .back:hover { background: #fff; }
+
+    /* Hero */
+    .hero {
+      background: var(--navy);
+      color: #fff;
+      text-align: center;
+      padding: 80px 40px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      background: var(--mustard);
+      border-radius: 50%;
+      opacity: 0.15;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -30px;
+      width: 160px; height: 160px;
+      background: var(--burnt-orange);
+      border-radius: 50%;
+      opacity: 0.12;
+    }
+
+    .hero__eyebrow {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mustard);
+      margin-bottom: 16px;
+    }
+
+    .hero__title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 16px;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+    }
+
+    .hero__subtitle {
+      font-size: 1.15rem;
+      max-width: 480px;
+      margin: 0 auto;
+      opacity: 0.85;
+      line-height: 1.6;
+    }
+
+    .hero__divider {
+      width: 80px;
+      height: 4px;
+      background: var(--mustard);
+      margin: 24px auto 0;
+      border-radius: 2px;
+    }
+
+    /* Country Posters */
+    .posters {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 40px;
+    }
+
+    .poster {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 4px 6px 20px rgba(0,0,0,0.12);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .poster:hover {
+      transform: translateY(-6px) rotate(-0.5deg);
+      box-shadow: 6px 10px 30px rgba(0,0,0,0.18);
+    }
+
+    .poster__header {
+      padding: 40px 32px 28px;
+      color: #fff;
+      position: relative;
+    }
+
+    .poster__country {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2.4rem;
+      font-weight: 900;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+      margin-bottom: 4px;
+    }
+
+    .poster__tagline {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      font-style: italic;
+    }
+
+    .poster__icon {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      font-size: 2.8rem;
+      opacity: 0.3;
+    }
+
+    .poster__body {
+      background: #fff;
+      padding: 28px 32px 32px;
+    }
+
+    .poster__category {
+      margin-bottom: 18px;
+    }
+
+    .poster__label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .poster__text {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: #555;
+    }
+
+    /* Country-specific colors */
+    .poster--france .poster__header { background: var(--navy); }
+    .poster--france .poster__label { color: var(--navy); }
+
+    .poster--italy .poster__header { background: var(--burnt-orange); }
+    .poster--italy .poster__label { color: var(--burnt-orange); }
+
+    .poster--spain .poster__header { background: var(--wine); }
+    .poster--spain .poster__label { color: var(--wine); }
+
+    .poster--germany .poster__header { background: var(--mustard); color: #2a2a2a; }
+    .poster--germany .poster__label { color: #8b7a2e; }
+    .poster--germany .poster__icon { opacity: 0.2; }
+
+    .poster--uk .poster__header { background: var(--teal); }
+    .poster--uk .poster__label { color: var(--teal); }
+
+    .poster--greece .poster__header { background: var(--sky); }
+    .poster--greece .poster__label { color: var(--sky); }
+
+    /* Quote Banner */
+    .quote {
+      text-align: center;
+      padding: 60px 40px;
+      background: var(--navy);
+      color: #fff;
+    }
+
+    .quote__text {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-style: italic;
+      max-width: 700px;
+      margin: 0 auto 16px;
+      line-height: 1.4;
+    }
+
+    .quote__attr {
+      font-size: 0.85rem;
+      color: var(--mustard);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px;
+      font-size: 0.85rem;
+      color: #999;
+    }
+
+    .footer a { color: #888; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .posters { padding: 32px 20px; grid-template-columns: 1fr; gap: 28px; }
+      .poster__header { padding: 28px 24px 20px; }
+      .poster__body { padding: 20px 24px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back">← Gallery</a>
+
+  <section class="hero">
+    <p class="hero__eyebrow">A Visual Journey</p>
+    <h1 class="hero__title">EUROPE</h1>
+    <p class="hero__subtitle">Six nations, six stories. Explore the architecture, cuisine, and culture that define a continent of endless wonder.</p>
+    <div class="hero__divider"></div>
+  </section>
+
+  <div class="posters">
+    <div class="poster poster--france">
+      <div class="poster__header">
+        <div class="poster__icon">⚜</div>
+        <h2 class="poster__country">France</h2>
+        <p class="poster__tagline">Where beauty is a way of life</p>
+      </div>
+      <div class="poster__body">
+        <div class="poster__category">
+          <p class="poster__label">Architecture</p>
+          <p class="poster__text">Gothic cathedrals pierce the sky while Haussmann's boulevards carve elegant geometry through Paris. From Versailles to Le Corbusier — France builds to inspire awe.</p>
+        </div>
+        <div class="poster__category">
+          <p class="poster__label">Cuisine</p>
+          <p class="poster__text">Haute cuisine meets countryside terroir. The croissant, the soufflé, the perfectly aged Comté — every meal is a performance.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="poster poster--italy">
+      <div class="poster__header">
+        <div class="poster__icon">☀</div>
+        <h2 class="poster__country">Italy</h2>
+        <p class="poster__tagline">La dolce vita in every detail</p>
+      </div>
+      <div class="poster__body">
+        <div class="poster__category">
+          <p class="poster__label">Architecture</p>
+          <p class="poster__text">The Colosseum's arches, Florence's dome, Venice's palazzo reflections. Italian architecture is drama, proportion, and Renaissance genius made permanent.</p>
+        </div>
+        <div class="poster__category">
+          <p class="poster__label">Cuisine</p>
+          <p class="poster__text">Simplicity elevated: San Marzano tomatoes, fresh mozzarella, hand-rolled pasta. Each region guards its recipes like family heirlooms.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="poster poster--spain">
+      <div class="poster__header">
+        <div class="poster__icon">🌞</div>
+        <h2 class="poster__country">Spain</h2>
+        <p class="poster__tagline">Passion written in stone and spice</p>
+      </div>
+      <div class="poster__body">
+        <div class="poster__category">
+          <p class="poster__label">Architecture</p>
+          <p class="poster__text">The Alhambra's intricate mosaics, Gaudí's impossible curves, and the stark white pueblos of Andalusia. Spain builds between dream and earth.</p>
+        </div>
+        <div class="poster__category">
+          <p class="poster__label">Cuisine</p>
+          <p class="poster__text">Tapas at midnight, paella by the sea, jamón sliced paper-thin. Spanish food is shared loudly, savored slowly, and always accompanied by good wine.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="poster poster--germany">
+      <div class="poster__header">
+        <div class="poster__icon">⚙</div>
+        <h2 class="poster__country">Germany</h2>
+        <p class="poster__tagline">Precision meets soul</p>
+      </div>
+      <div class="poster__body">
+        <div class="poster__category">
+          <p class="poster__label">Architecture</p>
+          <p class="poster__text">From Neuschwanstein's fairy-tale towers to the Bauhaus revolution. Germany gave the world functional modernism — and never forgot how to build a castle.</p>
+        </div>
+        <div class="poster__category">
+          <p class="poster__label">Cuisine</p>
+          <p class="poster__text">Pretzels and weisswurst in Bavaria, currywurst on Berlin corners, Black Forest cake for the soul. Honest food for honest appetites.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="poster poster--uk">
+      <div class="poster__header">
+        <div class="poster__icon">♛</div>
+        <h2 class="poster__country">United Kingdom</h2>
+        <p class="poster__tagline">Tradition with a modern edge</p>
+      </div>
+      <div class="poster__body">
+        <div class="poster__category">
+          <p class="poster__label">Architecture</p>
+          <p class="poster__text">Tudor beams, Georgian terraces, Victorian iron and glass, and London's ever-evolving skyline. The UK builds with an eye on history and both feet in the future.</p>
+        </div>
+        <div class="poster__category">
+          <p class="poster__label">Cuisine</p>
+          <p class="poster__text">The full English, afternoon tea, fish and chips by the sea. A cuisine of comfort and ritual, now enriched by the world's flavors.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="poster poster--greece">
+      <div class="poster__header">
+        <div class="poster__icon">☽</div>
+        <h2 class="poster__country">Greece</h2>
+        <p class="poster__tagline">Where civilization began</p>
+      </div>
+      <div class="poster__body">
+        <div class="poster__category">
+          <p class="poster__label">Architecture</p>
+          <p class="poster__text">White-washed Cycladic cubes, Doric columns against blue sky, Byzantine domes glowing gold. Greek architecture is clarity, light, and the birth of the West.</p>
+        </div>
+        <div class="poster__category">
+          <p class="poster__label">Cuisine</p>
+          <p class="poster__text">Olive oil, feta, grilled octopus, honey-soaked baklava. Greek food tastes of the Mediterranean sun and the generosity of shared tables.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="quote">
+    <p class="quote__text">"Europe is not a place. It is an idea — the richest, most contradictory, most beautiful idea humanity ever had."</p>
+    <p class="quote__attr">— A traveler's reflection</p>
+  </section>
+
+  <footer class="footer">
+    <p>European Cultural Mosaic · v2 Vintage Travel Poster · <a href="../index.html">← Gallery</a></p>
+  </footer>
+
+</body>
+</html>
