@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v11 — Watercolor + Art Nouveau · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8d9a8;
+      --green: #2d5a3d;
+      --lavender: #c9b8db;
+      --peach: #f0c9b0;
+      --sage: #a8c5a0;
+      --blush: #e8b4b8;
+      --sky: #a8c8e0;
+      --cream: #fdf8f3;
+      --warm-brown: #5c4a32;
+      --soft-black: #3a3530;
+    }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--cream);
+      color: var(--soft-black);
+      line-height: 1.75;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--warm-brown);
+      text-decoration: none;
+      background: rgba(253,248,243,0.95);
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--gold-light);
+    }
+    .back-link:hover { background: var(--gold-light); }
+
+    /* Ornamental Divider */
+    .ornament {
+      text-align: center;
+      padding: 12px 0;
+      color: var(--gold);
+      font-size: 1.2rem;
+      letter-spacing: 0.4em;
+    }
+
+    .ornament--large {
+      font-size: 1.6rem;
+      padding: 20px 0;
+    }
+
+    /* Hero — Watercolor wash with Art Nouveau frame */
+    .hero {
+      text-align: center;
+      padding: 80px 40px 48px;
+      background:
+        radial-gradient(ellipse at 15% 40%, rgba(201,184,219,0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 25%, rgba(240,201,176,0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 85%, rgba(168,197,160,0.2) 0%, transparent 50%),
+        var(--cream);
+      position: relative;
+      border-bottom: 2px solid var(--gold-light);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: '❧';
+      position: absolute;
+      font-size: 2rem;
+      color: var(--gold);
+      opacity: 0.4;
+    }
+    .hero::before { top: 24px; left: 40px; }
+    .hero::after { top: 24px; right: 40px; transform: scaleX(-1); }
+
+    .hero__hand {
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .hero__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      font-weight: 700;
+      font-style: italic;
+      color: var(--green);
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+
+    .hero__subtitle {
+      font-size: 1rem;
+      color: var(--warm-brown);
+      max-width: 520px;
+      margin: 0 auto;
+      opacity: 0.8;
+    }
+
+    /* Section Title */
+    .section-title {
+      text-align: center;
+      padding: 48px 40px 16px;
+    }
+
+    .section-title__hand {
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem;
+      color: var(--gold);
+    }
+
+    .section-title__main {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--green);
+      margin-top: 4px;
+    }
+
+    /* Country Cards — Watercolor cards with ornamental borders */
+    .countries {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 40px 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+    }
+
+    .country-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(92,74,50,0.08);
+      border: 1px solid var(--gold-light);
+      position: relative;
+    }
+
+    .country-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--gold);
+    }
+
+    .country-card__wash {
+      height: 100px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .country-card__name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--soft-black);
+      position: relative;
+      z-index: 1;
+    }
+
+    .country-card__tagline {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--warm-brown);
+      opacity: 0.7;
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      z-index: 1;
+    }
+
+    /* Per-country watercolor washes */
+    .country-card--france .country-card__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(201,184,219,0.35) 0%, rgba(201,184,219,0.1) 70%, transparent 100%);
+    }
+    .country-card--italy .country-card__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(240,201,176,0.4) 0%, rgba(240,201,176,0.1) 70%, transparent 100%);
+    }
+    .country-card--spain .country-card__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(232,180,184,0.35) 0%, rgba(232,180,184,0.1) 70%, transparent 100%);
+    }
+    .country-card--germany .country-card__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(168,197,160,0.35) 0%, rgba(168,197,160,0.1) 70%, transparent 100%);
+    }
+    .country-card--uk .country-card__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(168,200,224,0.35) 0%, rgba(168,200,224,0.1) 70%, transparent 100%);
+    }
+    .country-card--greece .country-card__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(168,200,224,0.25) 0%, transparent 70%),
+                  radial-gradient(ellipse at 30% 60%, rgba(232,217,168,0.3) 0%, transparent 60%);
+    }
+
+    .country-card__body {
+      padding: 24px 28px 28px;
+    }
+
+    .country-card__section { margin-bottom: 18px; }
+    .country-card__section:last-child { margin-bottom: 0; }
+
+    .country-card__label {
+      font-family: 'Caveat', cursive;
+      font-size: 1.05rem;
+      color: var(--gold);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .country-card__label::before {
+      content: '✦';
+      font-size: 0.6rem;
+    }
+
+    .country-card__text {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #666;
+    }
+
+    /* Food Focus Section */
+    .food-focus {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 40px 48px;
+    }
+
+    .food-focus__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--green);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .food-item {
+      text-align: center;
+      padding: 24px 16px;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px dashed var(--gold-light);
+    }
+
+    .food-item__icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .food-item__name {
+      font-family: 'Caveat', cursive;
+      font-size: 1.15rem;
+      color: var(--soft-black);
+      margin-bottom: 2px;
+    }
+
+    .food-item__country {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--warm-brown);
+      opacity: 0.6;
+    }
+
+    /* Quote */
+    .quote {
+      text-align: center;
+      padding: 48px 40px;
+      background:
+        radial-gradient(ellipse at 30% 50%, rgba(201,184,219,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 50%, rgba(240,201,176,0.15) 0%, transparent 50%),
+        var(--cream);
+    }
+
+    .quote__text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-style: italic;
+      color: var(--green);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.45;
+    }
+
+    .quote__attr {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--gold);
+      margin-top: 16px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 32px 40px;
+      font-size: 0.8rem;
+      color: var(--warm-brown);
+      opacity: 0.6;
+      border-top: 1px solid var(--gold-light);
+    }
+
+    .footer a { color: var(--gold); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .countries { padding: 24px 20px 40px; grid-template-columns: 1fr; }
+      .food-grid { grid-template-columns: repeat(2, 1fr); }
+      .food-focus { padding: 0 20px 40px; }
+      .hero::before, .hero::after { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .food-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← back to gallery</a>
+
+  <section class="hero">
+    <p class="hero__hand">a gentle exploration of</p>
+    <h1 class="hero__title">European Cultural Mosaic</h1>
+    <p class="hero__subtitle">Where Art Nouveau elegance meets watercolor softness — the food, architecture, and soul of six nations.</p>
+  </section>
+
+  <div class="ornament ornament--large">✦ ❧ ✦</div>
+
+  <div class="section-title">
+    <p class="section-title__hand">six countries, six stories</p>
+    <h2 class="section-title__main">Architecture & Cuisine</h2>
+  </div>
+
+  <div class="countries">
+    <div class="country-card country-card--france">
+      <div class="country-card__wash">
+        <h2 class="country-card__name">France</h2>
+        <span class="country-card__tagline">joie de vivre</span>
+      </div>
+      <div class="country-card__body">
+        <div class="country-card__section">
+          <p class="country-card__label">Architecture</p>
+          <p class="country-card__text">Gothic cathedrals soar heavenward while Haussmann's boulevards create elegant perspectives. Notre-Dame, Versailles, the Eiffel Tower — France builds monuments to beauty and ambition.</p>
+        </div>
+        <div class="country-card__section">
+          <p class="country-card__label">Cuisine</p>
+          <p class="country-card__text">The birthplace of haute cuisine. Croissants, coq au vin, crème brûlée — each dish a meditation on technique, terroir, and the belief that food is the highest art form.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="country-card country-card--italy">
+      <div class="country-card__wash">
+        <h2 class="country-card__name">Italy</h2>
+        <span class="country-card__tagline">la dolce vita</span>
+      </div>
+      <div class="country-card__body">
+        <div class="country-card__section">
+          <p class="country-card__label">Architecture</p>
+          <p class="country-card__text">Roman arches, Brunelleschi's dome, Venetian reflections. Italian architecture is drama and proportion — the Renaissance made permanent in marble and terracotta.</p>
+        </div>
+        <div class="country-card__section">
+          <p class="country-card__label">Cuisine</p>
+          <p class="country-card__text">Simplicity elevated to philosophy. San Marzano tomatoes, hand-rolled pasta, fresh mozzarella. Each region guards its recipes like sacred family heirlooms.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="country-card country-card--spain">
+      <div class="country-card__wash">
+        <h2 class="country-card__name">Spain</h2>
+        <span class="country-card__tagline">pasión y vida</span>
+      </div>
+      <div class="country-card__body">
+        <div class="country-card__section">
+          <p class="country-card__label">Architecture</p>
+          <p class="country-card__text">The Alhambra's geometric poetry, Gaudí's organic dreams, white Andalusian villages cascading down hillsides. Spain builds between earth and imagination.</p>
+        </div>
+        <div class="country-card__section">
+          <p class="country-card__label">Cuisine</p>
+          <p class="country-card__text">Tapas at midnight, paella saffron-golden by the sea, jamón sliced paper-thin. Spanish dining is communal theater under warm evening skies.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="country-card country-card--germany">
+      <div class="country-card__wash">
+        <h2 class="country-card__name">Germany</h2>
+        <span class="country-card__tagline">Gemütlichkeit</span>
+      </div>
+      <div class="country-card__body">
+        <div class="country-card__section">
+          <p class="country-card__label">Architecture</p>
+          <p class="country-card__text">Fairy-tale castles and Bauhaus clarity. From Neuschwanstein's romantic towers to Berlin's stark modernity, Germany builds between dream and discipline.</p>
+        </div>
+        <div class="country-card__section">
+          <p class="country-card__label">Cuisine</p>
+          <p class="country-card__text">Hearty, honest, deeply regional. Bavarian pretzels, Rhineland sauerbraten, Black Forest cake. Beer culture as institution, with over 1,500 breweries.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="country-card country-card--uk">
+      <div class="country-card__wash">
+        <h2 class="country-card__name">United Kingdom</h2>
+        <span class="country-card__tagline">keep calm</span>
+      </div>
+      <div class="country-card__body">
+        <div class="country-card__section">
+          <p class="country-card__label">Architecture</p>
+          <p class="country-card__text">Tudor half-timber, Georgian symmetry, Victorian grandeur. London's skyline is a timeline — from Wren's domes to the Shard's crystalline spike.</p>
+        </div>
+        <div class="country-card__section">
+          <p class="country-card__label">Cuisine</p>
+          <p class="country-card__text">Fish and chips, Sunday roast, afternoon tea. A cuisine of comfort and ritual, now enriched by centuries of multicultural influence.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="country-card country-card--greece">
+      <div class="country-card__wash">
+        <h2 class="country-card__name">Greece</h2>
+        <span class="country-card__tagline">φιλοξενία</span>
+      </div>
+      <div class="country-card__body">
+        <div class="country-card__section">
+          <p class="country-card__label">Architecture</p>
+          <p class="country-card__text">The Parthenon's perfect proportions, white-washed Cycladic cubes, gold Byzantine domes. Greek architecture is clarity, light, and the origin of the West.</p>
+        </div>
+        <div class="country-card__section">
+          <p class="country-card__label">Cuisine</p>
+          <p class="country-card__text">Olive oil, feta, grilled octopus, honey-soaked baklava. Mediterranean generosity — the table is always set for one more guest.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ornament">✦ ✦ ✦</div>
+
+  <div class="section-title">
+    <p class="section-title__hand">a taste of each nation</p>
+    <h2 class="section-title__main">Signature Flavors</h2>
+  </div>
+
+  <div class="food-focus">
+    <div class="food-grid">
+      <div class="food-item">
+        <div class="food-item__icon">🥐</div>
+        <p class="food-item__name">Croissant</p>
+        <p class="food-item__country">France</p>
+      </div>
+      <div class="food-item">
+        <div class="food-item__icon">🍕</div>
+        <p class="food-item__name">Pizza Margherita</p>
+        <p class="food-item__country">Italy</p>
+      </div>
+      <div class="food-item">
+        <div class="food-item__icon">🥘</div>
+        <p class="food-item__name">Paella</p>
+        <p class="food-item__country">Spain</p>
+      </div>
+      <div class="food-item">
+        <div class="food-item__icon">🥨</div>
+        <p class="food-item__name">Brezel</p>
+        <p class="food-item__country">Germany</p>
+      </div>
+      <div class="food-item">
+        <div class="food-item__icon">🫖</div>
+        <p class="food-item__name">Afternoon Tea</p>
+        <p class="food-item__country">United Kingdom</p>
+      </div>
+      <div class="food-item">
+        <div class="food-item__icon">🫒</div>
+        <p class="food-item__name">Mezze Platter</p>
+        <p class="food-item__country">Greece</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="quote">
+    <div class="ornament">❧</div>
+    <p class="quote__text">"One cannot think well, love well, sleep well, if one has not dined well."</p>
+    <p class="quote__attr">— Virginia Woolf</p>
+  </section>
+
+  <div class="ornament">✦ ❧ ✦</div>
+
+  <footer class="footer">
+    <p>European Cultural Mosaic · v11 Watercolor + Art Nouveau · <a href="../index.html">← Gallery</a></p>
+  </footer>
+
+</body>
+</html>
