@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v7 — Watercolor Artistic · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --lavender: #c9b8db;
+      --peach: #f0c9b0;
+      --sage: #a8c5a0;
+      --blush: #e8b4b8;
+      --sky: #a8c8e0;
+      --cream: #fdf8f3;
+      --warm-brown: #6b5a4e;
+      --soft-black: #3a3530;
+    }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--cream);
+      color: var(--soft-black);
+      line-height: 1.75;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--warm-brown);
+      text-decoration: none;
+      background: rgba(253,248,243,0.9);
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px dashed var(--lavender);
+    }
+    .back-link:hover { background: var(--lavender); color: #fff; }
+
+    /* Hero — Watercolor wash */
+    .hero {
+      text-align: center;
+      padding: 80px 40px 60px;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(201,184,219,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(240,201,176,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(168,197,160,0.25) 0%, transparent 50%),
+        var(--cream);
+      position: relative;
+    }
+
+    .hero__hand {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--warm-brown);
+      margin-bottom: 12px;
+    }
+
+    .hero__title {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 700;
+      color: var(--soft-black);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero__subtitle {
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--warm-brown);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .hero__colors {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .hero__swatch {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.8);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    /* Country Sections — Alternating watercolor bg */
+    .country {
+      padding: 56px 40px;
+      position: relative;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .country--wash-1 { background: radial-gradient(ellipse at 30% 50%, rgba(201,184,219,0.15) 0%, transparent 60%); }
+    .country--wash-2 { background: radial-gradient(ellipse at 70% 50%, rgba(240,201,176,0.15) 0%, transparent 60%); }
+    .country--wash-3 { background: radial-gradient(ellipse at 40% 40%, rgba(168,197,160,0.15) 0%, transparent 60%); }
+    .country--wash-4 { background: radial-gradient(ellipse at 60% 60%, rgba(232,180,184,0.15) 0%, transparent 60%); }
+    .country--wash-5 { background: radial-gradient(ellipse at 50% 30%, rgba(168,200,224,0.15) 0%, transparent 60%); }
+    .country--wash-6 { background: radial-gradient(ellipse at 30% 70%, rgba(201,184,219,0.1) 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(168,200,224,0.1) 0%, transparent 60%); }
+
+    .country__divider {
+      text-align: center;
+      color: var(--lavender);
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem;
+      margin-bottom: 32px;
+    }
+
+    .country__header {
+      margin-bottom: 24px;
+    }
+
+    .country__name {
+      font-family: 'Caveat', cursive;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--soft-black);
+      line-height: 1.1;
+    }
+
+    .country__tagline {
+      font-style: italic;
+      color: var(--warm-brown);
+      font-size: 1rem;
+      margin-top: 4px;
+    }
+
+    /* Image with soft border */
+    .country__image-wrap {
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .country__image {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .country__image-note {
+      font-family: 'Caveat', cursive;
+      font-size: 0.95rem;
+      color: var(--warm-brown);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Content blocks */
+    .country__content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    .content-block {
+      background: rgba(255,255,255,0.6);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px dashed rgba(0,0,0,0.08);
+    }
+
+    .content-block__label {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--warm-brown);
+      margin-bottom: 8px;
+    }
+
+    .content-block__text {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #5a5048;
+    }
+
+    /* Map links — hand-drawn feel */
+    .country__places {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .place-tag {
+      font-family: 'Caveat', cursive;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.7);
+      border: 1px dashed var(--lavender);
+      border-radius: 20px;
+      color: var(--warm-brown);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .place-tag:hover {
+      background: var(--lavender);
+      color: #fff;
+      border-color: var(--lavender);
+    }
+
+    /* Hand-drawn quote */
+    .quote-section {
+      text-align: center;
+      padding: 48px 40px;
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(240,201,176,0.2) 0%, transparent 50%),
+        var(--cream);
+    }
+
+    .quote-section__text {
+      font-family: 'Caveat', cursive;
+      font-size: 1.8rem;
+      color: var(--soft-black);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.4;
+    }
+
+    .quote-section__attr {
+      font-size: 0.9rem;
+      color: var(--warm-brown);
+      font-style: italic;
+      margin-top: 12px;
+    }
+
+    /* Lifestyle comparison — postcard style */
+    .postcards {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 40px;
+    }
+
+    .postcards__title {
+      font-family: 'Caveat', cursive;
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 32px;
+      color: var(--soft-black);
+    }
+
+    .postcards__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .postcard {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      text-align: center;
+      transform: rotate(var(--tilt, 0deg));
+      transition: transform 0.2s;
+    }
+
+    .postcard:hover { transform: rotate(0deg) scale(1.03); }
+
+    .postcard:nth-child(1) { --tilt: -1.5deg; }
+    .postcard:nth-child(2) { --tilt: 0.8deg; }
+    .postcard:nth-child(3) { --tilt: -0.5deg; }
+    .postcard:nth-child(4) { --tilt: 1deg; }
+    .postcard:nth-child(5) { --tilt: -0.8deg; }
+    .postcard:nth-child(6) { --tilt: 1.2deg; }
+
+    .postcard__country {
+      font-family: 'Caveat', cursive;
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .postcard__detail {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lavender);
+      margin-bottom: 12px;
+    }
+
+    .postcard__text {
+      font-size: 0.85rem;
+      color: #777;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--warm-brown);
+    }
+
+    .footer a { color: var(--lavender); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .country { padding: 40px 20px; }
+      .country__content { grid-template-columns: 1fr; }
+      .postcards__grid { grid-template-columns: 1fr; }
+      .postcards { padding: 36px 20px; }
+      .hero { padding: 60px 20px 40px; }
+      .country__image { height: 220px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← back to gallery</a>
+
+  <header class="hero">
+    <p class="hero__hand">~ a watercolor journey ~</p>
+    <h1 class="hero__title">European Cultural Mosaic</h1>
+    <p class="hero__subtitle">Soft strokes through the architecture, food, art, and life of six European nations</p>
+    <div class="hero__colors">
+      <div class="hero__swatch" style="background: var(--lavender)"></div>
+      <div class="hero__swatch" style="background: var(--peach)"></div>
+      <div class="hero__swatch" style="background: var(--sage)"></div>
+      <div class="hero__swatch" style="background: var(--blush)"></div>
+      <div class="hero__swatch" style="background: var(--sky)"></div>
+    </div>
+  </header>
+
+  <!-- France -->
+  <section class="country country--wash-1">
+    <div class="country__divider">~ ✿ ~</div>
+    <div class="country__header">
+      <h2 class="country__name">France</h2>
+      <p class="country__tagline">where beauty grows like wildflowers</p>
+    </div>
+    <div class="country__image-wrap">
+      <img src="https://images.unsplash.com/photo-1431274172761-fca41d930114?w=900&h=450&fit=crop" alt="Seine River with Eiffel Tower" class="country__image">
+      <p class="country__image-note">the Seine at golden hour... Paris in watercolor light</p>
+    </div>
+    <div class="country__content">
+      <div class="content-block">
+        <p class="content-block__label">Architecture</p>
+        <p class="content-block__text">Gothic cathedrals reaching for heaven, Haussmann's creamy boulevards, Versailles sprawling endlessly. France builds the way it cooks — with exquisite attention to proportion and a pinch of audacity.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Cuisine</p>
+        <p class="content-block__text">A warm baguette at dawn, unpasteurized Camembert at noon, coq au vin by candlelight. French food isn't just eating — it's the art of marking time through flavor.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Art & Life</p>
+        <p class="content-block__text">Monet's waterlilies are a feeling, not just a painting. Joie de vivre means finding beauty in the mundane — a morning espresso, sunlight on cobblestones, the rustle of a café awning.</p>
+      </div>
+    </div>
+    <div class="country__places">
+      <a href="https://maps.google.com/?q=Eiffel+Tower+Paris" target="_blank" class="place-tag">📍 Eiffel Tower</a>
+      <a href="https://maps.google.com/?q=Notre-Dame+de+Paris" target="_blank" class="place-tag">📍 Notre-Dame</a>
+      <a href="https://maps.google.com/?q=Palace+of+Versailles" target="_blank" class="place-tag">📍 Versailles</a>
+      <a href="https://maps.google.com/?q=Mont+Saint-Michel" target="_blank" class="place-tag">📍 Mont Saint-Michel</a>
+    </div>
+  </section>
+
+  <!-- Italy -->
+  <section class="country country--wash-2">
+    <div class="country__divider">~ ✿ ~</div>
+    <div class="country__header">
+      <h2 class="country__name">Italy</h2>
+      <p class="country__tagline">la dolce vita painted in terracotta and gold</p>
+    </div>
+    <div class="country__image-wrap">
+      <img src="https://images.unsplash.com/photo-1534445867742-43195f401b6c?w=900&h=450&fit=crop" alt="Italian countryside with cypress trees" class="country__image">
+      <p class="country__image-note">Tuscan hills... where every view is already a painting</p>
+    </div>
+    <div class="country__content">
+      <div class="content-block">
+        <p class="content-block__label">Architecture</p>
+        <p class="content-block__text">The Colosseum, two thousand years old and still the grandest arena. Brunelleschi's dome solved the impossible. Venice floats on 118 islands, sinking with unfathomable grace.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Cuisine</p>
+        <p class="content-block__text">Naples invented pizza. Bologna perfected ragù. Sicily fries rice into golden arancini. Italian cooking is regional devotion — the best tomatoes, freshest basil, finest olive oil.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Art & Life</p>
+        <p class="content-block__text">The Renaissance was born here and never really left. The passeggiata — that evening stroll in your best clothes — proves that for Italians, living is the ultimate art form.</p>
+      </div>
+    </div>
+    <div class="country__places">
+      <a href="https://maps.google.com/?q=Colosseum+Rome" target="_blank" class="place-tag">📍 Colosseum</a>
+      <a href="https://maps.google.com/?q=Florence+Cathedral" target="_blank" class="place-tag">📍 Florence Duomo</a>
+      <a href="https://maps.google.com/?q=Venice+Italy" target="_blank" class="place-tag">📍 Venice</a>
+      <a href="https://maps.google.com/?q=Amalfi+Coast" target="_blank" class="place-tag">📍 Amalfi Coast</a>
+    </div>
+  </section>
+
+  <div class="quote-section">
+    <p class="quote-section__text">"To wander through Europe is to turn the pages of a living watercolor — each country a different palette, each culture a different brushstroke."</p>
+    <p class="quote-section__attr">— a traveler's sketchbook</p>
+  </div>
+
+  <!-- Spain -->
+  <section class="country country--wash-3">
+    <div class="country__divider">~ ✿ ~</div>
+    <div class="country__header">
+      <h2 class="country__name">Spain</h2>
+      <p class="country__tagline">passion painted in sunlight and spice</p>
+    </div>
+    <div class="country__image-wrap">
+      <img src="https://images.unsplash.com/photo-1509840841025-9088ba78a826?w=900&h=450&fit=crop" alt="Spanish white village with terracotta roofs" class="country__image">
+      <p class="country__image-note">Andalusia's white villages... where the sun whitewashes everything</p>
+    </div>
+    <div class="country__content">
+      <div class="content-block">
+        <p class="content-block__label">Architecture</p>
+        <p class="content-block__text">The Alhambra's infinite geometric patterns. Gaudí's Sagrada Família, still growing after 140 years. Andalusia's pueblos blancos: white cubes tumbling down sunburnt hillsides.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Cuisine</p>
+        <p class="content-block__text">Tapas aren't a meal — they're a philosophy. Small plates, big conversation, late nights. Paella by the sea, gazpacho in the heat, jamón ibérico sliced paper-thin.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Art & Life</p>
+        <p class="content-block__text">Dalí melted clocks, Picasso broke faces, flamenco breaks hearts. The siesta is not laziness — it's the art of listening to your body and the rhythm of the sun.</p>
+      </div>
+    </div>
+    <div class="country__places">
+      <a href="https://maps.google.com/?q=La+Sagrada+Familia+Barcelona" target="_blank" class="place-tag">📍 Sagrada Família</a>
+      <a href="https://maps.google.com/?q=Alhambra+Granada" target="_blank" class="place-tag">📍 Alhambra</a>
+      <a href="https://maps.google.com/?q=Plaza+de+España+Seville" target="_blank" class="place-tag">📍 Plaza de España</a>
+      <a href="https://maps.google.com/?q=Ronda+Spain" target="_blank" class="place-tag">📍 Ronda</a>
+    </div>
+  </section>
+
+  <!-- Germany -->
+  <section class="country country--wash-4">
+    <div class="country__divider">~ ✿ ~</div>
+    <div class="country__header">
+      <h2 class="country__name">Germany</h2>
+      <p class="country__tagline">fairy tales and precision, warmth and wonder</p>
+    </div>
+    <div class="country__image-wrap">
+      <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=900&h=450&fit=crop" alt="Neuschwanstein Castle in autumn" class="country__image">
+      <p class="country__image-note">Neuschwanstein... a castle that dreams itself into existence</p>
+    </div>
+    <div class="country__content">
+      <div class="content-block">
+        <p class="content-block__label">Architecture</p>
+        <p class="content-block__text">Cologne Cathedral took six centuries of patience. The Bauhaus school in Dessau changed everything with three words: form follows function. Berlin rebuilds itself endlessly.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Cuisine</p>
+        <p class="content-block__text">Schweinshaxe the size of your dreams, Black Forest cake layered with cherries and time. Over 1,500 breweries following rules written half a millennium ago.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Art & Life</p>
+        <p class="content-block__text">Gemütlichkeit — that untranslatable coziness of a warm room, good company, and glühwein. Christmas markets glow. Forest paths wind. Kaffee und Kuchen on Sunday afternoon.</p>
+      </div>
+    </div>
+    <div class="country__places">
+      <a href="https://maps.google.com/?q=Neuschwanstein+Castle" target="_blank" class="place-tag">📍 Neuschwanstein</a>
+      <a href="https://maps.google.com/?q=Brandenburg+Gate+Berlin" target="_blank" class="place-tag">📍 Brandenburg Gate</a>
+      <a href="https://maps.google.com/?q=Black+Forest+Germany" target="_blank" class="place-tag">📍 Black Forest</a>
+      <a href="https://maps.google.com/?q=Heidelberg+Castle" target="_blank" class="place-tag">📍 Heidelberg</a>
+    </div>
+  </section>
+
+  <!-- UK -->
+  <section class="country country--wash-5">
+    <div class="country__divider">~ ✿ ~</div>
+    <div class="country__header">
+      <h2 class="country__name">United Kingdom</h2>
+      <p class="country__tagline">rain, roses, and remarkable resilience</p>
+    </div>
+    <div class="country__image-wrap">
+      <img src="https://images.unsplash.com/photo-1486299267070-83823f5448dd?w=900&h=450&fit=crop" alt="Big Ben and Westminster Bridge London" class="country__image">
+      <p class="country__image-note">Westminster at dusk... where history meets the Thames</p>
+    </div>
+    <div class="country__content">
+      <div class="content-block">
+        <p class="content-block__label">Architecture</p>
+        <p class="content-block__text">Tudor half-timber, Georgian terraces in Bath, Victorian train stations that look like cathedrals. The humble terraced house is as British as any palace.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Cuisine</p>
+        <p class="content-block__text">The Sunday roast is a weekly ritual. Fish and chips by the seaside, scones with clotted cream, a proper cuppa when the world feels too much.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Art & Life</p>
+        <p class="content-block__text">Shakespeare wrote it all first. The garden is where the British soul blooms. The pub is everyone's living room. Dry humor is the national shield against everything.</p>
+      </div>
+    </div>
+    <div class="country__places">
+      <a href="https://maps.google.com/?q=Big+Ben+London" target="_blank" class="place-tag">📍 Big Ben</a>
+      <a href="https://maps.google.com/?q=Stonehenge" target="_blank" class="place-tag">📍 Stonehenge</a>
+      <a href="https://maps.google.com/?q=Cotswolds+England" target="_blank" class="place-tag">📍 Cotswolds</a>
+      <a href="https://maps.google.com/?q=Edinburgh+Castle" target="_blank" class="place-tag">📍 Edinburgh Castle</a>
+    </div>
+  </section>
+
+  <!-- Greece -->
+  <section class="country country--wash-6">
+    <div class="country__divider">~ ✿ ~</div>
+    <div class="country__header">
+      <h2 class="country__name">Greece</h2>
+      <p class="country__tagline">where the light remembers everything</p>
+    </div>
+    <div class="country__image-wrap">
+      <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=900&h=450&fit=crop" alt="Santorini blue domes and white buildings" class="country__image">
+      <p class="country__image-note">Santorini... where white and blue are the only colors you'll ever need</p>
+    </div>
+    <div class="country__content">
+      <div class="content-block">
+        <p class="content-block__label">Architecture</p>
+        <p class="content-block__text">The Parthenon's columns are secretly curved — an optical illusion so they appear perfectly straight. Cycladic cubes glow white against infinite blue. Byzantine domes hold golden mosaics.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Cuisine</p>
+        <p class="content-block__text">Olive oil is lifeblood. Feta crumbles on everything. Grilled octopus by the harbor, honey-drizzled yogurt at dawn. A Greek taverna by the sea is dining perfected.</p>
+      </div>
+      <div class="content-block">
+        <p class="content-block__label">Art & Life</p>
+        <p class="content-block__text">Philoxenia — the love of strangers — turns every visitor into family. The kafeneio is where time slows, coffee is strong, and conversation flows like the Aegean breeze.</p>
+      </div>
+    </div>
+    <div class="country__places">
+      <a href="https://maps.google.com/?q=Parthenon+Athens" target="_blank" class="place-tag">📍 Parthenon</a>
+      <a href="https://maps.google.com/?q=Santorini+Greece" target="_blank" class="place-tag">📍 Santorini</a>
+      <a href="https://maps.google.com/?q=Meteora+Greece" target="_blank" class="place-tag">📍 Meteora</a>
+      <a href="https://maps.google.com/?q=Mykonos+Greece" target="_blank" class="place-tag">📍 Mykonos</a>
+    </div>
+  </section>
+
+  <!-- Art Postcards -->
+  <section class="postcards">
+    <h2 class="postcards__title">~ postcards from Europe ~</h2>
+    <div class="postcards__grid">
+      <div class="postcard">
+        <p class="postcard__country">France</p>
+        <p class="postcard__detail">Impressionism</p>
+        <p class="postcard__text">Monet and Renoir captured light like butterflies — fragile, fleeting, impossibly beautiful.</p>
+      </div>
+      <div class="postcard">
+        <p class="postcard__country">Italy</p>
+        <p class="postcard__detail">Renaissance</p>
+        <p class="postcard__text">Michelangelo painted the Sistine ceiling lying on his back for four years. Devotion made visible.</p>
+      </div>
+      <div class="postcard">
+        <p class="postcard__country">Spain</p>
+        <p class="postcard__detail">Surrealism</p>
+        <p class="postcard__text">Dalí painted melting clocks, Miró painted constellations. Spanish dreams are wilder than most realities.</p>
+      </div>
+      <div class="postcard">
+        <p class="postcard__country">Germany</p>
+        <p class="postcard__detail">Expressionism</p>
+        <p class="postcard__text">Kirchner and Kandinsky made the invisible visible — emotion as color, anxiety as line.</p>
+      </div>
+      <div class="postcard">
+        <p class="postcard__country">United Kingdom</p>
+        <p class="postcard__detail">Pre-Raphaelite</p>
+        <p class="postcard__text">Rossetti painted women like dreams — jewel-toned, haunted, impossibly romantic.</p>
+      </div>
+      <div class="postcard">
+        <p class="postcard__country">Greece</p>
+        <p class="postcard__detail">Classical Sculpture</p>
+        <p class="postcard__text">The Venus de Milo has no arms but more presence than any statue that's whole.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>European Cultural Mosaic · v7 Watercolor Artistic · <a href="../index.html">← back to gallery</a></p>
+  </footer>
+
+</body>
+</html>
