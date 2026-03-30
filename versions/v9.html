@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v9 — Editorial Dark · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-dim: #8a7a3a;
+      --bg: #0e0e0e;
+      --surface: #1a1a1a;
+      --surface-light: #242424;
+      --text: #e8e4dc;
+      --text-dim: #8a8578;
+      --rule: #333;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 300;
+      line-height: 1.65;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(14,14,14,0.9);
+      padding: 8px 16px;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+    }
+    .back-link:hover { color: var(--gold); border-color: var(--gold); }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      padding: 80px 40px 40px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .masthead__rule { width: 60px; height: 2px; background: var(--gold); margin: 0 auto 24px; }
+
+    .masthead__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .masthead__subtitle {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--text-dim);
+      margin-top: 12px;
+    }
+
+    .masthead__meta {
+      margin-top: 20px;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+    }
+
+    /* Section Headers */
+    .section-header {
+      text-align: center;
+      padding: 48px 40px 24px;
+    }
+
+    .section-header__label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .section-header__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 600;
+      font-style: italic;
+    }
+
+    /* Country Articles — Two-column editorial */
+    .articles {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px 48px;
+    }
+
+    .article {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      padding: 48px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .article:last-child { border-bottom: none; }
+
+    .article__header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: -16px;
+    }
+
+    .article__country {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+    }
+
+    .article__tagline {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .article__col h3 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .article__col p {
+      font-size: 0.92rem;
+      line-height: 1.75;
+      color: var(--text-dim);
+    }
+
+    /* Pull Quote */
+    .pull-quote {
+      padding: 60px 40px;
+      text-align: center;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .pull-quote__text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-style: italic;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .pull-quote__rule { width: 40px; height: 2px; background: var(--gold); margin: 24px auto 0; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .footer a { color: var(--gold-dim); text-decoration: none; }
+    .footer a:hover { color: var(--gold); }
+
+    @media (max-width: 768px) {
+      .article { grid-template-columns: 1fr; gap: 24px; }
+      .articles { padding: 0 20px 32px; }
+      .masthead { padding: 60px 20px 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← Gallery</a>
+
+  <header class="masthead">
+    <div class="masthead__rule"></div>
+    <h1 class="masthead__title">European Cultural Mosaic</h1>
+    <p class="masthead__subtitle">Architecture, Cuisine, and the Soul of a Continent</p>
+    <p class="masthead__meta">Six Nations · A Dark Editorial</p>
+  </header>
+
+  <div class="section-header">
+    <p class="section-header__label">The Nations</p>
+    <h2 class="section-header__title">Stories Written in Stone and Spice</h2>
+  </div>
+
+  <div class="articles">
+    <article class="article">
+      <div class="article__header">
+        <h2 class="article__country">France</h2>
+        <span class="article__tagline">— Joie de vivre</span>
+      </div>
+      <div class="article__col">
+        <h3>Architecture</h3>
+        <p>From the flying buttresses of Notre-Dame to the rational geometry of Haussmann's Paris, French architecture is ambition made permanent. Each era builds upon the last — Gothic, Baroque, Art Deco — a layered palimpsest of national identity in limestone and iron.</p>
+      </div>
+      <div class="article__col">
+        <h3>Cuisine</h3>
+        <p>French cuisine is philosophy on a plate. The mother sauces, the precise technique of a béarnaise, the sacred rituals of the boulangerie at dawn. Here, cooking is not sustenance — it is an act of civilization, refined over centuries of court and countryside.</p>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__header">
+        <h2 class="article__country">Italy</h2>
+        <span class="article__tagline">— La dolce vita</span>
+      </div>
+      <div class="article__col">
+        <h3>Architecture</h3>
+        <p>The Colosseum taught the world the arch. Brunelleschi's dome defied gravity and belief. Palladio's villas became the template for elegance from Virginia to St. Petersburg. Italian architecture is the foundation upon which the West was built.</p>
+      </div>
+      <div class="article__col">
+        <h3>Cuisine</h3>
+        <p>Italian cooking is the art of restraint — three ingredients, perfectly sourced, treated with respect. Each region is a republic of flavor: Emilia-Romagna's rich ragù, Naples' perfect margherita, Sicily's sweet and sour caponata.</p>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__header">
+        <h2 class="article__country">Spain</h2>
+        <span class="article__tagline">— Pasión y vida</span>
+      </div>
+      <div class="article__col">
+        <h3>Architecture</h3>
+        <p>The Alhambra's muqarnas ceilings drip like honey from heaven. Gaudí's Sagrada Família reaches toward God in organic spirals. Between Moorish precision and Catalan fantasy, Spain builds at the frontier of imagination.</p>
+      </div>
+      <div class="article__col">
+        <h3>Cuisine</h3>
+        <p>Spanish food is convivial theater. Tapas arrive in waves — patatas bravas, jamón ibérico, gambas al ajillo — each plate a prompt for conversation, each glass of Rioja a cue to linger longer into the warm night.</p>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__header">
+        <h2 class="article__country">Germany</h2>
+        <span class="article__tagline">— Ordnung und Seele</span>
+      </div>
+      <div class="article__col">
+        <h3>Architecture</h3>
+        <p>Germany oscillates between romantic excess and rational clarity. Neuschwanstein is pure fairy-tale; the Bauhaus is pure function. Between these poles lies Berlin's rebuilt landscape — scars and ambition in equal measure.</p>
+      </div>
+      <div class="article__col">
+        <h3>Cuisine</h3>
+        <p>Hearty, honest, and deeply regional. A Bavarian biergarten's weisswurst and pretzel is a world away from Hamburg's fischbrötchen, yet both share the German conviction that good food requires no pretension — only quality and generous portions.</p>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__header">
+        <h2 class="article__country">United Kingdom</h2>
+        <span class="article__tagline">— Keep calm, carry on</span>
+      </div>
+      <div class="article__col">
+        <h3>Architecture</h3>
+        <p>Tudor half-timber, Christopher Wren's domes, the great iron and glass of Victorian train stations. The UK builds with understatement that conceals engineering brilliance — and then occasionally throws in a Gherkin or a Shard.</p>
+      </div>
+      <div class="article__col">
+        <h3>Cuisine</h3>
+        <p>The Sunday roast is a secular ritual. Afternoon tea is performance art. Fish and chips by the sea is pure comfort. British cuisine, once maligned, now thrives — enriched by centuries of global connection and a new generation of fearless chefs.</p>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__header">
+        <h2 class="article__country">Greece</h2>
+        <span class="article__tagline">— Φιλοξενία (Philoxenia)</span>
+      </div>
+      <div class="article__col">
+        <h3>Architecture</h3>
+        <p>The Parthenon stands as the West's founding architectural statement — proportion, harmony, light. Centuries later, Cycladic whitewash against Aegean blue achieves the same perfection through simplicity. Greek architecture is clarity itself.</p>
+      </div>
+      <div class="article__col">
+        <h3>Cuisine</h3>
+        <p>Greek food is Mediterranean generosity distilled. Olive oil is liquid gold, feta crumbles over everything, grilled fish arrives minutes from the sea. Every meal is an invitation — the table is always set for one more guest.</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="pull-quote">
+    <p class="pull-quote__text">"To travel is to discover that everyone is wrong about other countries."</p>
+    <div class="pull-quote__rule"></div>
+  </div>
+
+  <footer class="footer">
+    <p>European Cultural Mosaic · v9 Editorial Dark · <a href="../index.html">← Gallery</a></p>
+  </footer>
+
+</body>
+</html>
