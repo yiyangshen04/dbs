@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v15 — Hero Sections + Watercolor · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8d9a8;
+      --green: #2d5a3d;
+      --cream: #fdf8f3;
+      --text: #3a3530;
+      --text-dim: #7a7068;
+
+      --france-wash: rgba(201,184,219,0.2);
+      --italy-wash: rgba(240,201,176,0.25);
+      --spain-wash: rgba(232,180,184,0.2);
+      --germany-wash: rgba(168,197,160,0.2);
+      --uk-wash: rgba(168,200,224,0.2);
+      --greece-wash: rgba(200,216,232,0.18);
+    }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      background: rgba(253,248,243,0.95);
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--gold-light);
+    }
+    .back-link:hover { background: var(--gold-light); }
+
+    .ornament {
+      text-align: center;
+      color: var(--gold);
+      font-size: 1.2rem;
+      letter-spacing: 0.4em;
+      padding: 12px 0;
+    }
+
+    /* Main Hero */
+    .main-hero {
+      text-align: center;
+      padding: 100px 40px 72px;
+      background:
+        radial-gradient(ellipse at 20% 40%, rgba(201,184,219,0.2) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(240,201,176,0.2) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(168,197,160,0.15) 0%, transparent 50%),
+        var(--cream);
+      position: relative;
+    }
+
+    .main-hero::before,
+    .main-hero::after {
+      content: '❧';
+      position: absolute;
+      font-size: 2.4rem;
+      color: var(--gold-light);
+      opacity: 0.5;
+    }
+    .main-hero::before { top: 40px; left: 48px; }
+    .main-hero::after { top: 40px; right: 48px; transform: scaleX(-1); }
+
+    .main-hero__hand {
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .main-hero__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(3rem, 7vw, 5rem);
+      font-weight: 700;
+      font-style: italic;
+      color: var(--green);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .main-hero__subtitle {
+      font-size: 1.05rem;
+      color: var(--text-dim);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .main-hero__divider {
+      width: 60px;
+      height: 2px;
+      background: var(--gold);
+      margin: 28px auto 0;
+    }
+
+    /* Country Hero Sections — Alternating full-width */
+    .country-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 400px;
+      position: relative;
+    }
+
+    .country-hero:nth-child(even) {
+      direction: rtl;
+    }
+
+    .country-hero:nth-child(even) > * {
+      direction: ltr;
+    }
+
+    .country-hero__wash {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 48px 40px;
+      position: relative;
+    }
+
+    /* Per-country watercolor washes */
+    .country-hero--france .country-hero__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(201,184,219,0.3) 0%, rgba(201,184,219,0.08) 70%, var(--cream) 100%);
+    }
+    .country-hero--italy .country-hero__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(240,201,176,0.35) 0%, rgba(240,201,176,0.08) 70%, var(--cream) 100%);
+    }
+    .country-hero--spain .country-hero__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(232,180,184,0.3) 0%, rgba(232,180,184,0.08) 70%, var(--cream) 100%);
+    }
+    .country-hero--germany .country-hero__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(168,197,160,0.3) 0%, rgba(168,197,160,0.08) 70%, var(--cream) 100%);
+    }
+    .country-hero--uk .country-hero__wash {
+      background: radial-gradient(ellipse at 50% 50%, rgba(168,200,224,0.3) 0%, rgba(168,200,224,0.08) 70%, var(--cream) 100%);
+    }
+    .country-hero--greece .country-hero__wash {
+      background: radial-gradient(ellipse at 40% 40%, rgba(200,216,232,0.25) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 70%, rgba(232,217,168,0.2) 0%, transparent 50%),
+                  var(--cream);
+    }
+
+    .country-hero__name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 700;
+      font-style: italic;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+
+    .country-hero__tagline {
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem;
+      color: var(--gold);
+    }
+
+    .country-hero__ornament {
+      font-size: 0.9rem;
+      color: var(--gold-light);
+      margin-top: 16px;
+      letter-spacing: 0.3em;
+    }
+
+    .country-hero__content {
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-top: 1px solid rgba(232,217,168,0.4);
+      border-bottom: 1px solid rgba(232,217,168,0.4);
+    }
+
+    .country-hero__section { margin-bottom: 20px; }
+    .country-hero__section:last-child { margin-bottom: 0; }
+
+    .country-hero__label {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .country-hero__label::before {
+      content: '✦';
+      font-size: 0.55rem;
+    }
+
+    .country-hero__text {
+      font-size: 0.92rem;
+      line-height: 1.75;
+      color: var(--text-dim);
+    }
+
+    /* Ornamental Divider between countries */
+    .section-divider {
+      text-align: center;
+      padding: 20px 0;
+      background: var(--cream);
+      color: var(--gold-light);
+      font-size: 1rem;
+      letter-spacing: 0.5em;
+      border-top: 1px solid rgba(232,217,168,0.3);
+      border-bottom: 1px solid rgba(232,217,168,0.3);
+    }
+
+    /* Closing Quote */
+    .closing {
+      text-align: center;
+      padding: 72px 40px;
+      background:
+        radial-gradient(ellipse at 30% 50%, rgba(201,184,219,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 50%, rgba(240,201,176,0.12) 0%, transparent 50%),
+        var(--cream);
+    }
+
+    .closing__text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-style: italic;
+      color: var(--green);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.4;
+    }
+
+    .closing__attr {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-top: 16px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 32px 40px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      border-top: 2px solid var(--gold-light);
+    }
+
+    .footer a { color: var(--gold); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .country-hero {
+        grid-template-columns: 1fr;
+      }
+      .country-hero:nth-child(even) { direction: ltr; }
+      .country-hero__wash { padding: 36px 24px; min-height: auto; }
+      .country-hero__content { padding: 28px 24px; }
+      .main-hero { padding: 72px 24px 56px; }
+      .main-hero::before, .main-hero::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← back to gallery</a>
+
+  <section class="main-hero">
+    <p class="main-hero__hand">a journey through</p>
+    <h1 class="main-hero__title">European<br>Cultural Mosaic</h1>
+    <p class="main-hero__subtitle">Full-width hero sections with watercolor washes and Art Nouveau ornaments — scrolling through six nations.</p>
+    <div class="main-hero__divider"></div>
+  </section>
+
+  <div class="ornament" style="padding: 24px 0;">✦ ❧ ✦</div>
+
+  <!-- France -->
+  <section class="country-hero country-hero--france">
+    <div class="country-hero__wash">
+      <h2 class="country-hero__name">France</h2>
+      <p class="country-hero__tagline">joie de vivre</p>
+      <p class="country-hero__ornament">✦ ❧ ✦</p>
+    </div>
+    <div class="country-hero__content">
+      <div class="country-hero__section">
+        <p class="country-hero__label">Architecture</p>
+        <p class="country-hero__text">From the flying buttresses of Notre-Dame to Haussmann's grand boulevards, French architecture is ambition in stone. Each era — Gothic, Baroque, Art Deco — builds upon the last, layering centuries of national identity.</p>
+      </div>
+      <div class="country-hero__section">
+        <p class="country-hero__label">Cuisine</p>
+        <p class="country-hero__text">The birthplace of haute cuisine. Morning croissants, the sacred lunch hour, perfectly sauced evening entrées. French cooking is philosophy on a plate — technique, terroir, and tradition intertwined.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider">❧</div>
+
+  <!-- Italy -->
+  <section class="country-hero country-hero--italy">
+    <div class="country-hero__wash">
+      <h2 class="country-hero__name">Italy</h2>
+      <p class="country-hero__tagline">la dolce vita</p>
+      <p class="country-hero__ornament">✦ ❧ ✦</p>
+    </div>
+    <div class="country-hero__content">
+      <div class="country-hero__section">
+        <p class="country-hero__label">Architecture</p>
+        <p class="country-hero__text">The Colosseum taught the world the arch. Brunelleschi's dome defied physics. Palladio's villas became the template for elegance across continents. Italian architecture is the West's founding grammar.</p>
+      </div>
+      <div class="country-hero__section">
+        <p class="country-hero__label">Cuisine</p>
+        <p class="country-hero__text">Simplicity as philosophy: three perfect ingredients, treated with reverence. Each region is a republic of flavor — Naples' margherita, Bologna's ragù, Sicily's sweet-sour caponata.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider">❧</div>
+
+  <!-- Spain -->
+  <section class="country-hero country-hero--spain">
+    <div class="country-hero__wash">
+      <h2 class="country-hero__name">Spain</h2>
+      <p class="country-hero__tagline">pasión y vida</p>
+      <p class="country-hero__ornament">✦ ❧ ✦</p>
+    </div>
+    <div class="country-hero__content">
+      <div class="country-hero__section">
+        <p class="country-hero__label">Architecture</p>
+        <p class="country-hero__text">The Alhambra drips with muqarnas honey. Gaudí's Sagrada Família spirals toward heaven. White Andalusian pueblos cascade down sunlit hills. Spain builds at the frontier of imagination.</p>
+      </div>
+      <div class="country-hero__section">
+        <p class="country-hero__label">Cuisine</p>
+        <p class="country-hero__text">Tapas arriving in waves at midnight — patatas bravas, jamón ibérico, gambas al ajillo. Spanish food is communal theater, each plate a cue for conversation and another glass of Rioja.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider">❧</div>
+
+  <!-- Germany -->
+  <section class="country-hero country-hero--germany">
+    <div class="country-hero__wash">
+      <h2 class="country-hero__name">Germany</h2>
+      <p class="country-hero__tagline">Gemütlichkeit</p>
+      <p class="country-hero__ornament">✦ ❧ ✦</p>
+    </div>
+    <div class="country-hero__content">
+      <div class="country-hero__section">
+        <p class="country-hero__label">Architecture</p>
+        <p class="country-hero__text">Neuschwanstein is pure fairy-tale; the Bauhaus is pure function. Between these poles lies Berlin's rebuilt landscape — history's scars and tomorrow's ambition standing shoulder to shoulder.</p>
+      </div>
+      <div class="country-hero__section">
+        <p class="country-hero__label">Cuisine</p>
+        <p class="country-hero__text">Hearty, honest, proudly regional. A Bavarian biergarten's weisswurst and pretzel, Hamburg's fischbrötchen, Black Forest cake. Good food needs no pretension — only quality and generous portions.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider">❧</div>
+
+  <!-- UK -->
+  <section class="country-hero country-hero--uk">
+    <div class="country-hero__wash">
+      <h2 class="country-hero__name">United Kingdom</h2>
+      <p class="country-hero__tagline">keep calm, carry on</p>
+      <p class="country-hero__ornament">✦ ❧ ✦</p>
+    </div>
+    <div class="country-hero__content">
+      <div class="country-hero__section">
+        <p class="country-hero__label">Architecture</p>
+        <p class="country-hero__text">Tudor half-timber, Wren's domes, Victorian train stations of iron and glass. The UK builds with understatement concealing brilliance — then occasionally throws in a Gherkin or a Shard.</p>
+      </div>
+      <div class="country-hero__section">
+        <p class="country-hero__label">Cuisine</p>
+        <p class="country-hero__text">The Sunday roast is secular ritual. Afternoon tea is performance art. Fish and chips by the sea is pure comfort. British food thrives — enriched by global connection and fearless new chefs.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider">❧</div>
+
+  <!-- Greece -->
+  <section class="country-hero country-hero--greece">
+    <div class="country-hero__wash">
+      <h2 class="country-hero__name">Greece</h2>
+      <p class="country-hero__tagline">φιλοξενία</p>
+      <p class="country-hero__ornament">✦ ❧ ✦</p>
+    </div>
+    <div class="country-hero__content">
+      <div class="country-hero__section">
+        <p class="country-hero__label">Architecture</p>
+        <p class="country-hero__text">The Parthenon stands as the West's founding statement — proportion, harmony, light. Cycladic whitewash against Aegean blue achieves the same perfection through simplicity centuries later.</p>
+      </div>
+      <div class="country-hero__section">
+        <p class="country-hero__label">Cuisine</p>
+        <p class="country-hero__text">Olive oil is liquid gold, feta crumbles over everything, grilled fish arrives minutes from the sea. Every meal is an invitation — the table is always set for one more guest.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="ornament" style="padding: 0 0 24px;">❧</div>
+    <p class="closing__text">"Europe was created by history. America was created by philosophy."</p>
+    <p class="closing__attr">— Margaret Thatcher</p>
+  </section>
+
+  <footer class="footer">
+    <p>European Cultural Mosaic · v15 Hero Sections + Watercolor · <a href="../index.html">← Gallery</a></p>
+  </footer>
+
+</body>
+</html>
