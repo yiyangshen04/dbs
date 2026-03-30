@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v10 — Swiss Grid + Vintage Color · European Cultural Mosaic</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --mustard: #d4a84b;
+      --teal: #2a7f62;
+      --burnt: #c75a3a;
+      --navy: #1a3a5c;
+      --wine: #8b2346;
+      --sky: #5b99b0;
+      --cream: #faf5eb;
+      --black: #1a1a1a;
+      --gray: #777;
+      --rule: #e0dbd2;
+    }
+
+    body {
+      font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--cream);
+      color: var(--black);
+      line-height: 1.55;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.75rem;
+      color: var(--gray);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 48px 0 0;
+    }
+    .back-link:hover { color: var(--burnt); }
+
+    /* Header */
+    .header {
+      padding: 24px 0 40px;
+      border-bottom: 3px solid var(--black);
+    }
+
+    .header__title {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+    }
+
+    .header__subtitle {
+      font-size: 1rem;
+      color: var(--gray);
+      margin-top: 8px;
+    }
+
+    /* Country Grid — Swiss grid with warm color headers */
+    .country-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border: 1px solid var(--rule);
+      margin-top: 40px;
+    }
+
+    .country-card {
+      border: 1px solid var(--rule);
+    }
+
+    .country-card__header {
+      padding: 28px 24px;
+      color: #fff;
+    }
+
+    .country-card__name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .country-card__native {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    .country-card__body { padding: 24px; }
+
+    .country-card__section { margin-bottom: 16px; }
+    .country-card__section:last-child { margin-bottom: 0; }
+
+    .country-card__label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .country-card__text {
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    /* Country Colors */
+    .country-card--france .country-card__header { background: var(--navy); }
+    .country-card--france .country-card__label { color: var(--navy); }
+
+    .country-card--italy .country-card__header { background: var(--burnt); }
+    .country-card--italy .country-card__label { color: var(--burnt); }
+
+    .country-card--spain .country-card__header { background: var(--wine); }
+    .country-card--spain .country-card__label { color: var(--wine); }
+
+    .country-card--germany .country-card__header { background: var(--mustard); color: var(--black); }
+    .country-card--germany .country-card__label { color: #8b7a2e; }
+
+    .country-card--uk .country-card__header { background: var(--teal); }
+    .country-card--uk .country-card__label { color: var(--teal); }
+
+    .country-card--greece .country-card__header { background: var(--sky); }
+    .country-card--greece .country-card__label { color: var(--sky); }
+
+    /* Comparison Table */
+    .comparison {
+      margin-top: 48px;
+      padding: 40px 0;
+      border-top: 3px solid var(--black);
+    }
+
+    .comparison__title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+
+    th {
+      text-align: left;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray);
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--black);
+      font-weight: 600;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    td:first-child { font-weight: 700; }
+
+    tr:hover td { background: rgba(212,168,75,0.06); }
+
+    /* Footer */
+    .footer {
+      padding: 40px 0;
+      border-top: 3px solid var(--black);
+      font-size: 0.75rem;
+      color: var(--gray);
+      display: flex;
+      justify-content: space-between;
+      margin-top: 48px;
+    }
+
+    .footer a { color: var(--gray); text-decoration: none; }
+    .footer a:hover { color: var(--burnt); }
+
+    @media (max-width: 900px) { .country-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) {
+      .container { padding: 0 20px; }
+      .country-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../index.html" class="back-link">← Back to Gallery</a>
+
+    <header class="header">
+      <h1 class="header__title">European Cultural Mosaic</h1>
+      <p class="header__subtitle">Six nations compared — architecture, cuisine, and the stories between them.</p>
+    </header>
+
+    <div class="country-grid">
+      <div class="country-card country-card--france">
+        <div class="country-card__header">
+          <h2 class="country-card__name">France</h2>
+          <p class="country-card__native">République Française</p>
+        </div>
+        <div class="country-card__body">
+          <div class="country-card__section">
+            <p class="country-card__label">Architecture</p>
+            <p class="country-card__text">Gothic cathedrals, Haussmann's boulevards, and the Eiffel Tower — French architecture blends monumental ambition with elegant urban planning.</p>
+          </div>
+          <div class="country-card__section">
+            <p class="country-card__label">Cuisine</p>
+            <p class="country-card__text">Haute cuisine and countryside terroir. Croissants, coq au vin, and crème brûlée — food as an art form protected by tradition.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="country-card country-card--italy">
+        <div class="country-card__header">
+          <h2 class="country-card__name">Italy</h2>
+          <p class="country-card__native">Repubblica Italiana</p>
+        </div>
+        <div class="country-card__body">
+          <div class="country-card__section">
+            <p class="country-card__label">Architecture</p>
+            <p class="country-card__text">Roman ruins, Renaissance domes, and Venetian palazzos. The Colosseum and Brunelleschi's dome shaped the Western architectural canon.</p>
+          </div>
+          <div class="country-card__section">
+            <p class="country-card__label">Cuisine</p>
+            <p class="country-card__text">Regional perfection: Neapolitan pizza, Bolognese ragù, Sicilian arancini. Simplicity and ingredient quality above all.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="country-card country-card--spain">
+        <div class="country-card__header">
+          <h2 class="country-card__name">Spain</h2>
+          <p class="country-card__native">Reino de España</p>
+        </div>
+        <div class="country-card__body">
+          <div class="country-card__section">
+            <p class="country-card__label">Architecture</p>
+            <p class="country-card__text">Moorish Alhambra, Gaudí's fantasies, white Andalusian villages. Spanish architecture spans Moorish precision to organic Modernisme.</p>
+          </div>
+          <div class="country-card__section">
+            <p class="country-card__label">Cuisine</p>
+            <p class="country-card__text">Tapas culture, paella, jamón ibérico. Dining is social — small plates shared late into the warm evening with wine.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="country-card country-card--germany">
+        <div class="country-card__header">
+          <h2 class="country-card__name">Germany</h2>
+          <p class="country-card__native">Bundesrepublik Deutschland</p>
+        </div>
+        <div class="country-card__body">
+          <div class="country-card__section">
+            <p class="country-card__label">Architecture</p>
+            <p class="country-card__text">Romanesque churches, Baroque palaces, Bauhaus modernism. From fairy-tale castles to Berlin's raw, rebuilt cityscape.</p>
+          </div>
+          <div class="country-card__section">
+            <p class="country-card__label">Cuisine</p>
+            <p class="country-card__text">Hearty and regional: Bavarian pretzels, Rhineland sauerbraten, Black Forest cake. Beer culture with 1,500+ breweries.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="country-card country-card--uk">
+        <div class="country-card__header">
+          <h2 class="country-card__name">United Kingdom</h2>
+          <p class="country-card__native">The United Kingdom</p>
+        </div>
+        <div class="country-card__body">
+          <div class="country-card__section">
+            <p class="country-card__label">Architecture</p>
+            <p class="country-card__text">Tudor half-timber, Georgian symmetry, Victorian iron and glass, and modern icons like the Gherkin and the Shard.</p>
+          </div>
+          <div class="country-card__section">
+            <p class="country-card__label">Cuisine</p>
+            <p class="country-card__text">Fish and chips, Sunday roast, afternoon tea. Comfort, tradition, and an increasingly vibrant multicultural food scene.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="country-card country-card--greece">
+        <div class="country-card__header">
+          <h2 class="country-card__name">Greece</h2>
+          <p class="country-card__native">Ελληνική Δημοκρατία</p>
+        </div>
+        <div class="country-card__body">
+          <div class="country-card__section">
+            <p class="country-card__label">Architecture</p>
+            <p class="country-card__text">Doric columns, white-washed Cycladic villages, Byzantine churches. The Parthenon remains the ultimate Western architectural symbol.</p>
+          </div>
+          <div class="country-card__section">
+            <p class="country-card__label">Cuisine</p>
+            <p class="country-card__text">Mediterranean simplicity: olive oil, feta, grilled fish, moussaka. Greek food is sun-soaked and shared generously.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="comparison">
+      <h2 class="comparison__title">At a Glance</h2>
+      <table>
+        <thead>
+          <tr><th>Country</th><th>Key Style</th><th>Signature Dish</th><th>Art Movement</th><th>Spirit</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>France</td><td>Gothic · Haussmann</td><td>Coq au Vin</td><td>Impressionism</td><td>Joie de vivre</td></tr>
+          <tr><td>Italy</td><td>Renaissance · Baroque</td><td>Pasta al Ragù</td><td>Renaissance</td><td>La dolce vita</td></tr>
+          <tr><td>Spain</td><td>Moorish · Modernisme</td><td>Paella</td><td>Surrealism</td><td>Pasión</td></tr>
+          <tr><td>Germany</td><td>Bauhaus · Romantic</td><td>Schweinshaxe</td><td>Expressionism</td><td>Gemütlichkeit</td></tr>
+          <tr><td>UK</td><td>Tudor · Victorian</td><td>Sunday Roast</td><td>Pre-Raphaelite</td><td>Keep calm</td></tr>
+          <tr><td>Greece</td><td>Classical · Cycladic</td><td>Moussaka</td><td>Classical</td><td>Philoxenia</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="footer">
+      <span>European Cultural Mosaic · v10 Swiss Grid + Vintage Color</span>
+      <a href="../index.html">← Gallery</a>
+    </footer>
+  </div>
+</body>
+</html>
