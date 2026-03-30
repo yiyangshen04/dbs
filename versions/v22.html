@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en" id="top">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v22 — Responsive Design · European Cultural Mosaic</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ===== CSS Custom Properties ===== */
+    :root {
+      --gold: #c9a84c;
+      --green: #2d5a3d;
+      --cream: #f5f0e8;
+      --warm-white: #faf8f3;
+      --brown: #5c4a32;
+      --france: #c9b8db;
+      --italy: #d4845a;
+      --spain: #d4727a;
+      --germany: #7ba07a;
+      --uk: #6a8caa;
+      --greece: #6aadcc;
+      --font-heading: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Lora', Georgia, serif;
+    }
+
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--warm-white);
+      color: var(--brown);
+      line-height: 1.7;
+      min-height: 100vh;
+      font-size: clamp(15px, 1vw, 16px);
+    }
+
+    /* ===== Sticky Navigation ===== */
+    .sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(245, 240, 232, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--gold);
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .sticky-nav__title {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--brown);
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    .sticky-nav__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .sticky-nav__link {
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      text-decoration: none;
+      color: var(--brown);
+      padding: 0.2rem 0.65rem;
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      transition: background 0.3s, color 0.3s;
+      white-space: nowrap;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .sticky-nav__link:hover {
+      background: var(--gold);
+      color: var(--warm-white);
+    }
+
+    /* ===== Back Link ===== */
+    .back-link {
+      display: inline-block;
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      color: var(--gold);
+      text-decoration: none;
+      padding: 1.2rem 2rem;
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+      min-height: 44px;
+    }
+    .back-link:hover { color: var(--brown); }
+
+    /* ===== Hero Section ===== */
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem 3.5rem;
+      background: linear-gradient(180deg, var(--cream) 0%, var(--warm-white) 100%);
+      border-bottom: 3px double var(--gold);
+    }
+
+    .hero__ornament {
+      font-size: 1.8rem;
+      color: var(--gold);
+      letter-spacing: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--brown);
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .hero__subtitle {
+      font-family: var(--font-heading);
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero__version {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--brown);
+      opacity: 0.6;
+    }
+
+    /* ===== Main Content ===== */
+    .main-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2.5rem 3rem;
+    }
+
+    /* ===== Region Group Header ===== */
+    .region-header {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      margin-top: 1rem;
+    }
+
+    .region-header__ornament {
+      font-size: 1.2rem;
+      color: var(--gold);
+      letter-spacing: 0.4rem;
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+
+    .region-header h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.4rem, 3.5vw, 2rem);
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .region-header__line {
+      width: 120px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0.8rem auto 0;
+    }
+
+    /* ===== Country Section ===== */
+    .country-section {
+      margin-bottom: 3.5rem;
+      scroll-margin-top: 4rem;
+    }
+
+    .country-header {
+      text-align: center;
+      padding: 2.5rem 1rem 1.5rem;
+    }
+
+    .country-header h3 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.6rem, 4vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      line-height: 1.2;
+    }
+
+    .country-header__tagline {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--gold);
+    }
+
+    /* Country accent color titles */
+    .country-section--france .country-header h3 { color: var(--france); }
+    .country-section--italy .country-header h3 { color: var(--italy); }
+    .country-section--spain .country-header h3 { color: var(--spain); }
+    .country-section--germany .country-header h3 { color: var(--germany); }
+    .country-section--uk .country-header h3 { color: var(--uk); }
+    .country-section--greece .country-header h3 { color: var(--greece); }
+
+    /* ===== Country Image (with v21 hover zoom) ===== */
+    .country-image-wrapper {
+      overflow: hidden;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+    }
+
+    .country-image {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .country-image:hover {
+      transform: scale(1.05);
+    }
+
+    /* ===== Drop Cap ===== */
+    .drop-cap::first-letter {
+      float: left;
+      font-family: var(--font-heading);
+      font-size: 3.4rem;
+      line-height: 0.85;
+      font-weight: 700;
+      color: var(--gold);
+      padding-right: 0.12em;
+      margin-top: 0.05em;
+    }
+
+    /* ===== Content Paragraphs ===== */
+    .country-content p {
+      margin-bottom: 1.2rem;
+      text-align: justify;
+    }
+
+    .country-content h4 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.1rem, 2vw, 1.3rem);
+      font-weight: 600;
+      color: var(--green);
+      margin: 1.8rem 0 0.8rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--gold);
+    }
+
+    /* ===== Pull Quote ===== */
+    .pull-quote {
+      margin: 2rem 1rem;
+      padding: 1.5rem 2rem;
+      border-left: 4px solid var(--gold);
+      border-right: 4px solid var(--gold);
+      text-align: center;
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--green);
+      background: var(--cream);
+      border-radius: 2px;
+    }
+
+    .pull-quote cite {
+      display: block;
+      font-size: 0.85rem;
+      font-style: normal;
+      color: var(--gold);
+      margin-top: 0.5rem;
+    }
+
+    /* ===== Art Movement Cards (with v21 lift effect) ===== */
+    .art-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .art-card {
+      display: inline-block;
+      background: var(--cream);
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      margin: 0.3rem 0.2rem;
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      color: var(--brown);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .art-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(92, 74, 50, 0.15);
+    }
+
+    /* ===== Landmarks (with v21 glow effect) ===== */
+    .landmarks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .landmark-tag {
+      background: var(--warm-white);
+      border: 1px solid var(--gold);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      color: var(--brown);
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .landmark-tag:hover {
+      box-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
+      border-color: var(--gold);
+    }
+
+    /* ===== Key Facts Aside ===== */
+    .key-facts {
+      background: var(--cream);
+      border: 2px solid var(--gold);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .key-facts__title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.7rem;
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+
+    .key-facts dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.3rem 1rem;
+    }
+
+    .key-facts dt {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--green);
+    }
+
+    .key-facts dd {
+      font-size: 0.9rem;
+    }
+
+    /* ===== Expandable Details (with v21 smooth transitions) ===== */
+    details {
+      margin: 1.2rem 0;
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+
+    details:hover {
+      border-color: var(--brown);
+    }
+
+    summary {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--brown);
+      padding: 0.8rem 1.2rem;
+      background: var(--cream);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 44px;
+      transition: background 0.3s ease;
+    }
+
+    summary:hover {
+      background: var(--warm-white);
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    summary::before {
+      content: '\2767';
+      color: var(--gold);
+      font-size: 1rem;
+    }
+
+    summary::after {
+      content: '\25B8';
+      margin-left: auto;
+      color: var(--gold);
+      transition: transform 0.3s;
+    }
+
+    details[open] summary::after {
+      transform: rotate(90deg);
+    }
+
+    details .details-content {
+      padding: 1rem 1.2rem;
+      background: var(--warm-white);
+    }
+
+    details .details-content p {
+      margin-bottom: 0.8rem;
+      text-align: justify;
+    }
+
+    details .details-content ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    details .details-content ul li {
+      padding: 0.4rem 0;
+      border-bottom: 1px dotted var(--gold);
+      font-size: 0.95rem;
+    }
+
+    details .details-content ul li:last-child {
+      border-bottom: none;
+    }
+
+    details .details-content ul li::before {
+      content: '\2726 ';
+      color: var(--gold);
+    }
+
+    /* ===== Ornamental Divider ===== */
+    .ornamental-divider {
+      text-align: center;
+      margin: 2.5rem 0;
+      font-size: 1.2rem;
+      color: var(--gold);
+      letter-spacing: 0.5rem;
+    }
+
+    /* ===== Back to Top ===== */
+    .back-to-top {
+      text-align: center;
+      padding: 2.5rem 1rem 3rem;
+    }
+
+    .back-to-top a {
+      display: inline-block;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      color: var(--brown);
+      text-decoration: none;
+      border: 2px solid var(--gold);
+      padding: 0.6rem 2rem;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+      transition: background 0.3s, color 0.3s;
+      min-height: 44px;
+    }
+
+    .back-to-top a:hover {
+      background: var(--gold);
+      color: var(--warm-white);
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 3px double var(--gold);
+      background: var(--cream);
+    }
+
+    .footer__ornament {
+      font-size: 1.2rem;
+      color: var(--gold);
+      letter-spacing: 0.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer p {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      color: var(--brown);
+      opacity: 0.7;
+    }
+
+    /* ===================================================================
+       RESPONSIVE BREAKPOINTS
+       =================================================================== */
+
+    /* ===== Tablet: max-width 1024px ===== */
+    @media (max-width: 1024px) {
+      .sticky-nav {
+        padding: 0.5rem 1rem;
+      }
+
+      .sticky-nav__link {
+        font-size: 0.75rem;
+        padding: 0.18rem 0.55rem;
+      }
+
+      .main-content {
+        padding: 0 1.5rem 3rem;
+      }
+
+      .country-image {
+        height: 240px;
+      }
+
+      .hero {
+        padding: 3.5rem 1.5rem 3rem;
+      }
+    }
+
+    /* ===== Mobile: max-width 768px ===== */
+    @media (max-width: 768px) {
+      body {
+        font-size: 15px;
+      }
+
+      .sticky-nav {
+        flex-direction: column;
+        padding: 0.5rem 1rem;
+        gap: 0.4rem;
+      }
+
+      .sticky-nav__title {
+        display: none;
+      }
+
+      .sticky-nav__links {
+        justify-content: center;
+        gap: 0.3rem;
+      }
+
+      .sticky-nav__link {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+        min-height: 44px;
+      }
+
+      .back-link {
+        padding: 1rem 1.25rem;
+      }
+
+      .hero {
+        padding: 3rem 1.25rem 2.5rem;
+      }
+
+      .main-content {
+        padding: 0 1.25rem 2rem;
+      }
+
+      .country-image {
+        height: auto;
+        max-height: 400px;
+      }
+
+      .country-header {
+        padding: 2rem 0.5rem 1rem;
+      }
+
+      .pull-quote {
+        margin: 1.5rem 0;
+        padding: 1rem 1.2rem;
+        font-size: 1.05rem;
+      }
+
+      .key-facts {
+        width: 100%;
+        margin: 1.5rem 0;
+        float: none;
+      }
+
+      .key-facts dl {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+      }
+
+      .key-facts dt {
+        margin-top: 0.3rem;
+      }
+
+      .landmarks {
+        gap: 0.4rem;
+      }
+
+      .ornamental-divider {
+        margin: 2rem 0;
+      }
+
+      .region-header {
+        padding: 2rem 0.5rem 1.5rem;
+      }
+
+      .country-content p {
+        text-align: left;
+      }
+
+      details .details-content p {
+        text-align: left;
+      }
+    }
+
+    /* ===== Small Mobile: max-width 480px ===== */
+    @media (max-width: 480px) {
+      body {
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .sticky-nav {
+        padding: 0.4rem 0.5rem;
+      }
+
+      .sticky-nav__links {
+        gap: 0.25rem;
+      }
+
+      .sticky-nav__link {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+        min-height: 44px;
+      }
+
+      .back-link {
+        padding: 0.8rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      .hero {
+        padding: 2rem 1rem 2rem;
+      }
+
+      .hero__ornament {
+        font-size: 1.4rem;
+        letter-spacing: 0.3rem;
+      }
+
+      .main-content {
+        padding: 0 1rem 1.5rem;
+      }
+
+      .country-header h3 {
+        font-size: clamp(1.4rem, 6vw, 1.8rem);
+      }
+
+      .country-header__tagline {
+        font-size: 0.9rem;
+      }
+
+      .country-image {
+        height: auto;
+      }
+
+      .drop-cap::first-letter {
+        font-size: 2.6rem;
+      }
+
+      .pull-quote {
+        margin: 1rem 0;
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+      }
+
+      .art-card {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+      }
+
+      .landmark-tag {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.7rem;
+      }
+
+      summary {
+        font-size: 0.95rem;
+        padding: 0.7rem 1rem;
+      }
+
+      details .details-content {
+        padding: 0.8rem 1rem;
+      }
+
+      details .details-content ul li {
+        font-size: 0.88rem;
+      }
+
+      .key-facts {
+        padding: 1rem;
+      }
+
+      .key-facts__title {
+        font-size: 1rem;
+      }
+
+      .key-facts dt,
+      .key-facts dd {
+        font-size: 0.85rem;
+      }
+
+      .footer {
+        padding: 1.5rem 1rem;
+      }
+
+      .footer p {
+        font-size: 0.8rem;
+      }
+
+      .ornamental-divider {
+        margin: 1.5rem 0;
+        font-size: 1rem;
+      }
+
+      .back-to-top a {
+        font-size: 0.9rem;
+        padding: 0.5rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Navigation -->
+  <nav class="sticky-nav">
+    <span class="sticky-nav__title">European Cultural Mosaic</span>
+    <div class="sticky-nav__links">
+      <a href="#france" class="sticky-nav__link">&#10087; France</a>
+      <a href="#germany" class="sticky-nav__link">&#10087; Germany</a>
+      <a href="#uk" class="sticky-nav__link">&#10087; United Kingdom</a>
+      <a href="#italy" class="sticky-nav__link">&#10087; Italy</a>
+      <a href="#spain" class="sticky-nav__link">&#10087; Spain</a>
+      <a href="#greece" class="sticky-nav__link">&#10087; Greece</a>
+    </div>
+  </nav>
+
+  <!-- Back Link -->
+  <a href="../index.html" class="back-link">&larr; Back to Gallery</a>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero__ornament">&#10087; &#10022; &#10087;</div>
+    <h1>European Cultural Mosaic</h1>
+    <p class="hero__subtitle">Responsive Design</p>
+    <p class="hero__version">Version 22 &middot; The Converging Phase &mdash; Responsive</p>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ============================== -->
+    <!-- WESTERN & CENTRAL EUROPE       -->
+    <!-- ============================== -->
+    <div class="region-header">
+      <span class="region-header__ornament">&#10087; &#10022; &#10087;</span>
+      <h2>Western &amp; Central Europe</h2>
+      <div class="region-header__line"></div>
+    </div>
+
+    <!-- ===== FRANCE ===== -->
+    <section id="france" class="country-section country-section--france">
+      <div class="country-header">
+        <h3>France</h3>
+        <p class="country-header__tagline">Elegance in Every Stone</p>
+      </div>
+
+      <div class="country-image-wrapper">
+        <img
+          src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=900&h=500&fit=crop"
+          alt="Eiffel Tower and Parisian skyline at dusk"
+          class="country-image"
+          loading="lazy"
+        >
+      </div>
+
+      <div class="country-content">
+        <h4>Architecture</h4>
+        <p class="drop-cap">France's architectural heritage is a grand narrative that spans from the soaring Gothic cathedrals of the medieval era to the bold iron lattice of the Eiffel Tower. Parisian boulevards, conceived during Haussmann's sweeping redesign of the city, create dramatic vistas that draw the eye toward monuments both ancient and modern. In the Loire Valley, Renaissance chateaux blend Italian grace with French grandeur, their formal gardens extending geometry into the landscape itself. From the Romanesque abbeys of Burgundy to the luminous stained glass of Chartres, every region contributes a chapter to this architectural story.</p>
+
+        <h4>Cuisine</h4>
+        <p>French cuisine remains a global benchmark, elevated by centuries of refinement and regional diversity. In Lyon, the bouchon tradition preserves hearty fare&mdash;quenelles, andouillette, and praline tarts&mdash;while Provence offers a sun-drenched palette of ratatouille, bouillabaisse, and tapenade. The art of patisserie reaches its zenith in Paris, where croissants, macarons, and mille-feuille are crafted with mathematical precision. Wine, cheese, and bread form the holy trinity of the French table, each with its own appellation and ritual.</p>
+
+        <div class="pull-quote">
+          "In France, cooking is a serious art form and a national sport."
+          <cite>&mdash; Julia Child</cite>
+        </div>
+
+        <details>
+          <summary>Art &amp; Lifestyle</summary>
+          <div class="details-content">
+            <p>France has been the crucible of Western art for centuries. The Impressionist revolution, born on the banks of the Seine, shattered academic convention and paved the way for modern art. From Monet's water lilies to Rodin's muscular bronzes, French artists have continually redefined beauty. The concept of fl&acirc;nerie&mdash;the art of leisurely wandering&mdash;captures the French approach to life: observant, unhurried, and deeply attuned to pleasure. Cafe culture, literary salons, and the philosophy of joie de vivre permeate daily existence.</p>
+            <div class="art-cards">
+              <span class="art-card">Impressionism</span>
+              <span class="art-card">Post-Impressionism</span>
+              <span class="art-card">Art Nouveau</span>
+              <span class="art-card">Fauvism</span>
+              <span class="art-card">Rococo</span>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Cuisine Highlights</summary>
+          <div class="details-content">
+            <ul>
+              <li>Croissants and pain au chocolat &mdash; buttery, flaky morning rituals</li>
+              <li>Coq au vin &mdash; chicken braised in Burgundy wine</li>
+              <li>Bouillabaisse &mdash; Proven&ccedil;al saffron fish stew from Marseille</li>
+              <li>Cr&egrave;me br&ucirc;l&eacute;e &mdash; custard with a caramelized sugar crust</li>
+              <li>Ratatouille &mdash; summer vegetable medley from Nice</li>
+              <li>Fromage &mdash; over 400 varieties of artisanal cheese</li>
+            </ul>
+          </div>
+        </details>
+
+        <aside class="key-facts">
+          <p class="key-facts__title">&#10022; Key Facts &#10022;</p>
+          <dl>
+            <dt>Capital</dt><dd>Paris</dd>
+            <dt>Population</dt><dd>~67 million</dd>
+            <dt>Language</dt><dd>French</dd>
+            <dt>UNESCO Sites</dt><dd>49+</dd>
+            <dt>Known For</dt><dd>Wine, haute couture, philosophy</dd>
+          </dl>
+        </aside>
+
+        <h4>Landmarks</h4>
+        <div class="landmarks">
+          <span class="landmark-tag">Eiffel Tower</span>
+          <span class="landmark-tag">Notre-Dame</span>
+          <span class="landmark-tag">Mont Saint-Michel</span>
+          <span class="landmark-tag">Palace of Versailles</span>
+          <span class="landmark-tag">Ch&acirc;teau de Chambord</span>
+          <span class="landmark-tag">Chartres Cathedral</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="ornamental-divider">&#10087; &#10022; &#10087;</div>
+
+    <!-- ===== GERMANY ===== -->
+    <section id="germany" class="country-section country-section--germany">
+      <div class="country-header">
+        <h3>Germany</h3>
+        <p class="country-header__tagline">Precision Meets Romanticism</p>
+      </div>
+
+      <div class="country-image-wrapper">
+        <img
+          src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=900&h=500&fit=crop"
+          alt="Colorful buildings along a German riverside"
+          class="country-image"
+          loading="lazy"
+        >
+      </div>
+
+      <div class="country-content">
+        <h4>Architecture</h4>
+        <p class="drop-cap">Germany's architectural landscape tells a story of reinvention, from the half-timbered houses of the Romantic Road to the radical transparency of modern Berlin. The Gothic majesty of Cologne Cathedral, with its twin spires piercing the Rhineland sky, stands as a testament to seven centuries of dedication. Bauhaus, born in Weimar and flourishing in Dessau, revolutionized design by marrying form to function with uncompromising clarity. In the post-war era, Germany rebuilt its cities with a blend of careful restoration and audacious modernism, nowhere more dramatically than in the Reichstag's glass dome.</p>
+
+        <h4>Cuisine</h4>
+        <p>German cuisine is far richer than its stereotypes suggest, embracing a diversity that ranges from Bavarian heartiness to Rhineland sophistication. The tradition of bread-making reaches extraordinary heights, with over 3,000 registered varieties of Brot filling bakery shelves each morning. Sausages&mdash;bratwurst, currywurst, weisswurst&mdash;are regional institutions, each town fiercely proud of its own recipe. From Swabian Sp&auml;tzle to Black Forest cake, from Riesling wines to the monastic brewing traditions that gave the world lager, German food culture rewards exploration.</p>
+
+        <div class="pull-quote">
+          "Germany is a country of poets and thinkers &mdash; and bakers."
+          <cite>&mdash; Traditional Saying</cite>
+        </div>
+
+        <details>
+          <summary>Art &amp; Lifestyle</summary>
+          <div class="details-content">
+            <p>Germany's cultural contributions span from the soaring music of Bach and Beethoven to the radical visions of Expressionism and Bauhaus. The German Romantic tradition&mdash;Caspar David Friedrich's lonely wanderers gazing into infinite landscapes&mdash;profoundly shaped European aesthetics. Today, Berlin pulses as one of Europe's great creative capitals, its galleries, clubs, and studios attracting artists from around the world. The German love of Wanderlust, of purposeful journeying through nature, reflects a deep philosophical engagement with the world beyond the city.</p>
+            <div class="art-cards">
+              <span class="art-card">Bauhaus</span>
+              <span class="art-card">Expressionism</span>
+              <span class="art-card">Romanticism</span>
+              <span class="art-card">Dada</span>
+              <span class="art-card">New Objectivity</span>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Cuisine Highlights</summary>
+          <div class="details-content">
+            <ul>
+              <li>Bratwurst &mdash; grilled sausage with regional variations</li>
+              <li>Sauerbraten &mdash; pot roast marinated in vinegar and spices</li>
+              <li>Sp&auml;tzle &mdash; Swabian egg noodles, often with cheese</li>
+              <li>Brezel &mdash; soft pretzels with coarse salt</li>
+              <li>Schwarzw&auml;lder Kirschtorte &mdash; Black Forest cherry cake</li>
+              <li>Kartoffelsalat &mdash; potato salad, warm or cold by region</li>
+            </ul>
+          </div>
+        </details>
+
+        <aside class="key-facts">
+          <p class="key-facts__title">&#10022; Key Facts &#10022;</p>
+          <dl>
+            <dt>Capital</dt><dd>Berlin</dd>
+            <dt>Population</dt><dd>~83 million</dd>
+            <dt>Language</dt><dd>German</dd>
+            <dt>UNESCO Sites</dt><dd>51+</dd>
+            <dt>Known For</dt><dd>Engineering, music, philosophy</dd>
+          </dl>
+        </aside>
+
+        <h4>Landmarks</h4>
+        <div class="landmarks">
+          <span class="landmark-tag">Brandenburg Gate</span>
+          <span class="landmark-tag">Neuschwanstein Castle</span>
+          <span class="landmark-tag">Cologne Cathedral</span>
+          <span class="landmark-tag">Reichstag Building</span>
+          <span class="landmark-tag">Heidelberg Castle</span>
+          <span class="landmark-tag">Bauhaus Dessau</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="ornamental-divider">&#10087; &#10022; &#10087;</div>
+
+    <!-- ===== UNITED KINGDOM ===== -->
+    <section id="uk" class="country-section country-section--uk">
+      <div class="country-header">
+        <h3>United Kingdom</h3>
+        <p class="country-header__tagline">Tradition Anchored in Innovation</p>
+      </div>
+
+      <div class="country-image-wrapper">
+        <img
+          src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=900&h=500&fit=crop"
+          alt="London skyline with Tower Bridge at twilight"
+          class="country-image"
+          loading="lazy"
+        >
+      </div>
+
+      <div class="country-content">
+        <h4>Architecture</h4>
+        <p class="drop-cap">The United Kingdom's built environment reads like a chronicle of power, faith, and invention. Norman castles still command hilltops from the Welsh Marches to the Scottish Highlands, their thick walls a reminder of conquest and consolidation. The Perpendicular Gothic of Westminster Abbey and King's College Chapel represents English craftsmanship at its most refined, fan vaults spreading like stone branches overhead. Georgian Bath and Victorian London each established canons of urban design that spread across an empire. Today, landmarks like the Shard and the Gherkin prove that Britain's architectural ambition endures.</p>
+
+        <h4>Cuisine</h4>
+        <p>British cuisine, long the subject of continental humor, has undergone a remarkable renaissance. The Sunday roast remains a sacred institution&mdash;golden Yorkshire puddings, burnished meats, and a careful hierarchy of vegetables. Fish and chips, wrapped in paper and eaten by the sea, is elevated street food at its most democratic. Scotland contributes smoky whisky and haggis, Wales offers lamb and laverbread, and Cornwall's pasties are handheld meals of satisfying perfection. The afternoon tea tradition&mdash;scones, clotted cream, finger sandwiches&mdash;transforms eating into ceremony.</p>
+
+        <div class="pull-quote">
+          "There is no sincerer love than the love of food."
+          <cite>&mdash; George Bernard Shaw</cite>
+        </div>
+
+        <details>
+          <summary>Art &amp; Lifestyle</summary>
+          <div class="details-content">
+            <p>Britain's artistic legacy encompasses Turner's luminous seascapes, Constable's pastoral idylls, and the provocative gestures of the Young British Artists. The literary tradition&mdash;from Shakespeare through the Romantic poets to the Bloomsbury Group&mdash;has shaped global culture in immeasurable ways. British life balances a genuine reverence for tradition with an irrepressible streak of eccentricity and invention. The pub, the garden, and the country walk remain cornerstones of social life, while London's theatre district rivals Broadway for energy and excellence.</p>
+            <div class="art-cards">
+              <span class="art-card">Pre-Raphaelites</span>
+              <span class="art-card">Arts &amp; Crafts</span>
+              <span class="art-card">Pop Art</span>
+              <span class="art-card">YBA</span>
+              <span class="art-card">Romanticism</span>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Cuisine Highlights</summary>
+          <div class="details-content">
+            <ul>
+              <li>Fish and chips &mdash; battered cod with thick-cut chips</li>
+              <li>Full English breakfast &mdash; eggs, bacon, sausage, beans, toast</li>
+              <li>Sunday roast &mdash; roasted meat with Yorkshire pudding</li>
+              <li>Afternoon tea &mdash; scones, clotted cream, finger sandwiches</li>
+              <li>Cornish pasty &mdash; crimped pastry filled with meat and veg</li>
+              <li>Sticky toffee pudding &mdash; date sponge with toffee sauce</li>
+            </ul>
+          </div>
+        </details>
+
+        <aside class="key-facts">
+          <p class="key-facts__title">&#10022; Key Facts &#10022;</p>
+          <dl>
+            <dt>Capital</dt><dd>London</dd>
+            <dt>Population</dt><dd>~67 million</dd>
+            <dt>Language</dt><dd>English</dd>
+            <dt>UNESCO Sites</dt><dd>33+</dd>
+            <dt>Known For</dt><dd>Literature, tea, parliamentary democracy</dd>
+          </dl>
+        </aside>
+
+        <h4>Landmarks</h4>
+        <div class="landmarks">
+          <span class="landmark-tag">Big Ben</span>
+          <span class="landmark-tag">Tower of London</span>
+          <span class="landmark-tag">Stonehenge</span>
+          <span class="landmark-tag">Edinburgh Castle</span>
+          <span class="landmark-tag">Buckingham Palace</span>
+          <span class="landmark-tag">Bath Roman Baths</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SOUTHERN EUROPE                -->
+    <!-- ============================== -->
+    <div class="region-header">
+      <span class="region-header__ornament">&#10087; &#10022; &#10087;</span>
+      <h2>Southern Europe</h2>
+      <div class="region-header__line"></div>
+    </div>
+
+    <!-- ===== ITALY ===== -->
+    <section id="italy" class="country-section country-section--italy">
+      <div class="country-header">
+        <h3>Italy</h3>
+        <p class="country-header__tagline">Where Beauty Is a Way of Life</p>
+      </div>
+
+      <div class="country-image-wrapper">
+        <img
+          src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=900&h=500&fit=crop"
+          alt="Venice canal with gondola and historic buildings"
+          class="country-image"
+          loading="lazy"
+        >
+      </div>
+
+      <div class="country-content">
+        <h4>Architecture</h4>
+        <p class="drop-cap">Italy is an open-air museum of architectural achievement spanning three millennia. The engineering genius of Roman aqueducts and the Colosseum laid foundations that still influence builders today. Florence's duomo, crowned by Brunelleschi's revolutionary dome, announced the Renaissance to the world, while Palladio's Veneto villas established a classical vocabulary that traveled to every continent. Venice floats as an impossible miracle&mdash;a city of marble palaces built on wooden pilings driven into the lagoon floor. From the trulli of Puglia to the baroque splendor of Lecce, every corner offers revelation.</p>
+
+        <h4>Cuisine</h4>
+        <p>Italian cuisine is an exercise in the beauty of simplicity. The philosophy of using the finest ingredients and treating them with respect has conquered global palates. Each of Italy's twenty regions maintains a fierce culinary identity: Emilia-Romagna offers Parmigiano and fresh pasta, Naples perfected the pizza, Liguria created pesto, and Sicily blends Arab, Greek, and Norman flavors into dishes like caponata and arancini. The Italian meal is a progression&mdash;antipasto, primo, secondo, contorno, dolce&mdash;each course a measured act of pleasure.</p>
+
+        <div class="pull-quote">
+          "Life is a combination of magic and pasta."
+          <cite>&mdash; Federico Fellini</cite>
+        </div>
+
+        <details>
+          <summary>Art &amp; Lifestyle</summary>
+          <div class="details-content">
+            <p>Italy's contribution to world art is without parallel. The Renaissance, born in Florence and radiating outward, produced Leonardo, Michelangelo, and Raphael&mdash;names that remain synonymous with genius. The Italian concept of la bella figura governs social life with an aesthetic philosophy that extends from dress to conversation to the arrangement of food on a plate. The passeggiata, the evening stroll through town, embodies Italian sociability: seeing and being seen, greeting neighbors, pausing for gelato as the light turns golden.</p>
+            <div class="art-cards">
+              <span class="art-card">Renaissance</span>
+              <span class="art-card">Baroque</span>
+              <span class="art-card">Mannerism</span>
+              <span class="art-card">Futurism</span>
+              <span class="art-card">Arte Povera</span>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Cuisine Highlights</summary>
+          <div class="details-content">
+            <ul>
+              <li>Margherita pizza &mdash; tomato, mozzarella, basil from Naples</li>
+              <li>Risotto alla Milanese &mdash; saffron-infused Arborio rice</li>
+              <li>Osso buco &mdash; braised veal shanks with gremolata</li>
+              <li>Tiramisu &mdash; espresso-soaked ladyfingers with mascarpone</li>
+              <li>Pesto alla Genovese &mdash; basil, pine nuts, Parmigiano, olive oil</li>
+              <li>Gelato &mdash; dense, intensely flavored Italian ice cream</li>
+            </ul>
+          </div>
+        </details>
+
+        <aside class="key-facts">
+          <p class="key-facts__title">&#10022; Key Facts &#10022;</p>
+          <dl>
+            <dt>Capital</dt><dd>Rome</dd>
+            <dt>Population</dt><dd>~60 million</dd>
+            <dt>Language</dt><dd>Italian</dd>
+            <dt>UNESCO Sites</dt><dd>58+</dd>
+            <dt>Known For</dt><dd>Art, fashion, gastronomy</dd>
+          </dl>
+        </aside>
+
+        <h4>Landmarks</h4>
+        <div class="landmarks">
+          <span class="landmark-tag">Colosseum</span>
+          <span class="landmark-tag">Leaning Tower of Pisa</span>
+          <span class="landmark-tag">Venice Canals</span>
+          <span class="landmark-tag">Florence Duomo</span>
+          <span class="landmark-tag">Amalfi Coast</span>
+          <span class="landmark-tag">Vatican City</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="ornamental-divider">&#10087; &#10022; &#10087;</div>
+
+    <!-- ===== SPAIN ===== -->
+    <section id="spain" class="country-section country-section--spain">
+      <div class="country-header">
+        <h3>Spain</h3>
+        <p class="country-header__tagline">Passion Carved in Light and Stone</p>
+      </div>
+
+      <div class="country-image-wrapper">
+        <img
+          src="https://images.unsplash.com/photo-1583422409516-2895a77efded?w=900&h=500&fit=crop"
+          alt="Sagrada Familia basilica in Barcelona"
+          class="country-image"
+          loading="lazy"
+        >
+      </div>
+
+      <div class="country-content">
+        <h4>Architecture</h4>
+        <p class="drop-cap">Spain's architecture is a vivid dialogue between cultures that have inhabited the Iberian Peninsula over centuries. The Alhambra in Granada, with its intricate muqarnas ceilings and serene courtyards, represents the pinnacle of Moorish artistry in Europe. Gaudi's Sagrada Familia, still rising after more than a century of construction, reimagines Gothic structure through the lens of organic form&mdash;every column a tree, every vault a forest canopy. From the Roman aqueduct of Segovia to Calatrava's soaring City of Arts and Sciences in Valencia, Spain builds with drama and confidence.</p>
+
+        <h4>Cuisine</h4>
+        <p>Spanish cuisine celebrates the communal table and the slow accumulation of flavor. Tapas culture transforms eating into a social art, each small plate&mdash;patatas bravas, jam&oacute;n ib&eacute;rico, gambas al ajillo&mdash;an invitation to share and converse. Paella, born in Valencia's rice paddies, captures the essence of land and sea in a single wide pan. The tradition of sobremesa, lingering at the table long after the meal has ended, reveals a culture that values companionship above efficiency. From Basque pintxos to Andalusian gazpacho, every region speaks its own delicious dialect.</p>
+
+        <div class="pull-quote">
+          "In Spain, the dead are more alive than the dead of any other country."
+          <cite>&mdash; Federico Garc&iacute;a Lorca</cite>
+        </div>
+
+        <details>
+          <summary>Art &amp; Lifestyle</summary>
+          <div class="details-content">
+            <p>Spain's artistic spirit burns with an intensity matched by few nations. From Vel&aacute;zquez's penetrating court portraits to Picasso's shattering Cubism and Dal&iacute;'s surrealist dreamscapes, Spanish artists have repeatedly upended convention. Flamenco, with its percussive footwork and gut-wrenching cante jondo, distills centuries of Andalusian experience into pure emotional expression. The Spanish approach to life embraces contradiction&mdash;fiery passion alongside deep tranquility, ancient tradition alongside avant-garde daring&mdash;and finds in that tension a unique vitality.</p>
+            <div class="art-cards">
+              <span class="art-card">Surrealism</span>
+              <span class="art-card">Cubism</span>
+              <span class="art-card">Spanish Baroque</span>
+              <span class="art-card">Modernisme</span>
+              <span class="art-card">El Greco School</span>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Cuisine Highlights</summary>
+          <div class="details-content">
+            <ul>
+              <li>Paella Valenciana &mdash; saffron rice with rabbit, chicken, and beans</li>
+              <li>Jam&oacute;n ib&eacute;rico &mdash; acorn-fed cured ham, sliced paper-thin</li>
+              <li>Gazpacho &mdash; chilled tomato soup from Andalusia</li>
+              <li>Patatas bravas &mdash; fried potatoes with spicy tomato sauce</li>
+              <li>Pintxos &mdash; Basque bar snacks on toothpicks</li>
+              <li>Churros con chocolate &mdash; fried dough with thick hot chocolate</li>
+            </ul>
+          </div>
+        </details>
+
+        <aside class="key-facts">
+          <p class="key-facts__title">&#10022; Key Facts &#10022;</p>
+          <dl>
+            <dt>Capital</dt><dd>Madrid</dd>
+            <dt>Population</dt><dd>~47 million</dd>
+            <dt>Language</dt><dd>Spanish (Castilian)</dd>
+            <dt>UNESCO Sites</dt><dd>49+</dd>
+            <dt>Known For</dt><dd>Flamenco, tapas, fiestas</dd>
+          </dl>
+        </aside>
+
+        <h4>Landmarks</h4>
+        <div class="landmarks">
+          <span class="landmark-tag">Sagrada Familia</span>
+          <span class="landmark-tag">Alhambra</span>
+          <span class="landmark-tag">Park G&uuml;ell</span>
+          <span class="landmark-tag">Plaza de Espa&ntilde;a</span>
+          <span class="landmark-tag">Segovia Aqueduct</span>
+          <span class="landmark-tag">Mezquita of C&oacute;rdoba</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="ornamental-divider">&#10087; &#10022; &#10087;</div>
+
+    <!-- ===== GREECE ===== -->
+    <section id="greece" class="country-section country-section--greece">
+      <div class="country-header">
+        <h3>Greece</h3>
+        <p class="country-header__tagline">The Cradle of Western Civilization</p>
+      </div>
+
+      <div class="country-image-wrapper">
+        <img
+          src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=900&h=500&fit=crop"
+          alt="Santorini white-washed buildings overlooking the Aegean Sea"
+          class="country-image"
+          loading="lazy"
+        >
+      </div>
+
+      <div class="country-content">
+        <h4>Architecture</h4>
+        <p class="drop-cap">Greece gave the Western world its architectural vocabulary. The Parthenon, crowning the Acropolis in Athens, perfected the Doric order with such mathematical subtlety&mdash;its columns slightly swelling, its stylobate gently curving&mdash;that it appears more perfect than perfection itself. The Cycladic islands developed their own vernacular: dazzling white cubist forms tumbling down volcanic cliffs, punctuated by blue-domed churches that mirror the Aegean sky. Byzantine churches throughout the mainland preserve golden mosaics that glow with spiritual intensity, while the medieval fortifications of Rhodes tell stories of Crusader knights and Ottoman sieges.</p>
+
+        <h4>Cuisine</h4>
+        <p>Greek cuisine is the original Mediterranean diet, rooted in olive oil, fresh vegetables, grains, and the bounty of surrounding seas. Moussaka layers eggplant, seasoned lamb, and creamy b&eacute;chamel into a dish of comforting complexity. The meze tradition&mdash;a spread of tzatziki, dolmades, spanakopita, grilled octopus, and feta drizzled with honey&mdash;transforms every meal into a celebration. Greek coffee, brewed slowly in a briki and served with a glass of cold water, is a ritual of patience and hospitality that has remained unchanged for centuries.</p>
+
+        <div class="pull-quote">
+          "The light of Greece opened my eyes and penetrated my pores."
+          <cite>&mdash; Henry Miller</cite>
+        </div>
+
+        <details>
+          <summary>Art &amp; Lifestyle</summary>
+          <div class="details-content">
+            <p>Greece's artistic legacy begins with the idealized marble forms of classical sculpture and the narrative power of red- and black-figure pottery. The concept of kalokagathia&mdash;the unity of beauty and virtue&mdash;informed Greek aesthetics and continues to resonate. Byzantine icon painting developed a visual theology of extraordinary power, golden backgrounds representing divine light. Modern Greek life revolves around philoxenia, a hospitality so profound it is considered sacred. The taverna, the kafeneio, and the village plateia remain stages for the essential Greek art of conversation.</p>
+            <div class="art-cards">
+              <span class="art-card">Classical</span>
+              <span class="art-card">Hellenistic</span>
+              <span class="art-card">Byzantine</span>
+              <span class="art-card">Cycladic</span>
+              <span class="art-card">Greek Revival</span>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Cuisine Highlights</summary>
+          <div class="details-content">
+            <ul>
+              <li>Moussaka &mdash; layered eggplant, lamb, and b&eacute;chamel</li>
+              <li>Souvlaki &mdash; grilled meat skewers with pita and tzatziki</li>
+              <li>Spanakopita &mdash; flaky phyllo filled with spinach and feta</li>
+              <li>Dolmades &mdash; grape leaves stuffed with rice and herbs</li>
+              <li>Baklava &mdash; layered phyllo with nuts and honey syrup</li>
+              <li>Greek salad &mdash; tomato, cucumber, olives, feta, olive oil</li>
+            </ul>
+          </div>
+        </details>
+
+        <aside class="key-facts">
+          <p class="key-facts__title">&#10022; Key Facts &#10022;</p>
+          <dl>
+            <dt>Capital</dt><dd>Athens</dd>
+            <dt>Population</dt><dd>~10.4 million</dd>
+            <dt>Language</dt><dd>Greek</dd>
+            <dt>UNESCO Sites</dt><dd>18+</dd>
+            <dt>Known For</dt><dd>Democracy, philosophy, mythology</dd>
+          </dl>
+        </aside>
+
+        <h4>Landmarks</h4>
+        <div class="landmarks">
+          <span class="landmark-tag">Parthenon</span>
+          <span class="landmark-tag">Santorini</span>
+          <span class="landmark-tag">Delphi</span>
+          <span class="landmark-tag">Meteora</span>
+          <span class="landmark-tag">Palace of Knossos</span>
+          <span class="landmark-tag">Temple of Olympian Zeus</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Back to Top -->
+    <div class="ornamental-divider">&#10087; &#10022; &#10087;</div>
+    <div class="back-to-top">
+      <a href="#top">&uarr; Back to Top</a>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__ornament">&#10087; &#10022; &#10087;</div>
+    <p>European Cultural Mosaic &middot; Version 22 &middot; Responsive Design</p>
+    <p>The Converging Phase &mdash; Responsive</p>
+  </footer>
+
+</body>
+</html>
