@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v12 — Brutalist + Map Data · European Cultural Mosaic</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --green: #00ff41;
+      --green-dim: #00aa2a;
+      --bg: #0a0a0a;
+      --surface: #111;
+      --border: #222;
+      --text: #ccc;
+      --dim: #666;
+    }
+
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 100;
+      font-size: 12px;
+      color: var(--green);
+      text-decoration: none;
+      border: 1px solid var(--green-dim);
+      padding: 4px 12px;
+    }
+    .back-link:hover { background: var(--green); color: var(--bg); }
+
+    /* Terminal Header */
+    .terminal-header {
+      border-bottom: 2px solid var(--green);
+      padding: 60px 40px 32px;
+    }
+
+    .terminal-header__prompt {
+      color: var(--green-dim);
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .terminal-header__title {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      color: var(--green);
+      font-family: 'Courier New', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .terminal-header__sub {
+      color: var(--dim);
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+    /* Map Grid — Countries positioned roughly like map */
+    .map-section {
+      padding: 40px;
+    }
+
+    .map-section__label {
+      color: var(--green-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 20px;
+    }
+
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(3, auto);
+      gap: 8px;
+      max-width: 1000px;
+    }
+
+    .map-node {
+      border: 1px solid var(--border);
+      padding: 16px;
+      position: relative;
+      min-height: 160px;
+    }
+
+    .map-node:hover { border-color: var(--green-dim); }
+
+    .map-node__coords {
+      font-size: 10px;
+      color: var(--dim);
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+
+    .map-node__name {
+      font-weight: 700;
+      color: var(--green);
+      font-size: 16px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .map-node__code {
+      font-size: 11px;
+      color: var(--dim);
+      margin-bottom: 12px;
+    }
+
+    .map-node__data {
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .map-node__data span {
+      color: var(--green-dim);
+    }
+
+    /* Position countries roughly geographically */
+    .map-node--uk { grid-column: 1 / 3; grid-row: 1; }
+    .map-node--france { grid-column: 2 / 4; grid-row: 2; }
+    .map-node--germany { grid-column: 3 / 5; grid-row: 1; }
+    .map-node--spain { grid-column: 1 / 3; grid-row: 3; }
+    .map-node--italy { grid-column: 3 / 5; grid-row: 2 / 4; }
+    .map-node--greece { grid-column: 4 / 6; grid-row: 2 / 4; }
+
+    /* Data Table */
+    .data-section {
+      padding: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .data-section__label {
+      color: var(--green-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      max-width: 1000px;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th {
+      text-align: left;
+      color: var(--green);
+      font-weight: 700;
+      padding: 8px;
+      border-bottom: 1px solid var(--green-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    td {
+      padding: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td:first-child { color: var(--green); font-weight: 700; }
+
+    tr:hover td { background: rgba(0,255,65,0.03); }
+
+    /* Raw dump */
+    .raw-section {
+      padding: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .raw-section__label {
+      color: var(--green-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 16px;
+    }
+
+    .raw-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px;
+      max-width: 1000px;
+      font-size: 12px;
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+
+    .raw-block .key { color: var(--green); }
+    .raw-block .val { color: var(--text); }
+    .raw-block .comment { color: var(--dim); }
+
+    /* Footer */
+    .footer {
+      padding: 32px 40px;
+      border-top: 2px solid var(--green);
+      font-size: 11px;
+      color: var(--dim);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .footer a { color: var(--green-dim); text-decoration: none; }
+    .footer a:hover { color: var(--green); }
+
+    @media (max-width: 900px) {
+      .map-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto;
+      }
+      .map-node--uk, .map-node--france, .map-node--germany,
+      .map-node--spain, .map-node--italy, .map-node--greece {
+        grid-column: auto; grid-row: auto;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .map-grid { grid-template-columns: 1fr; }
+      body { padding: 0; }
+      .terminal-header, .map-section, .data-section, .raw-section, .footer { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">[← GALLERY]</a>
+
+  <header class="terminal-header">
+    <p class="terminal-header__prompt">user@europa:~$ cat /data/cultural_mosaic.db</p>
+    <h1 class="terminal-header__title">> EUROPEAN_CULTURAL_MOSAIC</h1>
+    <p class="terminal-header__sub">// spatial data dump — 6 nodes — architecture + cuisine + art + lifestyle</p>
+  </header>
+
+  <section class="map-section">
+    <p class="map-section__label">// geo_grid — approximate spatial mapping</p>
+    <div class="map-grid">
+      <div class="map-node map-node--uk">
+        <span class="map-node__coords">51.5°N 0.1°W</span>
+        <h2 class="map-node__name">UK</h2>
+        <p class="map-node__code">GBR · London</p>
+        <div class="map-node__data">
+          <span>arch:</span> Tudor, Georgian, Victorian<br>
+          <span>food:</span> Sunday roast, fish & chips<br>
+          <span>art:</span> Pre-Raphaelite, Turner<br>
+          <span>vibe:</span> "Keep calm, carry on"
+        </div>
+      </div>
+
+      <div class="map-node map-node--germany">
+        <span class="map-node__coords">52.5°N 13.4°E</span>
+        <h2 class="map-node__name">Germany</h2>
+        <p class="map-node__code">DEU · Berlin</p>
+        <div class="map-node__data">
+          <span>arch:</span> Romanesque, Bauhaus<br>
+          <span>food:</span> Pretzel, schweinshaxe<br>
+          <span>art:</span> Expressionism, Bauhaus<br>
+          <span>vibe:</span> Ordnung & Gemütlichkeit
+        </div>
+      </div>
+
+      <div class="map-node map-node--france">
+        <span class="map-node__coords">48.9°N 2.3°E</span>
+        <h2 class="map-node__name">France</h2>
+        <p class="map-node__code">FRA · Paris</p>
+        <div class="map-node__data">
+          <span>arch:</span> Gothic, Haussmann, Art Deco<br>
+          <span>food:</span> Coq au vin, croissant<br>
+          <span>art:</span> Impressionism, Rodin<br>
+          <span>vibe:</span> Joie de vivre
+        </div>
+      </div>
+
+      <div class="map-node map-node--spain">
+        <span class="map-node__coords">40.4°N 3.7°W</span>
+        <h2 class="map-node__name">Spain</h2>
+        <p class="map-node__code">ESP · Madrid</p>
+        <div class="map-node__data">
+          <span>arch:</span> Moorish, Modernisme<br>
+          <span>food:</span> Tapas, paella, jamón<br>
+          <span>art:</span> Surrealism, Picasso<br>
+          <span>vibe:</span> Siesta y fiesta
+        </div>
+      </div>
+
+      <div class="map-node map-node--italy">
+        <span class="map-node__coords">41.9°N 12.5°E</span>
+        <h2 class="map-node__name">Italy</h2>
+        <p class="map-node__code">ITA · Rome</p>
+        <div class="map-node__data">
+          <span>arch:</span> Roman, Renaissance<br>
+          <span>food:</span> Pasta, pizza, gelato<br>
+          <span>art:</span> Renaissance masters<br>
+          <span>vibe:</span> La dolce vita
+        </div>
+      </div>
+
+      <div class="map-node map-node--greece">
+        <span class="map-node__coords">37.9°N 23.7°E</span>
+        <h2 class="map-node__name">Greece</h2>
+        <p class="map-node__code">GRC · Athens</p>
+        <div class="map-node__data">
+          <span>arch:</span> Classical, Cycladic<br>
+          <span>food:</span> Moussaka, souvlaki<br>
+          <span>art:</span> Classical sculpture<br>
+          <span>vibe:</span> Philoxenia
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="data-section">
+    <p class="data-section__label">// comparison_matrix.csv</p>
+    <table>
+      <thead>
+        <tr><th>node</th><th>arch_primary</th><th>dish_signature</th><th>art_movement</th><th>ethos</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>FRA</td><td>Gothic/Haussmann</td><td>Coq au Vin</td><td>Impressionism</td><td>joie_de_vivre</td></tr>
+        <tr><td>ITA</td><td>Renaissance/Baroque</td><td>Pasta al Ragù</td><td>Renaissance</td><td>dolce_vita</td></tr>
+        <tr><td>ESP</td><td>Moorish/Modernisme</td><td>Paella Valenciana</td><td>Surrealism</td><td>pasión</td></tr>
+        <tr><td>DEU</td><td>Bauhaus/Romantic</td><td>Schweinshaxe</td><td>Expressionism</td><td>gemütlichkeit</td></tr>
+        <tr><td>GBR</td><td>Tudor/Victorian</td><td>Sunday Roast</td><td>Pre-Raphaelite</td><td>stiff_upper_lip</td></tr>
+        <tr><td>GRC</td><td>Classical/Cycladic</td><td>Moussaka</td><td>Classical</td><td>philoxenia</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="raw-section">
+    <p class="raw-section__label">// raw_notes.txt</p>
+    <div class="raw-block">
+<span class="comment">// europe is not a uniform entity.</span>
+<span class="comment">// it is a compression of contradictions:</span>
+<span class="key">north</span>  <span class="val">→ restraint, precision, function</span>
+<span class="key">south</span>  <span class="val">→ warmth, improvisation, sensory</span>
+<span class="key">west</span>   <span class="val">→ tradition, institution, refinement</span>
+<span class="key">east</span>   <span class="val">→ resilience, depth, emergence</span>
+<span class="comment">// the beauty is in the tension between them.</span>
+<span class="comment">// EOF</span>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>> european_cultural_mosaic · v12 · brutalist_map_data</span>
+    <a href="../index.html">[← GALLERY]</a>
+  </footer>
+
+</body>
+</html>
