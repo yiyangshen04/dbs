@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v8 — Map-Centric · European Cultural Mosaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f0f2f5;
+      --surface: #fff;
+      --border: #d8dce3;
+      --text: #2c3e50;
+      --muted: #7f8c9b;
+      --blue: #3366aa;
+      --blue-light: #e8f0fe;
+      --france: #2456a4;
+      --italy: #c75a3a;
+      --spain: #b5322a;
+      --germany: #d4a020;
+      --uk: #1a3a5c;
+      --greece: #2a7fb5;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* Top bar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    .topbar a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .topbar__title {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .topbar__coords {
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    /* Main Layout: sidebar + map */
+    .layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      min-height: calc(100vh - 45px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      max-height: calc(100vh - 45px);
+    }
+
+    .sidebar__header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar__title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .sidebar__subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Country list items */
+    .country-item {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+      display: block;
+      color: inherit;
+    }
+
+    .country-item:hover { background: var(--blue-light); }
+
+    .country-item__header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .country-item__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .country-item__name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .country-item__coords {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    .country-item__desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .country-item__tags {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* Map Area */
+    .map-area {
+      position: relative;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    /* Simplified CSS Europe Map */
+    .europe-map {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 600px;
+    }
+
+    /* Country pins on map */
+    .pin {
+      position: absolute;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s;
+      z-index: 2;
+    }
+
+    .pin:hover { transform: scale(1.15); z-index: 10; }
+
+    .pin__marker {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      border: 2px solid #fff;
+    }
+
+    .pin__label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text);
+      background: rgba(255,255,255,0.9);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+      white-space: nowrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .pin__pulse {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      animation: pulse 2s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+      100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+    }
+
+    /* Embedded map image */
+    .map-bg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map-bg img {
+      width: 90%;
+      max-width: 700px;
+      opacity: 0.12;
+    }
+
+    /* Grid lines */
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* Scale indicator */
+    .scale {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scale__bar {
+      width: 80px;
+      height: 2px;
+      background: var(--muted);
+      position: relative;
+    }
+
+    .scale__bar::before, .scale__bar::after {
+      content: '';
+      position: absolute;
+      width: 2px;
+      height: 8px;
+      background: var(--muted);
+      top: -3px;
+    }
+
+    .scale__bar::before { left: 0; }
+    .scale__bar::after { right: 0; }
+
+    /* Country Detail Panels (below map on scroll) */
+    .details {
+      padding: 48px 24px;
+    }
+
+    .details__title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .detail-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+
+    .detail-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .detail-card__image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .detail-card__body {
+      padding: 20px;
+    }
+
+    .detail-card__header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .detail-card__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .detail-card__name {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .detail-card__coord {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    .detail-card__sections {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .detail-card__label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--blue);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .detail-card__text {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .detail-card__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .map-link {
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--blue-light);
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+
+    .map-link:hover { background: #d0e0fc; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    .footer a { color: var(--blue); text-decoration: none; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
+      .europe-map { min-height: 400px; }
+      .detail-card__sections { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .detail-grid { grid-template-columns: 1fr; }
+      .topbar { flex-wrap: wrap; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <a href="../index.html">← Gallery</a>
+    <span class="topbar__title">European Cultural Mosaic — Map View</span>
+    <span class="topbar__coords">Lat 46.2°N — Lon 14.5°E</span>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar__header">
+        <h1 class="sidebar__title">Explore Europe</h1>
+        <p class="sidebar__subtitle">6 countries · 24 landmarks · Click to explore</p>
+      </div>
+
+      <a href="#france-detail" class="country-item">
+        <div class="country-item__header">
+          <span class="country-item__dot" style="background: var(--france)"></span>
+          <span class="country-item__name">France</span>
+          <span class="country-item__coords">48.86°N 2.35°E</span>
+        </div>
+        <p class="country-item__desc">Gothic cathedrals, haute cuisine, Impressionism. Where beauty is a way of life.</p>
+        <div class="country-item__tags">
+          <span class="tag">Architecture</span><span class="tag">Cuisine</span><span class="tag">Art</span>
+        </div>
+      </a>
+
+      <a href="#italy-detail" class="country-item">
+        <div class="country-item__header">
+          <span class="country-item__dot" style="background: var(--italy)"></span>
+          <span class="country-item__name">Italy</span>
+          <span class="country-item__coords">41.90°N 12.50°E</span>
+        </div>
+        <p class="country-item__desc">Renaissance masterpieces, regional pasta perfection, la dolce vita embodied.</p>
+        <div class="country-item__tags">
+          <span class="tag">Renaissance</span><span class="tag">Cuisine</span><span class="tag">Design</span>
+        </div>
+      </a>
+
+      <a href="#spain-detail" class="country-item">
+        <div class="country-item__header">
+          <span class="country-item__dot" style="background: var(--spain)"></span>
+          <span class="country-item__name">Spain</span>
+          <span class="country-item__coords">40.42°N 3.70°W</span>
+        </div>
+        <p class="country-item__desc">Moorish palaces, Gaudí's fantasies, tapas culture. Passion in every gesture.</p>
+        <div class="country-item__tags">
+          <span class="tag">Moorish</span><span class="tag">Gaudí</span><span class="tag">Tapas</span>
+        </div>
+      </a>
+
+      <a href="#germany-detail" class="country-item">
+        <div class="country-item__header">
+          <span class="country-item__dot" style="background: var(--germany)"></span>
+          <span class="country-item__name">Germany</span>
+          <span class="country-item__coords">52.52°N 13.41°E</span>
+        </div>
+        <p class="country-item__desc">Bauhaus revolution, fairy-tale castles, beer culture. Precision meets soul.</p>
+        <div class="country-item__tags">
+          <span class="tag">Bauhaus</span><span class="tag">Beer</span><span class="tag">Castles</span>
+        </div>
+      </a>
+
+      <a href="#uk-detail" class="country-item">
+        <div class="country-item__header">
+          <span class="country-item__dot" style="background: var(--uk)"></span>
+          <span class="country-item__name">United Kingdom</span>
+          <span class="country-item__coords">51.51°N 0.13°W</span>
+        </div>
+        <p class="country-item__desc">Tudor to modern, afternoon tea, Shakespeare. Tradition with a wry smile.</p>
+        <div class="country-item__tags">
+          <span class="tag">Victorian</span><span class="tag">Tea</span><span class="tag">Literature</span>
+        </div>
+      </a>
+
+      <a href="#greece-detail" class="country-item">
+        <div class="country-item__header">
+          <span class="country-item__dot" style="background: var(--greece)"></span>
+          <span class="country-item__name">Greece</span>
+          <span class="country-item__coords">37.98°N 23.73°E</span>
+        </div>
+        <p class="country-item__desc">Classical columns, Cycladic white, Mediterranean cuisine. Where it all began.</p>
+        <div class="country-item__tags">
+          <span class="tag">Classical</span><span class="tag">Islands</span><span class="tag">Philosophy</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Map Area -->
+    <div class="map-area">
+      <div class="grid-overlay"></div>
+
+      <div class="europe-map">
+        <!-- France -->
+        <a href="https://maps.google.com/?q=Paris+France" target="_blank" class="pin" style="top: 48%; left: 35%;">
+          <div class="pin__pulse" style="background: var(--france);"></div>
+          <div class="pin__marker" style="background: var(--france);">FR</div>
+          <span class="pin__label">Paris</span>
+        </a>
+
+        <!-- Italy -->
+        <a href="https://maps.google.com/?q=Rome+Italy" target="_blank" class="pin" style="top: 62%; left: 50%;">
+          <div class="pin__pulse" style="background: var(--italy);"></div>
+          <div class="pin__marker" style="background: var(--italy);">IT</div>
+          <span class="pin__label">Rome</span>
+        </a>
+
+        <!-- Spain -->
+        <a href="https://maps.google.com/?q=Madrid+Spain" target="_blank" class="pin" style="top: 60%; left: 22%;">
+          <div class="pin__pulse" style="background: var(--spain);"></div>
+          <div class="pin__marker" style="background: var(--spain);">ES</div>
+          <span class="pin__label">Madrid</span>
+        </a>
+
+        <!-- Germany -->
+        <a href="https://maps.google.com/?q=Berlin+Germany" target="_blank" class="pin" style="top: 35%; left: 48%;">
+          <div class="pin__pulse" style="background: var(--germany);"></div>
+          <div class="pin__marker" style="background: var(--germany);">DE</div>
+          <span class="pin__label">Berlin</span>
+        </a>
+
+        <!-- UK -->
+        <a href="https://maps.google.com/?q=London+UK" target="_blank" class="pin" style="top: 35%; left: 30%;">
+          <div class="pin__pulse" style="background: var(--uk);"></div>
+          <div class="pin__marker" style="background: var(--uk);">UK</div>
+          <span class="pin__label">London</span>
+        </a>
+
+        <!-- Greece -->
+        <a href="https://maps.google.com/?q=Athens+Greece" target="_blank" class="pin" style="top: 70%; left: 62%;">
+          <div class="pin__pulse" style="background: var(--greece);"></div>
+          <div class="pin__marker" style="background: var(--greece);">GR</div>
+          <span class="pin__label">Athens</span>
+        </a>
+      </div>
+
+      <div class="scale">
+        <div class="scale__bar"></div>
+        <span>~500 km</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Cards -->
+  <section class="details">
+    <h2 class="details__title">Country Profiles</h2>
+    <div class="detail-grid">
+
+      <article class="detail-card" id="france-detail">
+        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&h=300&fit=crop" alt="Eiffel Tower Paris" class="detail-card__image">
+        <div class="detail-card__body">
+          <div class="detail-card__header">
+            <span class="detail-card__dot" style="background: var(--france)"></span>
+            <span class="detail-card__name">France</span>
+            <span class="detail-card__coord">48.86°N 2.35°E</span>
+          </div>
+          <div class="detail-card__sections">
+            <div>
+              <p class="detail-card__label">Architecture</p>
+              <p class="detail-card__text">Gothic cathedrals, Haussmann boulevards, Art Deco glamour. Paris alone is a timeline of Western architecture.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Cuisine</p>
+              <p class="detail-card__text">Haute cuisine and terroir. 246 cheeses, wine as identity, the baguette as daily sacrament.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Art</p>
+              <p class="detail-card__text">Impressionism — Monet, Renoir, Degas. The Louvre: 380,000 objects spanning millennia.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Lifestyle</p>
+              <p class="detail-card__text">Joie de vivre. Café culture. 2-hour lunches. The art of savoring every moment.</p>
+            </div>
+          </div>
+          <div class="detail-card__links">
+            <a href="https://maps.google.com/?q=Eiffel+Tower+Paris" target="_blank" class="map-link">📍 Eiffel Tower</a>
+            <a href="https://maps.google.com/?q=Notre-Dame+de+Paris" target="_blank" class="map-link">📍 Notre-Dame</a>
+            <a href="https://maps.google.com/?q=Palace+of+Versailles" target="_blank" class="map-link">📍 Versailles</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="detail-card" id="italy-detail">
+        <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=600&h=300&fit=crop" alt="Rome Colosseum" class="detail-card__image">
+        <div class="detail-card__body">
+          <div class="detail-card__header">
+            <span class="detail-card__dot" style="background: var(--italy)"></span>
+            <span class="detail-card__name">Italy</span>
+            <span class="detail-card__coord">41.90°N 12.50°E</span>
+          </div>
+          <div class="detail-card__sections">
+            <div>
+              <p class="detail-card__label">Architecture</p>
+              <p class="detail-card__text">Roman engineering, Renaissance domes, Venetian palazzos. Two millennia of drama in stone.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Cuisine</p>
+              <p class="detail-card__text">Regional perfection. Naples owns pizza, Bologna owns ragù. Best ingredients, minimal intervention.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Art</p>
+              <p class="detail-card__text">The Renaissance: Michelangelo, Leonardo, Botticelli. Humanity's greatest creative explosion.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Lifestyle</p>
+              <p class="detail-card__text">La dolce vita. The passeggiata. Espresso standing at the bar. Style as identity.</p>
+            </div>
+          </div>
+          <div class="detail-card__links">
+            <a href="https://maps.google.com/?q=Colosseum+Rome" target="_blank" class="map-link">📍 Colosseum</a>
+            <a href="https://maps.google.com/?q=Florence+Cathedral" target="_blank" class="map-link">📍 Florence</a>
+            <a href="https://maps.google.com/?q=Venice+Italy" target="_blank" class="map-link">📍 Venice</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="detail-card" id="spain-detail">
+        <img src="https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&h=300&fit=crop" alt="Sagrada Família Barcelona" class="detail-card__image">
+        <div class="detail-card__body">
+          <div class="detail-card__header">
+            <span class="detail-card__dot" style="background: var(--spain)"></span>
+            <span class="detail-card__name">Spain</span>
+            <span class="detail-card__coord">40.42°N 3.70°W</span>
+          </div>
+          <div class="detail-card__sections">
+            <div>
+              <p class="detail-card__label">Architecture</p>
+              <p class="detail-card__text">Alhambra's infinite geometry, Gaudí's organic fantasies, Andalusia's white villages.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Cuisine</p>
+              <p class="detail-card__text">Tapas philosophy — small plates, big conversation. Paella, jamón, gazpacho, late nights.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Art</p>
+              <p class="detail-card__text">Picasso, Dalí, Miró. Flamenco is discipline and wildness fused into movement.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Lifestyle</p>
+              <p class="detail-card__text">Dinner at 10 PM. Siesta as wisdom. Passion as a way of being.</p>
+            </div>
+          </div>
+          <div class="detail-card__links">
+            <a href="https://maps.google.com/?q=La+Sagrada+Familia+Barcelona" target="_blank" class="map-link">📍 Sagrada Família</a>
+            <a href="https://maps.google.com/?q=Alhambra+Granada" target="_blank" class="map-link">📍 Alhambra</a>
+            <a href="https://maps.google.com/?q=Plaza+Mayor+Madrid" target="_blank" class="map-link">📍 Madrid</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="detail-card" id="germany-detail">
+        <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&h=300&fit=crop" alt="Neuschwanstein Castle" class="detail-card__image">
+        <div class="detail-card__body">
+          <div class="detail-card__header">
+            <span class="detail-card__dot" style="background: var(--germany)"></span>
+            <span class="detail-card__name">Germany</span>
+            <span class="detail-card__coord">52.52°N 13.41°E</span>
+          </div>
+          <div class="detail-card__sections">
+            <div>
+              <p class="detail-card__label">Architecture</p>
+              <p class="detail-card__text">Cologne Cathedral, Bauhaus minimalism, Berlin's glass Reichstag. Function meets fairy tale.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Cuisine</p>
+              <p class="detail-card__text">Schweinshaxe, 1,500 breweries, Black Forest cake. Reinheitsgebot since 1516.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Art</p>
+              <p class="detail-card__text">Expressionism: Kirchner, Kandinsky. Bauhaus reshaped design, typography, everything.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Lifestyle</p>
+              <p class="detail-card__text">Gemütlichkeit. Christmas markets. Forest bathing. Kaffee und Kuchen on Sundays.</p>
+            </div>
+          </div>
+          <div class="detail-card__links">
+            <a href="https://maps.google.com/?q=Neuschwanstein+Castle" target="_blank" class="map-link">📍 Neuschwanstein</a>
+            <a href="https://maps.google.com/?q=Brandenburg+Gate+Berlin" target="_blank" class="map-link">📍 Brandenburg Gate</a>
+            <a href="https://maps.google.com/?q=Cologne+Cathedral" target="_blank" class="map-link">📍 Cologne</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="detail-card" id="uk-detail">
+        <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&h=300&fit=crop" alt="Tower Bridge London" class="detail-card__image">
+        <div class="detail-card__body">
+          <div class="detail-card__header">
+            <span class="detail-card__dot" style="background: var(--uk)"></span>
+            <span class="detail-card__name">United Kingdom</span>
+            <span class="detail-card__coord">51.51°N 0.13°W</span>
+          </div>
+          <div class="detail-card__sections">
+            <div>
+              <p class="detail-card__label">Architecture</p>
+              <p class="detail-card__text">Tudor half-timber, Georgian terraces, Victorian grandeur, modern Shard and Gherkin.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Cuisine</p>
+              <p class="detail-card__text">Sunday roast, fish & chips, afternoon tea. London now a global food capital.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Art</p>
+              <p class="detail-card__text">Shakespeare, Turner, Banksy. Polite revolution across centuries.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Lifestyle</p>
+              <p class="detail-card__text">The pub, the queue, dry humor. Keep calm and garden on.</p>
+            </div>
+          </div>
+          <div class="detail-card__links">
+            <a href="https://maps.google.com/?q=Tower+Bridge+London" target="_blank" class="map-link">📍 Tower Bridge</a>
+            <a href="https://maps.google.com/?q=Stonehenge" target="_blank" class="map-link">📍 Stonehenge</a>
+            <a href="https://maps.google.com/?q=Edinburgh+Castle" target="_blank" class="map-link">📍 Edinburgh</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="detail-card" id="greece-detail">
+        <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&h=300&fit=crop" alt="Santorini Greece" class="detail-card__image">
+        <div class="detail-card__body">
+          <div class="detail-card__header">
+            <span class="detail-card__dot" style="background: var(--greece)"></span>
+            <span class="detail-card__name">Greece</span>
+            <span class="detail-card__coord">37.98°N 23.73°E</span>
+          </div>
+          <div class="detail-card__sections">
+            <div>
+              <p class="detail-card__label">Architecture</p>
+              <p class="detail-card__text">Parthenon's optical illusions, Cycladic cubes, Byzantine golden domes.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Cuisine</p>
+              <p class="detail-card__text">Olive oil, feta, grilled octopus. Mediterranean purity. Taverna dining perfected.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Art</p>
+              <p class="detail-card__text">Classical sculpture — Venus de Milo, Discus Thrower. Stone made to breathe.</p>
+            </div>
+            <div>
+              <p class="detail-card__label">Lifestyle</p>
+              <p class="detail-card__text">Philoxenia: love of strangers. The kafeneio. Time bends; connection doesn't.</p>
+            </div>
+          </div>
+          <div class="detail-card__links">
+            <a href="https://maps.google.com/?q=Parthenon+Athens" target="_blank" class="map-link">📍 Parthenon</a>
+            <a href="https://maps.google.com/?q=Santorini+Greece" target="_blank" class="map-link">📍 Santorini</a>
+            <a href="https://maps.google.com/?q=Meteora+Greece" target="_blank" class="map-link">📍 Meteora</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>European Cultural Mosaic · v8 Map-Centric · <a href="../index.html">← Gallery</a></p>
+  </footer>
+
+</body>
+</html>
