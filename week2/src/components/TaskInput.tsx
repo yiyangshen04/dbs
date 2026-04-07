@@ -5,9 +5,9 @@ import { useTaskContext, Task } from '@/context/TaskContext';
 
 const categories = ['Uncategorized', 'Work', 'Study', 'Life', 'Ideas'];
 const priorities: { value: Task['priority']; label: string; color: string }[] = [
-  { value: 'low', label: 'Low', color: 'bg-emerald-100 text-emerald-700' },
-  { value: 'medium', label: 'Med', color: 'bg-amber-100 text-amber-700' },
-  { value: 'high', label: 'High', color: 'bg-red-100 text-red-700' },
+  { value: 'low', label: 'Low', color: 'bg-emerald-500/15 text-emerald-400' },
+  { value: 'medium', label: 'Med', color: 'bg-amber-500/15 text-amber-400' },
+  { value: 'high', label: 'High', color: 'bg-red-500/15 text-red-400' },
 ];
 
 export default function TaskInput() {
@@ -39,15 +39,15 @@ export default function TaskInput() {
           value={content}
           onChange={e => setContent(e.target.value)}
           placeholder="What's on your mind? Press Enter to add..."
-          className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm
-                     focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400
-                     placeholder:text-gray-400 transition-all shadow-sm"
+          className="flex-1 px-4 py-3 rounded-xl border border-border bg-surface text-sm text-foreground
+                     focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/50
+                     placeholder:text-muted transition-all"
         />
         <button
           type="submit"
-          className="px-5 py-3 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl
-                     text-sm font-medium hover:from-indigo-600 hover:to-violet-600
-                     transition-all shadow-sm hover:shadow-md active:scale-95"
+          className="px-5 py-3 bg-accent text-black rounded-xl
+                     text-sm font-semibold hover:bg-accent/80
+                     transition-all active:scale-95"
         >
           Add
         </button>
@@ -55,7 +55,7 @@ export default function TaskInput() {
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1.5">
-          <span className="text-xs text-gray-400 font-medium">Priority:</span>
+          <span className="text-xs text-muted font-medium">Priority:</span>
           {priorities.map(p => (
             <button
               key={p.value}
@@ -63,8 +63,8 @@ export default function TaskInput() {
               onClick={() => setPriority(p.value)}
               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                 priority === p.value
-                  ? `${p.color} ring-1 ring-current/20`
-                  : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                  ? p.color
+                  : 'bg-surface text-muted hover:bg-surface-hover'
               }`}
             >
               {p.label}
@@ -73,7 +73,7 @@ export default function TaskInput() {
         </div>
 
         <div className="flex items-center gap-1.5">
-          <span className="text-xs text-gray-400 font-medium">Category:</span>
+          <span className="text-xs text-muted font-medium">Category:</span>
           {categories.map(c => (
             <button
               key={c}
@@ -81,8 +81,8 @@ export default function TaskInput() {
               onClick={() => setCategory(c)}
               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                 category === c
-                  ? 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200'
-                  : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                  ? 'bg-accent/15 text-accent'
+                  : 'bg-surface text-muted hover:bg-surface-hover'
               }`}
             >
               {c}

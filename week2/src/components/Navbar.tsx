@@ -18,13 +18,13 @@ export default function Navbar() {
   const pending = tasks.filter(t => !t.completed).length;
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
+    <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur-lg border-b border-border">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <span className="bg-gradient-to-r from-indigo-500 to-violet-500 text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm">
+          <span className="bg-accent text-black w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black">
             Q
           </span>
-          <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+          <span className="text-accent">
             QuickNote
           </span>
         </Link>
@@ -37,8 +37,8 @@ export default function Navbar() {
               href={l.href}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 pathname === l.href
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'bg-accent/15 text-accent'
+                  : 'text-muted hover:text-foreground hover:bg-surface-hover'
               }`}
             >
               <span className="mr-1">{l.icon}</span>
@@ -46,7 +46,7 @@ export default function Navbar() {
             </Link>
           ))}
           {pending > 0 && (
-            <span className="ml-2 bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+            <span className="ml-2 bg-amber-500/15 text-amber-400 text-xs font-semibold px-2 py-0.5 rounded-full">
               {pending} pending
             </span>
           )}
@@ -54,7 +54,7 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+          className="md:hidden p-2 rounded-lg hover:bg-surface-hover text-muted"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +69,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 pb-3">
+        <div className="md:hidden border-t border-border bg-surface px-4 pb-3">
           {links.map(l => (
             <Link
               key={l.href}
@@ -77,8 +77,8 @@ export default function Navbar() {
               onClick={() => setMobileOpen(false)}
               className={`block px-3 py-2 rounded-lg text-sm font-medium ${
                 pathname === l.href
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-gray-500'
+                  ? 'bg-accent/15 text-accent'
+                  : 'text-muted'
               }`}
             >
               <span className="mr-2">{l.icon}</span>
