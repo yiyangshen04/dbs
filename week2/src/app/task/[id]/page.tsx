@@ -6,11 +6,7 @@ import { useTaskContext } from '@/context/TaskContext';
 import type { Task } from '@/context/TaskContext';
 
 const categories = ['Uncategorized', 'Work', 'Study', 'Life', 'Ideas'];
-const priorities: { value: Task['priority']; label: string; color: string }[] = [
-  { value: 'low', label: 'Low', color: 'bg-emerald-500/15 text-emerald-400' },
-  { value: 'medium', label: 'Medium', color: 'bg-amber-500/15 text-amber-400' },
-  { value: 'high', label: 'High', color: 'bg-red-500/15 text-red-400' },
-];
+const priorities: Task['priority'][] = ['low', 'medium', 'high'];
 
 export default function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -18,7 +14,6 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const { getTask, updateTask, toggleTask, deleteTask } = useTaskContext();
   const task = getTask(id);
 
-  const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState('');
 
   useEffect(() => {
@@ -27,14 +22,9 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
 
   if (!task) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <div className="text-4xl mb-4">🔍</div>
-        <h2 className="text-lg font-semibold text-foreground mb-2">Task not found</h2>
-        <p className="text-sm text-muted mb-6">This task may have been deleted or the page was refreshed.</p>
-        <button
-          onClick={() => router.push('/')}
-          className="px-4 py-2 bg-accent text-black rounded-lg text-sm hover:bg-accent/80 transition-colors"
-        >
+      <div className="max-w-xl mx-auto px-6 pt-24 text-center">
+        <p className="text-muted text-sm mb-4">Task not found.</p>
+        <button onClick={() => router.push('/')} className="text-accent text-sm hover:underline">
           Back to Capture
         </button>
       </div>
@@ -42,9 +32,8 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   function handleSave() {
-    if (editContent.trim()) {
+    if (editContent.trim() && editContent.trim() !== task!.content) {
       updateTask(id, { content: editContent.trim() });
-      setEditing(false);
     }
   }
 
@@ -54,87 +43,74 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 animate-fade-in">
+    <div className="max-w-xl mx-auto px-6 py-12 animate-fade-in">
+      {/* Breadcrumb */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground mb-6 transition-colors"
+        className="text-[11px] text-muted hover:text-foreground mb-8 block transition-colors"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back
+        ← back
       </button>
 
-      <div className="bg-surface rounded-2xl border border-border p-6">
-        <div className="flex items-center justify-between mb-4">
-          <span
-            className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+      {/* Editable title — Notion-style */}
+      <input
+        type="text"
+        value={editContent}
+        onChange={e => setEditContent(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={e => e.key === 'Enter' && handleSave()}
+        className={`w-full text-2xl font-light bg-transparent border-none outline-none mb-8
+          ${task.completed ? 'line-through text-muted' : 'text-foreground'}
+          placeholder:text-muted/30`}
+        placeholder="Untitled"
+      />
+
+      {/* Properties — like Notion properties */}
+      <div className="space-y-4 mb-10">
+        <div className="flex items-center">
+          <span className="text-[11px] text-muted uppercase tracking-widest w-20">Status</span>
+          <button
+            onClick={() => toggleTask(id)}
+            className={`text-sm px-3 py-1 rounded-md transition-all ${
               task.completed
-                ? 'bg-emerald-500/15 text-emerald-400'
-                : 'bg-amber-500/15 text-amber-400'
+                ? 'bg-emerald-50 text-emerald-600'
+                : 'bg-amber-50 text-amber-600'
             }`}
           >
-            {task.completed ? '✓ Completed' : '○ Pending'}
-          </span>
-          <span className="text-xs text-muted">
-            {new Date(task.createdAt).toLocaleString()}
-          </span>
+            {task.completed ? 'Done' : 'To do'}
+          </button>
         </div>
 
-        {editing ? (
-          <div className="mb-6">
-            <input
-              type="text"
-              value={editContent}
-              onChange={e => setEditContent(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSave()}
-              className="w-full text-lg font-semibold px-3 py-2 border border-accent/30 rounded-lg bg-surface-hover text-foreground
-                         focus:outline-none focus:ring-2 focus:ring-accent/30"
-              autoFocus
-            />
-            <div className="flex gap-2 mt-2">
-              <button onClick={handleSave} className="px-3 py-1.5 bg-accent text-black rounded-lg text-xs font-semibold hover:bg-accent/80">Save</button>
-              <button onClick={() => { setEditing(false); setEditContent(task.content); }} className="px-3 py-1.5 bg-surface-hover text-muted rounded-lg text-xs hover:text-foreground">Cancel</button>
-            </div>
-          </div>
-        ) : (
-          <h1
-            onClick={() => setEditing(true)}
-            className={`text-lg font-semibold mb-6 cursor-pointer hover:text-accent transition-colors
-              ${task.completed ? 'line-through text-muted' : 'text-foreground'}`}
-          >
-            {task.content}
-          </h1>
-        )}
-
-        <div className="mb-4">
-          <label className="text-xs font-medium text-muted mb-2 block">Priority</label>
-          <div className="flex gap-2">
+        <div className="flex items-center">
+          <span className="text-[11px] text-muted uppercase tracking-widest w-20">Priority</span>
+          <div className="flex gap-1">
             {priorities.map(p => (
               <button
-                key={p.value}
-                onClick={() => updateTask(id, { priority: p.value })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  task.priority === p.value ? p.color : 'bg-surface-hover text-muted hover:text-foreground'
+                key={p}
+                onClick={() => updateTask(id, { priority: p })}
+                className={`text-[12px] capitalize px-2.5 py-1 rounded-md transition-all ${
+                  task.priority === p
+                    ? 'bg-surface-hover text-foreground font-medium'
+                    : 'text-muted hover:text-foreground'
                 }`}
               >
-                {p.label}
+                {p}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="mb-6">
-          <label className="text-xs font-medium text-muted mb-2 block">Category</label>
-          <div className="flex flex-wrap gap-2">
+        <div className="flex items-center">
+          <span className="text-[11px] text-muted uppercase tracking-widest w-20">Category</span>
+          <div className="flex flex-wrap gap-1">
             {categories.map(c => (
               <button
                 key={c}
                 onClick={() => updateTask(id, { category: c })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                className={`text-[12px] px-2.5 py-1 rounded-md transition-all ${
                   task.category === c
-                    ? 'bg-accent/15 text-accent'
-                    : 'bg-surface-hover text-muted hover:text-foreground'
+                    ? 'bg-surface-hover text-foreground font-medium'
+                    : 'text-muted hover:text-foreground'
                 }`}
               >
                 {c}
@@ -143,31 +119,36 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
           </div>
         </div>
 
-        <div className="border-t border-border pt-4 mb-6 space-y-1">
-          <p className="text-xs text-muted">Created: {new Date(task.createdAt).toLocaleString()}</p>
-          {task.completedAt && (
-            <p className="text-xs text-emerald-400">Completed: {new Date(task.completedAt).toLocaleString()}</p>
-          )}
+        <div className="flex items-center">
+          <span className="text-[11px] text-muted uppercase tracking-widest w-20">Created</span>
+          <span className="text-[12px] text-muted">{new Date(task.createdAt).toLocaleString()}</span>
         </div>
 
-        <div className="flex gap-2">
-          <button
-            onClick={() => toggleTask(id)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              task.completed
-                ? 'bg-amber-500/15 text-amber-400 hover:bg-amber-500/25'
-                : 'bg-accent text-black hover:bg-accent/80'
-            }`}
-          >
-            {task.completed ? 'Mark as Pending' : 'Mark as Done'}
-          </button>
-          <button
-            onClick={handleDelete}
-            className="px-4 py-2.5 bg-red-500/10 text-red-400 rounded-xl text-sm font-medium hover:bg-red-500/20 transition-all"
-          >
-            Delete
-          </button>
-        </div>
+        {task.completedAt && (
+          <div className="flex items-center">
+            <span className="text-[11px] text-muted uppercase tracking-widest w-20">Finished</span>
+            <span className="text-[12px] text-emerald-500">{new Date(task.completedAt).toLocaleString()}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-border mb-6" />
+
+      {/* Actions */}
+      <div className="flex gap-4">
+        <button
+          onClick={() => toggleTask(id)}
+          className="text-sm text-accent hover:underline"
+        >
+          {task.completed ? 'Reopen' : 'Complete'}
+        </button>
+        <button
+          onClick={handleDelete}
+          className="text-sm text-red-400 hover:underline"
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

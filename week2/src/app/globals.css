@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf7f2;
-  --foreground: #3d2e1f;
-  --surface: #ffffff;
-  --surface-hover: #f5f0e8;
-  --border: #e8dfd3;
-  --muted: #9c8b7a;
-  --accent: #d97706;
-  --accent-dim: #b45309;
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --surface: #fafafa;
+  --surface-hover: #f0f0f0;
+  --border: #e5e5e5;
+  --muted: #999999;
+  --accent: #2563eb;
+  --accent-dim: #1d4ed8;
 }
 
 @theme inline {
@@ -35,15 +35,6 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-8px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
-}
-
-.animate-slide-in {
-  animation: slideIn 0.3s ease-out;
 }

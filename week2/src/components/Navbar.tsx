@@ -2,88 +2,48 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 import { useTaskContext } from '@/context/TaskContext';
 
 const links = [
-  { href: '/', label: 'Capture', icon: '⚡' },
-  { href: '/review', label: 'Review', icon: '📊' },
-  { href: '/export', label: 'Export', icon: '📤' },
+  { href: '/', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" /></svg>, label: 'Capture' },
+  { href: '/review', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13h4l3-8 4 16 3-8h4" /></svg>, label: 'Review' },
+  { href: '/export', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4" /></svg>, label: 'Export' },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const { tasks } = useTaskContext();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const pending = tasks.filter(t => !t.completed).length;
 
   return (
-    <nav className="sticky top-0 z-50 bg-surface/90 backdrop-blur-lg border-b border-border">
-      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <span className="bg-accent text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm">
-            Q
-          </span>
-          <span className="text-accent">
-            QuickNote
-          </span>
+    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <div className="max-w-3xl mx-auto px-6 h-12 flex items-center justify-between">
+        <Link href="/" className="text-foreground font-semibold tracking-tight">
+          QuickNote
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           {links.map(l => (
             <Link
               key={l.href}
               href={l.href}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              title={l.label}
+              className={`p-2 rounded-lg transition-all ${
                 pathname === l.href
-                  ? 'bg-accent/10 text-accent'
-                  : 'text-muted hover:text-foreground hover:bg-surface-hover'
+                  ? 'text-accent bg-accent/5'
+                  : 'text-muted hover:text-foreground'
               }`}
             >
-              <span className="mr-1">{l.icon}</span>
-              {l.label}
+              {l.icon}
             </Link>
           ))}
           {pending > 0 && (
-            <span className="ml-2 bg-accent/10 text-accent text-xs font-semibold px-2 py-0.5 rounded-full">
-              {pending} pending
+            <span className="ml-1 w-5 h-5 flex items-center justify-center bg-accent text-white text-[10px] font-bold rounded-full">
+              {pending}
             </span>
           )}
         </div>
-
-        <button
-          className="md:hidden p-2 rounded-lg hover:bg-surface-hover text-muted"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {mobileOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
       </div>
-
-      {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-surface px-4 pb-3">
-          {links.map(l => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setMobileOpen(false)}
-              className={`block px-3 py-2 rounded-lg text-sm font-medium ${
-                pathname === l.href
-                  ? 'bg-accent/10 text-accent'
-                  : 'text-muted'
-              }`}
-            >
-              <span className="mr-2">{l.icon}</span>
-              {l.label}
-            </Link>
-          ))}
-        </div>
-      )}
     </nav>
   );
 }
