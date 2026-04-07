@@ -3,6 +3,7 @@
 import { useTaskContext } from '@/context/TaskContext';
 
 const categoryColors: Record<string, string> = {
+  Uncategorized: 'bg-gray-400',
   Work: 'bg-blue-500',
   Study: 'bg-purple-500',
   Life: 'bg-green-500',
@@ -24,7 +25,7 @@ export default function ReviewPage() {
   const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   // Category breakdown
-  const categoryStats = ['Work', 'Study', 'Life', 'Ideas'].map(cat => {
+  const categoryStats = ['Uncategorized', 'Work', 'Study', 'Life', 'Ideas'].map(cat => {
     const catTasks = tasks.filter(t => t.category === cat);
     const catCompleted = catTasks.filter(t => t.completed).length;
     return { name: cat, total: catTasks.length, completed: catCompleted };

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTaskContext } from '@/context/TaskContext';
 import type { Task } from '@/context/TaskContext';
 
-const categories = ['Work', 'Study', 'Life', 'Ideas'];
+const categories = ['Uncategorized', 'Work', 'Study', 'Life', 'Ideas'];
 const priorities: { value: Task['priority']; label: string; color: string }[] = [
   { value: 'low', label: 'Low', color: 'bg-emerald-100 text-emerald-700 ring-emerald-200' },
   { value: 'medium', label: 'Medium', color: 'bg-amber-100 text-amber-700 ring-amber-200' },

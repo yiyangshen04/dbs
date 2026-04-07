@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTaskContext, Task } from '@/context/TaskContext';
 
-const categories = ['Work', 'Study', 'Life', 'Ideas'];
+const categories = ['Uncategorized', 'Work', 'Study', 'Life', 'Ideas'];
 const priorities: { value: Task['priority']; label: string; color: string }[] = [
   { value: 'low', label: 'Low', color: 'bg-emerald-100 text-emerald-700' },
   { value: 'medium', label: 'Med', color: 'bg-amber-100 text-amber-700' },
@@ -14,7 +14,7 @@ export default function TaskInput() {
   const { addTask } = useTaskContext();
   const [content, setContent] = useState('');
   const [priority, setPriority] = useState<Task['priority']>('medium');
-  const [category, setCategory] = useState('Work');
+  const [category, setCategory] = useState('Uncategorized');
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
