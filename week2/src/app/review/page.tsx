@@ -3,7 +3,7 @@
 import { useTaskContext } from '@/context/TaskContext';
 
 const categoryColors: Record<string, string> = {
-  Uncategorized: 'bg-gray-400',
+  Uncategorized: 'bg-stone-400',
   Work: 'bg-blue-500',
   Study: 'bg-purple-500',
   Life: 'bg-green-500',

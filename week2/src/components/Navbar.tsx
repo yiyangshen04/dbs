@@ -18,10 +18,10 @@ export default function Navbar() {
   const pending = tasks.filter(t => !t.completed).length;
 
   return (
-    <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur-lg border-b border-border">
+    <nav className="sticky top-0 z-50 bg-surface/90 backdrop-blur-lg border-b border-border">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <span className="bg-accent text-black w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black">
+          <span className="bg-accent text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm">
             Q
           </span>
           <span className="text-accent">
@@ -29,7 +29,6 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
           {links.map(l => (
             <Link
@@ -37,7 +36,7 @@ export default function Navbar() {
               href={l.href}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 pathname === l.href
-                  ? 'bg-accent/15 text-accent'
+                  ? 'bg-accent/10 text-accent'
                   : 'text-muted hover:text-foreground hover:bg-surface-hover'
               }`}
             >
@@ -46,13 +45,12 @@ export default function Navbar() {
             </Link>
           ))}
           {pending > 0 && (
-            <span className="ml-2 bg-amber-500/15 text-amber-400 text-xs font-semibold px-2 py-0.5 rounded-full">
+            <span className="ml-2 bg-accent/10 text-accent text-xs font-semibold px-2 py-0.5 rounded-full">
               {pending} pending
             </span>
           )}
         </div>
 
-        {/* Mobile hamburger */}
         <button
           className="md:hidden p-2 rounded-lg hover:bg-surface-hover text-muted"
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -67,7 +65,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-surface px-4 pb-3">
           {links.map(l => (
@@ -77,7 +74,7 @@ export default function Navbar() {
               onClick={() => setMobileOpen(false)}
               className={`block px-3 py-2 rounded-lg text-sm font-medium ${
                 pathname === l.href
-                  ? 'bg-accent/15 text-accent'
+                  ? 'bg-accent/10 text-accent'
                   : 'text-muted'
               }`}
             >

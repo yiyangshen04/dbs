@@ -10,11 +10,11 @@ const priorityColors = {
 };
 
 const categoryColors: Record<string, string> = {
-  Uncategorized: 'bg-zinc-800 text-zinc-400',
-  Work: 'bg-blue-500/15 text-blue-400',
-  Study: 'bg-purple-500/15 text-purple-400',
-  Life: 'bg-green-500/15 text-green-400',
-  Ideas: 'bg-amber-500/15 text-amber-400',
+  Uncategorized: 'bg-stone-100 text-stone-500',
+  Work: 'bg-blue-50 text-blue-600',
+  Study: 'bg-purple-50 text-purple-600',
+  Life: 'bg-green-50 text-green-600',
+  Ideas: 'bg-amber-50 text-amber-600',
 };
 
 export default function TaskList({ filter }: { filter?: 'all' | 'pending' | 'completed' }) {
@@ -50,8 +50,8 @@ export default function TaskList({ filter }: { filter?: 'all' | 'pending' | 'com
           key={task.id}
           className={`group flex items-center gap-3 p-3 rounded-xl border transition-all
             ${task.completed
-              ? 'bg-surface/50 border-border/50'
-              : 'bg-surface border-border hover:border-accent/30 hover:bg-surface-hover'
+              ? 'bg-surface-hover/50 border-border/50'
+              : 'bg-surface border-border hover:border-accent/30 hover:shadow-sm'
             }`}
         >
           <button
@@ -59,11 +59,11 @@ export default function TaskList({ filter }: { filter?: 'all' | 'pending' | 'com
             className={`flex-shrink-0 w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center
               ${task.completed
                 ? 'bg-accent border-transparent'
-                : 'border-muted/50 hover:border-accent'
+                : 'border-border hover:border-accent'
               }`}
           >
             {task.completed && (
-              <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
               </svg>
             )}
@@ -80,13 +80,13 @@ export default function TaskList({ filter }: { filter?: 'all' | 'pending' | 'com
             {task.content}
           </Link>
 
-          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${categoryColors[task.category] || 'bg-zinc-800 text-zinc-400'}`}>
+          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${categoryColors[task.category] || 'bg-stone-100 text-stone-500'}`}>
             {task.category}
           </span>
 
           <button
             onClick={() => deleteTask(task.id)}
-            className="opacity-0 group-hover:opacity-100 text-muted hover:text-red-400 transition-all p-1"
+            className="opacity-0 group-hover:opacity-100 text-muted hover:text-red-500 transition-all p-1"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
