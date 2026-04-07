@@ -10,25 +10,21 @@ export default function HomePage() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
 
   const total = tasks.length;
-  const completed = tasks.filter(t => t.completed).length;
-  const pending = total - completed;
 
   return (
-    <div className="max-w-xl mx-auto px-6 pt-16 pb-8">
-      {/* Zen input area */}
-      <TaskInput />
-
-      {/* Minimal stats + filter */}
-      {total > 0 && (
-        <div className="flex items-center justify-between mt-10 mb-4">
-          <div className="flex gap-1">
+    <div className="p-6">
+      {/* Header bar */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-lg font-semibold text-foreground">Capture</h1>
+        {total > 0 && (
+          <div className="flex gap-1 bg-surface rounded-lg border border-border p-0.5">
             {(['all', 'pending', 'completed'] as const).map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`text-[11px] px-2 py-1 rounded transition-all capitalize ${
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all capitalize ${
                   filter === f
-                    ? 'text-accent font-medium'
+                    ? 'bg-accent text-white shadow-sm'
                     : 'text-muted hover:text-foreground'
                 }`}
               >
@@ -36,13 +32,15 @@ export default function HomePage() {
               </button>
             ))}
           </div>
-          <span className="text-[11px] text-muted">
-            {completed}/{total} done
-          </span>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Clean task list */}
+      {/* Input card */}
+      <div className="mb-6">
+        <TaskInput />
+      </div>
+
+      {/* Table list */}
       <TaskList filter={filter} />
     </div>
   );

@@ -29,10 +29,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full bg-background text-foreground">
         <TaskProvider>
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <main className="md:ml-56 min-h-screen">{children}</main>
         </TaskProvider>
       </body>
     </html>
