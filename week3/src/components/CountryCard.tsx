@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Country } from "@/lib/types";
+import { getCountryImages } from "@/lib/country-images";
 
 const regionColors: Record<string, string> = {
   Africa: "var(--africa)",
@@ -8,24 +9,6 @@ const regionColors: Record<string, string> = {
   Europe: "var(--europe)",
   Oceania: "var(--oceania)",
   Antarctic: "var(--antarctic)",
-};
-
-const regionGradients: Record<string, string> = {
-  Africa: "linear-gradient(135deg, #d4845a 0%, #c9a84c 100%)",
-  Americas: "linear-gradient(135deg, #2d5a3d 0%, #3d7a53 100%)",
-  Asia: "linear-gradient(135deg, #c9a84c 0%, #dfc47a 100%)",
-  Europe: "linear-gradient(135deg, #6a8caa 0%, #8bafc9 100%)",
-  Oceania: "linear-gradient(135deg, #6aadcc 0%, #8ec5dd 100%)",
-  Antarctic: "linear-gradient(135deg, #94a3b8 0%, #b0bec5 100%)",
-};
-
-const regionIcons: Record<string, string> = {
-  Africa: "\uD83E\uDD81",
-  Americas: "\uD83C\uDF0E",
-  Asia: "\u26E9\uFE0F",
-  Europe: "\uD83C\uDFF0",
-  Oceania: "\uD83C\uDFDD\uFE0F",
-  Antarctic: "\u2744\uFE0F",
 };
 
 function formatPopulation(pop: number): string {
@@ -37,10 +20,8 @@ function formatPopulation(pop: number): string {
 
 export default function CountryCard({ country }: { country: Country }) {
   const color = regionColors[country.region] || "var(--gold)";
-  const gradient =
-    regionGradients[country.region] ||
-    "linear-gradient(135deg, #c9a84c 0%, #dfc47a 100%)";
-  const regionIcon = regionIcons[country.region] || "\uD83C\uDF0D";
+  const images = getCountryImages(country.cca3);
+  const heroImage = images[0];
 
   return (
     <Link
@@ -53,28 +34,42 @@ export default function CountryCard({ country }: { country: Country }) {
           "transform var(--transition-base), box-shadow var(--transition-base)",
       }}
     >
-      {/* Gradient Banner with Region Icon */}
+      {/* Image Banner */}
       <div
-        className="relative flex items-center justify-center"
-        style={{
-          background: gradient,
-          height: "120px",
-        }}
+        className="relative flex items-end justify-start"
+        style={{ height: "140px", overflow: "hidden" }}
       >
-        {/* Region icon watermark */}
-        <span
-          className="absolute opacity-20"
-          style={{ fontSize: "4rem" }}
-        >
-          {regionIcon}
-        </span>
+        {heroImage ? (
+          <img
+            src={heroImage}
+            alt={`Scenery of ${country.name.common}`}
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(135deg, ${color}88, ${color}44)`,
+            }}
+          />
+        )}
+
+        {/* Gradient overlay for text readability */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)",
+          }}
+        />
 
         {/* Flag badge */}
         <div
           className="absolute top-3 left-3 rounded-full overflow-hidden shadow-md"
           style={{
-            width: "40px",
-            height: "40px",
+            width: "36px",
+            height: "36px",
             border: "2px solid rgba(255,255,255,0.8)",
           }}
         >
@@ -88,11 +83,11 @@ export default function CountryCard({ country }: { country: Country }) {
 
         {/* Country name overlay */}
         <h3
-          className="relative font-heading font-bold text-center px-4"
+          className="relative font-heading font-bold px-4 pb-3"
           style={{
-            fontSize: "1.25rem",
+            fontSize: "1.2rem",
             color: "#fff",
-            textShadow: "0 2px 8px rgba(0,0,0,0.3)",
+            textShadow: "0 1px 4px rgba(0,0,0,0.5)",
             lineHeight: 1.3,
           }}
         >

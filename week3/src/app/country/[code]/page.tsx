@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCountryByCode } from "@/lib/countries";
 import { getTravelInfo } from "@/lib/travel-data";
+import { getCountryImages } from "@/lib/country-images";
 import SaveButton from "@/components/SaveButton";
 
 const regionColors: Record<string, string> = {
@@ -50,6 +51,7 @@ export default async function CountryDetailPage({
     regionGradients[country.region] ||
     "linear-gradient(135deg, #c9a84c 0%, #dfc47a 100%)";
   const travelInfo = getTravelInfo(code);
+  const countryImages = getCountryImages(code);
   const languages = country.languages
     ? Object.values(country.languages).join(", ")
     : "N/A";
@@ -63,15 +65,29 @@ export default async function CountryDetailPage({
     <div className="animate-fade-in">
       {/* Header with Gradient Banner */}
       <section>
-        {/* Gradient Banner */}
+        {/* Hero Banner with Photo */}
         <div
           className="relative overflow-hidden"
           style={{
             background: gradient,
             padding: "2rem 2rem 3rem",
-            minHeight: "180px",
+            minHeight: "220px",
           }}
         >
+          {countryImages[0] && (
+            <img
+              src={countryImages[0]}
+              alt={`Scenery of ${country.name.common}`}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)",
+            }}
+          />
           <div className="mx-auto flex items-end gap-6" style={{ maxWidth: "960px" }}>
             <Link
               href="/explore"
