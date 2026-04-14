@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+/* ===== v25 Design System ===== */
+:root {
+  /* Core Palette */
+  --gold: #c9a84c;
+  --gold-light: #dfc47a;
+  --gold-dark: #a88a3a;
+  --green: #2d5a3d;
+  --green-light: #3d7a53;
+  --cream: #f5f0e8;
+  --warm-white: #faf8f3;
+  --brown: #5c4a32;
+  --brown-light: #7a6548;
+
+  /* Region Accent Colors */
+  --europe: #6a8caa;
+  --asia: #c9a84c;
+  --africa: #d4845a;
+  --americas: #2d5a3d;
+  --oceania: #6aadcc;
+  --antarctic: #94a3b8;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2.5rem;
+  --spacing-xl: 4rem;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.4s ease;
+}
+
+/* ===== Tailwind v4 Theme ===== */
+@theme inline {
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-v-green: var(--green);
+  --color-green-light: var(--green-light);
+  --color-cream: var(--cream);
+  --color-warm-white: var(--warm-white);
+  --color-brown: var(--brown);
+  --color-brown-light: var(--brown-light);
+  --color-europe: var(--europe);
+  --color-asia: var(--asia);
+  --color-africa: var(--africa);
+  --color-americas: var(--americas);
+  --color-oceania: var(--oceania);
+  --color-antarctic: var(--antarctic);
+  --font-heading: var(--font-cormorant);
+  --font-body: var(--font-lora);
+}
+
+/* ===== Base Styles ===== */
+body {
+  font-family: var(--font-body), Georgia, serif;
+  background: var(--warm-white);
+  background-image: radial-gradient(circle at 1px 1px, rgba(201,168,76,0.03) 1px, transparent 0);
+  background-size: 24px 24px;
+  color: var(--brown);
+  line-height: 1.7;
+}
+
+/* ===== Focus Visible ===== */
+*:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ===== Accessibility: Skip Link ===== */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  background: var(--gold);
+  color: var(--warm-white);
+  padding: 0.6rem 1.2rem;
+  font-family: var(--font-heading), Georgia, serif;
+  font-size: 1rem;
+  text-decoration: none;
+  border-radius: 0 0 6px 6px;
+  z-index: 100;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ===== Gold Shimmer Animation ===== */
+@keyframes gold-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--brown) 0%,
+    var(--brown) 35%,
+    var(--gold-light) 45%,
+    var(--gold) 50%,
+    var(--gold-light) 55%,
+    var(--brown) 65%,
+    var(--brown) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gold-shimmer 6s ease-in-out infinite;
+}
+
+/* ===== Fade In ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ===== Ornamental Line ===== */
+.ornament-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 8px auto;
+  max-width: 200px;
+}
+
+/* ===== Pill Button ===== */
+.pill-btn {
+  display: inline-block;
+  font-family: var(--font-heading), Georgia, serif;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: var(--brown);
+  padding: 0.4rem 1.2rem;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  transition: background var(--transition-base), color var(--transition-base), box-shadow var(--transition-base);
+  cursor: pointer;
+  background: transparent;
+}
+
+.pill-btn:hover {
+  background: var(--gold);
+  color: var(--warm-white);
+  box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+}
+
+.pill-btn-active {
+  background: var(--gold);
+  color: var(--warm-white);
+}
+
+.pill-btn-lg {
+  font-size: 1rem;
+  padding: 0.6rem 2rem;
+  border-width: 2px;
+}
+
+/* ===== Card with Corner Ornaments ===== */
+.card-ornament {
+  position: relative;
+  border-radius: 4px;
+}
+
+.card-ornament::before,
+.card-ornament::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  transition: width var(--transition-base), height var(--transition-base);
+}
+
+.card-ornament::before {
+  top: 0;
+  left: 0;
+  border-top: 3px solid var(--gold);
+  border-left: 3px solid var(--gold);
+}
+
+.card-ornament::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 3px solid var(--gold);
+  border-right: 3px solid var(--gold);
+}
+
+.card-ornament:hover::before,
+.card-ornament:hover::after {
+  width: 32px;
+  height: 32px;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
