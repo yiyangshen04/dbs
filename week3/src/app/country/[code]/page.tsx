@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCountryByCode } from "@/lib/countries";
+import { getTravelInfo } from "@/lib/travel-data";
 import SaveButton from "@/components/SaveButton";
 
 const regionColors: Record<string, string> = {
@@ -48,6 +49,7 @@ export default async function CountryDetailPage({
   const gradient =
     regionGradients[country.region] ||
     "linear-gradient(135deg, #c9a84c 0%, #dfc47a 100%)";
+  const travelInfo = getTravelInfo(code);
   const languages = country.languages
     ? Object.values(country.languages).join(", ")
     : "N/A";
@@ -193,6 +195,204 @@ export default async function CountryDetailPage({
           )}
         </div>
       </section>
+
+      {/* Travel Guide Section */}
+      {travelInfo && (
+        <section
+          className="mx-auto"
+          style={{
+            maxWidth: "960px",
+            padding: "0 var(--spacing-md) var(--spacing-lg)",
+          }}
+        >
+          {/* Tagline */}
+          <div className="text-center mb-8">
+            <span
+              className="block mb-2"
+              style={{
+                fontSize: "1.2rem",
+                color: "var(--gold)",
+                letterSpacing: "0.4rem",
+              }}
+            >
+              &#x2726;
+            </span>
+            <h2
+              className="font-heading font-semibold uppercase mb-3"
+              style={{
+                fontSize: "clamp(1.3rem, 3vw, 1.8rem)",
+                color: "var(--green)",
+                letterSpacing: "0.08em",
+              }}
+            >
+              Travel Guide
+            </h2>
+            <div className="ornament-line mb-4" />
+            <p
+              className="font-heading italic mx-auto"
+              style={{
+                fontSize: "clamp(1.1rem, 2.5vw, 1.4rem)",
+                color: "var(--gold-dark)",
+                maxWidth: "600px",
+                lineHeight: 1.6,
+              }}
+            >
+              &ldquo;{travelInfo.tagline}&rdquo;
+            </p>
+          </div>
+
+          {/* Highlights Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            {travelInfo.highlights.map((h, i) => (
+              <div
+                key={i}
+                className="card-ornament p-5 text-center"
+                style={{
+                  background: "var(--cream)",
+                  borderTop: `3px solid ${color}`,
+                }}
+              >
+                <div className="text-3xl mb-2">{h.icon}</div>
+                <h3
+                  className="font-heading font-bold mb-2"
+                  style={{ fontSize: "1.05rem", color: "var(--brown)" }}
+                >
+                  {h.title}
+                </h3>
+                <p
+                  className="font-body"
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "var(--brown-light)",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {h.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Top Attractions */}
+          <div
+            className="card-ornament p-6 mb-8"
+            style={{
+              background: "var(--cream)",
+              border: "2px solid var(--gold)",
+              borderRadius: "6px",
+            }}
+          >
+            <h3
+              className="font-heading font-semibold mb-4 text-center"
+              style={{
+                fontSize: "1.15rem",
+                color: "var(--green)",
+                letterSpacing: "0.05em",
+              }}
+            >
+              &#x2726; Must-Visit Attractions
+            </h3>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {travelInfo.attractions.map((attraction, i) => (
+                <span
+                  key={i}
+                  className="pill-btn text-sm"
+                  style={{ cursor: "default" }}
+                >
+                  {attraction}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Cuisine + Season + Tip */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Cuisine */}
+            <div
+              className="p-5"
+              style={{
+                background: "var(--cream)",
+                borderRadius: "6px",
+                borderLeft: `4px solid ${color}`,
+              }}
+            >
+              <h4
+                className="font-heading font-semibold mb-3"
+                style={{ fontSize: "1rem", color: "var(--brown)" }}
+              >
+                &#x1F37D;&#xFE0F; Local Cuisine
+              </h4>
+              <ul
+                className="font-body space-y-1"
+                style={{
+                  fontSize: "0.88rem",
+                  color: "var(--brown-light)",
+                  listStyle: "none",
+                  padding: 0,
+                }}
+              >
+                {travelInfo.cuisine.map((dish, i) => (
+                  <li key={i}>&#x2726; {dish}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Best Season */}
+            <div
+              className="p-5"
+              style={{
+                background: "var(--cream)",
+                borderRadius: "6px",
+                borderLeft: "4px solid var(--gold)",
+              }}
+            >
+              <h4
+                className="font-heading font-semibold mb-3"
+                style={{ fontSize: "1rem", color: "var(--brown)" }}
+              >
+                &#x2600;&#xFE0F; Best Time to Visit
+              </h4>
+              <p
+                className="font-body"
+                style={{
+                  fontSize: "0.88rem",
+                  color: "var(--brown-light)",
+                  lineHeight: 1.6,
+                }}
+              >
+                {travelInfo.bestSeason}
+              </p>
+            </div>
+
+            {/* Travel Tip */}
+            <div
+              className="p-5"
+              style={{
+                background: "var(--cream)",
+                borderRadius: "6px",
+                borderLeft: "4px solid var(--green)",
+              }}
+            >
+              <h4
+                className="font-heading font-semibold mb-3"
+                style={{ fontSize: "1rem", color: "var(--brown)" }}
+              >
+                &#x1F4A1; Travel Tip
+              </h4>
+              <p
+                className="font-body"
+                style={{
+                  fontSize: "0.88rem",
+                  color: "var(--brown-light)",
+                  lineHeight: 1.6,
+                }}
+              >
+                {travelInfo.travelTip}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
