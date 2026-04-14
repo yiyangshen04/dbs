@@ -3,6 +3,7 @@ import { getCountryByCode } from "@/lib/countries";
 import { getTravelInfo } from "@/lib/travel-data";
 import { getCountryImages } from "@/lib/country-images";
 import SaveButton from "@/components/SaveButton";
+import HeroImage from "@/components/HeroImage";
 
 const regionColors: Record<string, string> = {
   Africa: "var(--africa)",
@@ -75,10 +76,9 @@ export default async function CountryDetailPage({
           }}
         >
           {countryImages[0] && (
-            <img
+            <HeroImage
               src={countryImages[0]}
               alt={`Scenery of ${country.name.common}`}
-              className="absolute inset-0 w-full h-full object-cover"
             />
           )}
           <div

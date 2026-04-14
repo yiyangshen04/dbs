@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Country } from "@/lib/types";
 import { getCountryImages } from "@/lib/country-images";
@@ -11,6 +14,24 @@ const regionColors: Record<string, string> = {
   Antarctic: "var(--antarctic)",
 };
 
+const regionGradients: Record<string, string> = {
+  Africa: "linear-gradient(135deg, #d4845a 0%, #c9a84c 100%)",
+  Americas: "linear-gradient(135deg, #2d5a3d 0%, #3d7a53 100%)",
+  Asia: "linear-gradient(135deg, #c9a84c 0%, #dfc47a 100%)",
+  Europe: "linear-gradient(135deg, #6a8caa 0%, #8bafc9 100%)",
+  Oceania: "linear-gradient(135deg, #6aadcc 0%, #8ec5dd 100%)",
+  Antarctic: "linear-gradient(135deg, #94a3b8 0%, #b0bec5 100%)",
+};
+
+const regionIcons: Record<string, string> = {
+  Africa: "\uD83E\uDD81",
+  Americas: "\uD83C\uDF0E",
+  Asia: "\u26E9\uFE0F",
+  Europe: "\uD83C\uDFF0",
+  Oceania: "\uD83C\uDFDD\uFE0F",
+  Antarctic: "\u2744\uFE0F",
+};
+
 function formatPopulation(pop: number): string {
   if (pop >= 1_000_000_000) return (pop / 1_000_000_000).toFixed(1) + "B";
   if (pop >= 1_000_000) return (pop / 1_000_000).toFixed(1) + "M";
@@ -20,8 +41,13 @@ function formatPopulation(pop: number): string {
 
 export default function CountryCard({ country }: { country: Country }) {
   const color = regionColors[country.region] || "var(--gold)";
+  const gradient =
+    regionGradients[country.region] ||
+    "linear-gradient(135deg, #c9a84c 0%, #dfc47a 100%)";
+  const regionIcon = regionIcons[country.region] || "\uD83C\uDF0D";
   const images = getCountryImages(country.cca3);
   const heroImage = images[0];
+  const [imgFailed, setImgFailed] = useState(false);
 
   return (
     <Link
@@ -39,23 +65,26 @@ export default function CountryCard({ country }: { country: Country }) {
         className="relative flex items-end justify-start"
         style={{ height: "140px", overflow: "hidden" }}
       >
-        {heroImage ? (
+        {heroImage && !imgFailed ? (
           <img
             src={heroImage}
-            alt={`Scenery of ${country.name.common}`}
+            alt={`${country.name.common}`}
             className="absolute inset-0 w-full h-full object-cover"
             loading="lazy"
+            onError={() => setImgFailed(true)}
           />
         ) : (
           <div
-            className="absolute inset-0"
-            style={{
-              background: `linear-gradient(135deg, ${color}88, ${color}44)`,
-            }}
-          />
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ background: gradient }}
+          >
+            <span className="opacity-30" style={{ fontSize: "3.5rem" }}>
+              {regionIcon}
+            </span>
+          </div>
         )}
 
-        {/* Gradient overlay for text readability */}
+        {/* Gradient overlay */}
         <div
           className="absolute inset-0"
           style={{
@@ -81,7 +110,7 @@ export default function CountryCard({ country }: { country: Country }) {
           />
         </div>
 
-        {/* Country name overlay */}
+        {/* Country name */}
         <h3
           className="relative font-heading font-bold px-4 pb-3"
           style={{
