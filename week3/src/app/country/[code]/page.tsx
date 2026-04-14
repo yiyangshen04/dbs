@@ -214,200 +214,252 @@ export default async function CountryDetailPage({
 
       {/* Travel Guide Section */}
       {travelInfo && (
-        <section
-          className="mx-auto"
-          style={{
-            maxWidth: "960px",
-            padding: "0 var(--spacing-md) var(--spacing-lg)",
-          }}
-        >
-          {/* Tagline */}
-          <div className="text-center mb-8">
-            <span
-              className="block mb-2"
+        <>
+          {/* Inspirational Banner */}
+          <section
+            className="relative overflow-hidden text-center"
+            style={{
+              padding: "3.5rem 2rem",
+              background: gradient,
+              minHeight: "200px",
+            }}
+          >
+            {countryImages[1] ? (
+              <HeroImage src={countryImages[1]} alt={`${country.name.common} scenery`} />
+            ) : countryImages[0] ? (
+              <HeroImage src={countryImages[0]} alt={`${country.name.common} scenery`} />
+            ) : null}
+            <div
+              className="absolute inset-0"
               style={{
-                fontSize: "1.2rem",
-                color: "var(--gold)",
-                letterSpacing: "0.4rem",
+                background: "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.7) 100%)",
               }}
-            >
-              &#x2726;
-            </span>
-            <h2
-              className="font-heading font-semibold uppercase mb-3"
-              style={{
-                fontSize: "clamp(1.3rem, 3vw, 1.8rem)",
-                color: "var(--green)",
-                letterSpacing: "0.08em",
-              }}
-            >
-              Travel Guide
-            </h2>
-            <div className="ornament-line mb-4" />
-            <p
-              className="font-heading italic mx-auto"
-              style={{
-                fontSize: "clamp(1.1rem, 2.5vw, 1.4rem)",
-                color: "var(--gold-dark)",
-                maxWidth: "600px",
-                lineHeight: 1.6,
-              }}
-            >
-              &ldquo;{travelInfo.tagline}&rdquo;
-            </p>
-          </div>
-
-          {/* Highlights Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            {travelInfo.highlights.map((h, i) => (
-              <div
-                key={i}
-                className="card-ornament p-5 text-center"
+            />
+            <div className="relative z-10">
+              <span
+                className="block mb-3"
+                style={{ fontSize: "1.5rem", color: "var(--gold-light)", letterSpacing: "0.5rem" }}
+              >
+                &#x2726; &#x2726; &#x2726;
+              </span>
+              <h2
+                className="font-heading font-bold mb-4"
                 style={{
-                  background: "var(--cream)",
-                  borderTop: `3px solid ${color}`,
+                  fontSize: "clamp(1.6rem, 4vw, 2.4rem)",
+                  color: "#fff",
+                  letterSpacing: "0.06em",
+                  textShadow: "0 2px 12px rgba(0,0,0,0.4)",
                 }}
               >
-                <div className="text-3xl mb-2">{h.icon}</div>
-                <h3
-                  className="font-heading font-bold mb-2"
-                  style={{ fontSize: "1.05rem", color: "var(--brown)" }}
+                Why Visit {country.name.common}?
+              </h2>
+              <p
+                className="font-heading italic mx-auto"
+                style={{
+                  fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)",
+                  color: "var(--gold-light)",
+                  maxWidth: "640px",
+                  lineHeight: 1.7,
+                  textShadow: "0 1px 6px rgba(0,0,0,0.3)",
+                }}
+              >
+                &ldquo;{travelInfo.tagline}&rdquo;
+              </p>
+            </div>
+          </section>
+
+          <section
+            className="mx-auto"
+            style={{
+              maxWidth: "960px",
+              padding: "var(--spacing-lg) var(--spacing-md) var(--spacing-lg)",
+            }}
+          >
+            {/* Highlights — large feature cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+              {travelInfo.highlights.map((h, i) => (
+                <div
+                  key={i}
+                  className="relative overflow-hidden text-center"
+                  style={{
+                    background: `linear-gradient(135deg, ${color}18, ${color}08)`,
+                    border: `1px solid ${color}33`,
+                    borderRadius: "12px",
+                    padding: "2rem 1.5rem",
+                  }}
                 >
-                  {h.title}
-                </h3>
+                  <div
+                    className="mx-auto mb-3 flex items-center justify-center"
+                    style={{
+                      width: "64px",
+                      height: "64px",
+                      borderRadius: "50%",
+                      background: `${color}20`,
+                      fontSize: "1.8rem",
+                    }}
+                  >
+                    {h.icon}
+                  </div>
+                  <h3
+                    className="font-heading font-bold mb-2"
+                    style={{ fontSize: "1.15rem", color: "var(--brown)" }}
+                  >
+                    {h.title}
+                  </h3>
+                  <p
+                    className="font-body"
+                    style={{
+                      fontSize: "0.9rem",
+                      color: "var(--brown-light)",
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    {h.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Must-Visit Attractions — numbered list style */}
+            <div className="mb-10">
+              <h3
+                className="font-heading font-bold mb-6 text-center"
+                style={{
+                  fontSize: "1.4rem",
+                  color: "var(--brown)",
+                }}
+              >
+                &#x1F4CD; Must-Visit Attractions
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {travelInfo.attractions.map((attraction, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-4 p-4"
+                    style={{
+                      background: "var(--cream)",
+                      borderRadius: "10px",
+                      borderLeft: `4px solid ${color}`,
+                    }}
+                  >
+                    <span
+                      className="font-heading font-bold shrink-0 flex items-center justify-center"
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "50%",
+                        background: color,
+                        color: "#fff",
+                        fontSize: "0.9rem",
+                      }}
+                    >
+                      {i + 1}
+                    </span>
+                    <span
+                      className="font-body font-semibold"
+                      style={{ fontSize: "0.95rem", color: "var(--brown)" }}
+                    >
+                      {attraction}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Cuisine + Season + Tip — richer layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              {/* Cuisine */}
+              <div
+                className="p-6 text-center"
+                style={{
+                  background: "linear-gradient(135deg, #f5f0e8, #faf8f3)",
+                  borderRadius: "12px",
+                  border: `1px solid ${color}33`,
+                }}
+              >
+                <div className="text-4xl mb-3">&#x1F37D;&#xFE0F;</div>
+                <h4
+                  className="font-heading font-bold mb-3"
+                  style={{ fontSize: "1.1rem", color: "var(--brown)" }}
+                >
+                  Taste the Flavors
+                </h4>
+                <div className="space-y-2">
+                  {travelInfo.cuisine.map((dish, i) => (
+                    <p
+                      key={i}
+                      className="font-body"
+                      style={{
+                        fontSize: "0.92rem",
+                        color: "var(--brown-light)",
+                        padding: "0.3rem 0",
+                        borderBottom: i < travelInfo.cuisine.length - 1 ? "1px dotted var(--gold)" : "none",
+                      }}
+                    >
+                      {dish}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              {/* Best Season */}
+              <div
+                className="p-6 text-center"
+                style={{
+                  background: "linear-gradient(135deg, #f5f0e8, #faf8f3)",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(201,168,76,0.2)",
+                }}
+              >
+                <div className="text-4xl mb-3">&#x2600;&#xFE0F;</div>
+                <h4
+                  className="font-heading font-bold mb-3"
+                  style={{ fontSize: "1.1rem", color: "var(--brown)" }}
+                >
+                  When to Go
+                </h4>
                 <p
                   className="font-body"
                   style={{
-                    fontSize: "0.85rem",
+                    fontSize: "0.92rem",
                     color: "var(--brown-light)",
-                    lineHeight: 1.6,
+                    lineHeight: 1.7,
                   }}
                 >
-                  {h.desc}
+                  {travelInfo.bestSeason}
                 </p>
               </div>
-            ))}
-          </div>
 
-          {/* Top Attractions */}
-          <div
-            className="card-ornament p-6 mb-8"
-            style={{
-              background: "var(--cream)",
-              border: "2px solid var(--gold)",
-              borderRadius: "6px",
-            }}
-          >
-            <h3
-              className="font-heading font-semibold mb-4 text-center"
-              style={{
-                fontSize: "1.15rem",
-                color: "var(--green)",
-                letterSpacing: "0.05em",
-              }}
-            >
-              &#x2726; Must-Visit Attractions
-            </h3>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {travelInfo.attractions.map((attraction, i) => (
-                <span
-                  key={i}
-                  className="pill-btn text-sm"
-                  style={{ cursor: "default" }}
+              {/* Travel Tip */}
+              <div
+                className="p-6 text-center"
+                style={{
+                  background: "linear-gradient(135deg, #f5f0e8, #faf8f3)",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(45,90,61,0.15)",
+                }}
+              >
+                <div className="text-4xl mb-3">&#x1F4A1;</div>
+                <h4
+                  className="font-heading font-bold mb-3"
+                  style={{ fontSize: "1.1rem", color: "var(--brown)" }}
                 >
-                  {attraction}
-                </span>
-              ))}
+                  Insider Tip
+                </h4>
+                <p
+                  className="font-body"
+                  style={{
+                    fontSize: "0.92rem",
+                    color: "var(--brown-light)",
+                    lineHeight: 1.7,
+                  }}
+                >
+                  {travelInfo.travelTip}
+                </p>
+              </div>
             </div>
-          </div>
-
-          {/* Cuisine + Season + Tip */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Cuisine */}
-            <div
-              className="p-5"
-              style={{
-                background: "var(--cream)",
-                borderRadius: "6px",
-                borderLeft: `4px solid ${color}`,
-              }}
-            >
-              <h4
-                className="font-heading font-semibold mb-3"
-                style={{ fontSize: "1rem", color: "var(--brown)" }}
-              >
-                &#x1F37D;&#xFE0F; Local Cuisine
-              </h4>
-              <ul
-                className="font-body space-y-1"
-                style={{
-                  fontSize: "0.88rem",
-                  color: "var(--brown-light)",
-                  listStyle: "none",
-                  padding: 0,
-                }}
-              >
-                {travelInfo.cuisine.map((dish, i) => (
-                  <li key={i}>&#x2726; {dish}</li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Best Season */}
-            <div
-              className="p-5"
-              style={{
-                background: "var(--cream)",
-                borderRadius: "6px",
-                borderLeft: "4px solid var(--gold)",
-              }}
-            >
-              <h4
-                className="font-heading font-semibold mb-3"
-                style={{ fontSize: "1rem", color: "var(--brown)" }}
-              >
-                &#x2600;&#xFE0F; Best Time to Visit
-              </h4>
-              <p
-                className="font-body"
-                style={{
-                  fontSize: "0.88rem",
-                  color: "var(--brown-light)",
-                  lineHeight: 1.6,
-                }}
-              >
-                {travelInfo.bestSeason}
-              </p>
-            </div>
-
-            {/* Travel Tip */}
-            <div
-              className="p-5"
-              style={{
-                background: "var(--cream)",
-                borderRadius: "6px",
-                borderLeft: "4px solid var(--green)",
-              }}
-            >
-              <h4
-                className="font-heading font-semibold mb-3"
-                style={{ fontSize: "1rem", color: "var(--brown)" }}
-              >
-                &#x1F4A1; Travel Tip
-              </h4>
-              <p
-                className="font-body"
-                style={{
-                  fontSize: "0.88rem",
-                  color: "var(--brown-light)",
-                  lineHeight: 1.6,
-                }}
-              >
-                {travelInfo.travelTip}
-              </p>
-            </div>
-          </div>
-        </section>
+          </section>
+        </>
       )}
     </div>
   );
