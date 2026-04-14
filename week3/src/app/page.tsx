@@ -4,58 +4,83 @@ const regions = [
   {
     name: "Africa",
     color: "var(--africa)",
+    bg: "linear-gradient(135deg, #d4845a33, #c9a84c22)",
     description: "Vast savannas, ancient cultures, and vibrant cities",
-    emoji: "\uD83C\uDF0D",
+    icon: "\uD83E\uDD81",
   },
   {
     name: "Americas",
     color: "var(--americas)",
+    bg: "linear-gradient(135deg, #2d5a3d33, #3d7a5322)",
     description: "From Patagonia to the Arctic, diverse landscapes await",
-    emoji: "\uD83C\uDF0E",
+    icon: "\uD83D\uDDFD",
   },
   {
     name: "Asia",
     color: "var(--asia)",
+    bg: "linear-gradient(135deg, #c9a84c33, #dfc47a22)",
     description: "Temples, mountains, and millennia of civilization",
-    emoji: "\uD83C\uDF0F",
+    icon: "\u26E9\uFE0F",
   },
   {
     name: "Europe",
     color: "var(--europe)",
+    bg: "linear-gradient(135deg, #6a8caa33, #6a8caa22)",
     description: "Historic capitals, art, cuisine, and coastal charm",
-    emoji: "\uD83C\uDFF0",
+    icon: "\uD83C\uDFF0",
   },
   {
     name: "Oceania",
     color: "var(--oceania)",
+    bg: "linear-gradient(135deg, #6aadcc33, #6aadcc22)",
     description: "Island paradises, coral reefs, and ancient traditions",
-    emoji: "\uD83C\uDFDD\uFE0F",
+    icon: "\uD83C\uDFDD\uFE0F",
   },
 ];
 
 export default function HomePage() {
   return (
     <div className="animate-fade-in">
-      {/* Hero Section */}
+      {/* Hero Section with Animated Beach Scene */}
       <section
         className="text-center relative overflow-hidden"
         style={{
-          padding: "var(--spacing-xl) 2rem 3.5rem",
+          padding: "5rem 2rem 6rem",
           background:
-            "linear-gradient(180deg, var(--cream) 0%, var(--warm-white) 100%)",
+            "linear-gradient(180deg, #dce9f3 0%, #f0e6d3 35%, #e8dcc8 50%, var(--warm-white) 100%)",
           borderBottom: "3px double var(--gold)",
+          minHeight: "420px",
         }}
       >
-        {/* Subtle texture overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(201,168,76,0.015) 40px, rgba(201,168,76,0.015) 80px)",
-          }}
-        />
+        {/* Animated Scene */}
+        <div className="hero-scene">
+          {/* Sun */}
+          <div className="hero-sun" />
 
-        <div className="relative">
+          {/* Clouds */}
+          <div className="hero-cloud hero-cloud-1" />
+          <div className="hero-cloud hero-cloud-2" />
+          <div className="hero-cloud hero-cloud-3" />
+
+          {/* Birds */}
+          <div className="hero-bird hero-bird-1">&#x2708;</div>
+          <div className="hero-bird hero-bird-2">&#x2708;</div>
+          <div className="hero-bird hero-bird-3">&#x2708;</div>
+
+          {/* Palm Trees */}
+          <div className="hero-palm hero-palm-left">{"\uD83C\uDF34"}</div>
+          <div className="hero-palm hero-palm-right">{"\uD83C\uDF34"}</div>
+
+          {/* Waves */}
+          <div className="hero-waves">
+            <div className="hero-wave hero-wave-1" />
+            <div className="hero-wave hero-wave-2" />
+            <div className="hero-wave hero-wave-3" />
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10">
           {/* Ornament */}
           <div
             className="font-heading mb-4"
@@ -72,7 +97,7 @@ export default function HomePage() {
           <h1
             className="shimmer-text font-heading font-bold mb-2"
             style={{
-              fontSize: "clamp(2.2rem, 5vw, 3.5rem)",
+              fontSize: "clamp(2.4rem, 5vw, 3.8rem)",
               lineHeight: 1.2,
             }}
           >
@@ -84,7 +109,7 @@ export default function HomePage() {
             className="font-heading italic mb-2"
             style={{
               fontSize: "clamp(1rem, 2.5vw, 1.3rem)",
-              color: "var(--gold)",
+              color: "var(--gold-dark)",
             }}
           >
             Discover Every Corner of the World
@@ -96,19 +121,26 @@ export default function HomePage() {
             style={{
               fontSize: "0.95rem",
               color: "var(--brown-light)",
-              maxWidth: "640px",
+              maxWidth: "580px",
               lineHeight: 1.8,
             }}
           >
             Explore countries across all continents, save the ones that inspire
-            you, and build your personal travel bucket list. Your next adventure
-            starts here.
+            you, and build your personal travel bucket list.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex gap-4 justify-center mt-8 flex-wrap">
-            <Link href="/explore" className="pill-btn pill-btn-lg no-underline">
-              Start Exploring
+            <Link
+              href="/explore"
+              className="pill-btn pill-btn-lg no-underline"
+              style={{
+                background: "var(--gold)",
+                color: "var(--warm-white)",
+                borderColor: "var(--gold)",
+              }}
+            >
+              {"\u2708\uFE0F"} Start Exploring
             </Link>
             <Link href="/sign-up" className="pill-btn pill-btn-lg no-underline">
               Create Account
@@ -161,13 +193,20 @@ export default function HomePage() {
             <Link
               key={region.name}
               href={`/explore?region=${region.name}`}
-              className="card-ornament p-6 no-underline block transition-transform hover:-translate-y-1"
+              className="card-ornament p-6 no-underline block transition-all hover:-translate-y-2 hover:shadow-lg"
               style={{
                 background: "var(--cream)",
                 borderTop: `3px solid ${region.color}`,
               }}
             >
-              <div className="text-3xl mb-3">{region.emoji}</div>
+              {/* Region Icon */}
+              <div
+                className="region-icon-bg"
+                style={{ background: region.bg }}
+              >
+                {region.icon}
+              </div>
+
               <h3
                 className="font-heading font-bold mb-2"
                 style={{

@@ -202,6 +202,179 @@ body {
   height: 32px;
 }
 
+/* ===== Hero Beach Scene ===== */
+.hero-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Sun */
+.hero-sun {
+  position: absolute;
+  top: 12%;
+  right: 15%;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #f5d76e 0%, #f7c948 40%, rgba(247,201,72,0) 70%);
+  border-radius: 50%;
+  animation: sun-glow 4s ease-in-out infinite;
+}
+
+@keyframes sun-glow {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* Clouds */
+.hero-cloud {
+  position: absolute;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50px;
+  animation: cloud-drift linear infinite;
+}
+
+.hero-cloud::before,
+.hero-cloud::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.hero-cloud-1 {
+  width: 120px; height: 36px;
+  top: 18%; left: -140px;
+  animation-duration: 35s;
+}
+.hero-cloud-1::before { width: 50px; height: 50px; top: -22px; left: 20px; }
+.hero-cloud-1::after { width: 38px; height: 38px; top: -16px; left: 58px; }
+
+.hero-cloud-2 {
+  width: 90px; height: 28px;
+  top: 28%; left: -110px;
+  animation-duration: 45s;
+  animation-delay: 8s;
+  opacity: 0.5;
+}
+.hero-cloud-2::before { width: 40px; height: 40px; top: -18px; left: 15px; }
+.hero-cloud-2::after { width: 30px; height: 30px; top: -12px; left: 45px; }
+
+.hero-cloud-3 {
+  width: 100px; height: 30px;
+  top: 10%; left: -120px;
+  animation-duration: 50s;
+  animation-delay: 20s;
+  opacity: 0.4;
+}
+.hero-cloud-3::before { width: 44px; height: 44px; top: -20px; left: 18px; }
+.hero-cloud-3::after { width: 34px; height: 34px; top: -14px; left: 52px; }
+
+@keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(100vw + 200px)); }
+}
+
+/* Birds */
+.hero-bird {
+  position: absolute;
+  color: var(--brown);
+  font-size: 1rem;
+  opacity: 0.3;
+  animation: bird-fly linear infinite;
+}
+
+.hero-bird-1 { top: 22%; animation-duration: 18s; animation-delay: 2s; }
+.hero-bird-2 { top: 16%; animation-duration: 22s; animation-delay: 7s; font-size: 0.7rem; opacity: 0.2; }
+.hero-bird-3 { top: 26%; animation-duration: 15s; animation-delay: 12s; font-size: 0.8rem; opacity: 0.25; }
+
+@keyframes bird-fly {
+  0% { left: -5%; transform: translateY(0); }
+  25% { transform: translateY(-8px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-5px); }
+  100% { left: 105%; transform: translateY(0); }
+}
+
+/* Waves */
+.hero-waves {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  overflow: hidden;
+}
+
+.hero-wave {
+  position: absolute;
+  bottom: 0;
+  left: -5%;
+  width: 110%;
+  height: 100%;
+  animation: wave ease-in-out infinite;
+}
+
+.hero-wave-1 {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,120 400,0 600,60 C800,120 1000,0 1200,60 L1200,120 L0,120 Z' fill='%236aadcc' opacity='0.15'/%3E%3C/svg%3E") repeat-x;
+  background-size: 1200px 120px;
+  animation-duration: 8s;
+}
+
+.hero-wave-2 {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,120 400,0 600,60 C800,120 1000,0 1200,60 L1200,120 L0,120 Z' fill='%236aadcc' opacity='0.1'/%3E%3C/svg%3E") repeat-x;
+  background-size: 1200px 120px;
+  animation-duration: 6s;
+  animation-delay: -2s;
+}
+
+.hero-wave-3 {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,120 400,0 600,60 C800,120 1000,0 1200,60 L1200,120 L0,120 Z' fill='%23c9a84c' opacity='0.08'/%3E%3C/svg%3E") repeat-x;
+  background-size: 1200px 120px;
+  animation-duration: 10s;
+  animation-delay: -4s;
+}
+
+@keyframes wave {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-50px); }
+}
+
+/* Palm Tree */
+.hero-palm {
+  position: absolute;
+  bottom: 30px;
+  font-size: 3.5rem;
+  opacity: 0.12;
+  animation: palm-sway 6s ease-in-out infinite;
+}
+
+.hero-palm-left { left: 5%; animation-delay: 0s; }
+.hero-palm-right { right: 5%; animation-delay: 3s; transform: scaleX(-1); }
+
+@keyframes palm-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* Region icon background */
+.region-icon-bg {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  margin-bottom: 0.75rem;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.region-icon-bg:hover {
+  transform: scale(1.1);
+}
+
 /* ===== Reduced Motion ===== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

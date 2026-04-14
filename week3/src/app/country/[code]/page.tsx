@@ -11,6 +11,15 @@ const regionColors: Record<string, string> = {
   Antarctic: "var(--antarctic)",
 };
 
+const regionGradients: Record<string, string> = {
+  Africa: "linear-gradient(135deg, #d4845a 0%, #c9a84c 100%)",
+  Americas: "linear-gradient(135deg, #2d5a3d 0%, #3d7a53 100%)",
+  Asia: "linear-gradient(135deg, #c9a84c 0%, #dfc47a 100%)",
+  Europe: "linear-gradient(135deg, #6a8caa 0%, #8bafc9 100%)",
+  Oceania: "linear-gradient(135deg, #6aadcc 0%, #8ec5dd 100%)",
+  Antarctic: "linear-gradient(135deg, #94a3b8 0%, #b0bec5 100%)",
+};
+
 export default async function CountryDetailPage({
   params,
 }: {
@@ -36,6 +45,9 @@ export default async function CountryDetailPage({
   }
 
   const color = regionColors[country.region] || "var(--gold)";
+  const gradient =
+    regionGradients[country.region] ||
+    "linear-gradient(135deg, #c9a84c 0%, #dfc47a 100%)";
   const languages = country.languages
     ? Object.values(country.languages).join(", ")
     : "N/A";
@@ -47,70 +59,82 @@ export default async function CountryDetailPage({
 
   return (
     <div className="animate-fade-in">
-      {/* Header */}
-      <section
-        style={{
-          padding: "var(--spacing-md) 2rem",
-          background:
-            "linear-gradient(180deg, var(--cream) 0%, var(--warm-white) 100%)",
-          borderBottom: "3px double var(--gold)",
-        }}
-      >
-        <div className="mx-auto" style={{ maxWidth: "960px" }}>
-          <Link
-            href="/explore"
-            className="font-heading no-underline inline-block mb-4"
-            style={{
-              fontSize: "0.95rem",
-              color: "var(--gold)",
-              letterSpacing: "0.05em",
-            }}
-          >
-            &larr; Back to Explore
-          </Link>
-
-          <div className="flex flex-col md:flex-row gap-6 items-start">
-            {/* Flag */}
-            <div
-              className="w-full md:w-80 shrink-0 rounded-lg overflow-hidden"
+      {/* Header with Gradient Banner */}
+      <section>
+        {/* Gradient Banner */}
+        <div
+          className="relative overflow-hidden"
+          style={{
+            background: gradient,
+            padding: "2rem 2rem 3rem",
+            minHeight: "180px",
+          }}
+        >
+          <div className="mx-auto flex items-end gap-6" style={{ maxWidth: "960px" }}>
+            <Link
+              href="/explore"
+              className="font-heading no-underline absolute top-4 left-6"
               style={{
-                border: `3px solid ${color}`,
-                boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+                fontSize: "0.9rem",
+                color: "rgba(255,255,255,0.8)",
+                letterSpacing: "0.05em",
+              }}
+            >
+              &larr; Back to Explore
+            </Link>
+
+            {/* Flag Badge */}
+            <div
+              className="shrink-0 rounded-xl overflow-hidden shadow-lg"
+              style={{
+                width: "120px",
+                height: "80px",
+                border: "3px solid rgba(255,255,255,0.8)",
               }}
             >
               <img
                 src={country.flags.svg}
-                alt={
-                  country.flags.alt || `Flag of ${country.name.common}`
-                }
-                className="w-full h-auto"
+                alt={country.flags.alt || `Flag of ${country.name.common}`}
+                className="w-full h-full object-cover"
               />
             </div>
 
-            {/* Title & Save */}
-            <div className="flex-1">
+            {/* Title */}
+            <div className="flex-1 pb-1">
               <h1
                 className="font-heading font-bold mb-1"
                 style={{
                   fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
-                  color,
+                  color: "#fff",
                   lineHeight: 1.2,
+                  textShadow: "0 2px 8px rgba(0,0,0,0.2)",
                 }}
               >
                 {country.name.common}
               </h1>
               <p
-                className="font-body italic mb-4"
+                className="font-body italic"
                 style={{
                   fontSize: "1rem",
-                  color: "var(--brown-light)",
+                  color: "rgba(255,255,255,0.8)",
                 }}
               >
                 {country.name.official}
               </p>
-
-              <SaveButton country={country} />
             </div>
+          </div>
+        </div>
+
+        {/* Save Button Bar */}
+        <div
+          style={{
+            background: "var(--cream)",
+            borderBottom: "3px double var(--gold)",
+            padding: "1rem 2rem",
+          }}
+        >
+          <div className="mx-auto" style={{ maxWidth: "960px" }}>
+            <SaveButton country={country} />
           </div>
         </div>
       </section>
