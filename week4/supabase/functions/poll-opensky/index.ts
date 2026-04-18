@@ -1,37 +1,59 @@
 // Supabase Edge Function (Deno runtime).
-// Triggered by pg_cron every minute. Pulls aircraft positions from OpenSky
-// Network and upserts them into Supabase. Replaces the Railway worker —
-// Railway's egress had a chronic undici/fetch issue against OpenSky.
+// Triggered by pg_cron every minute. Pulls aircraft positions from
+// adsb.lol (community ADS-B feed) and upserts them into Supabase.
 //
-// Scheduling is defined in supabase/migrations/0002_schedule_poll.sql.
+// History: originally used OpenSky Network, but OpenSky blocks TCP
+// connections from major cloud provider IP ranges (confirmed against
+// Railway + Supabase Edge — same ConnectTimeoutError in both). adsb.lol
+// is a community-run feed that doesn't block cloud egress.
+//
+// adsb.lol exposes /v2/point/{lat}/{lon}/{radius_nm} with a 250 nm max
+// radius, so we fan out across a grid of anchor points to cover the
+// continental US and dedupe by ICAO hex.
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const BBOX = { lamin: 24, lomin: -125, lamax: 49, lomax: -66 };
+// Anchor points (lat, lon) each with a 250 nm radius — chosen to cover
+// the continental US commercial air traffic corridors with overlap.
+const ANCHORS: Array<[number, number]> = [
+  [40.7, -74.0], // NYC / East coast
+  [33.7, -84.4], // Atlanta / Southeast
+  [25.8, -80.3], // Miami / South FL
+  [41.9, -87.6], // Chicago / Midwest
+  [32.9, -97.0], // DFW / South Central
+  [39.7, -104.9], // Denver / Rockies
+  [34.0, -118.2], // LA / SoCal
+  [47.4, -122.3], // Seattle / Pacific NW
+];
+const RADIUS_NM = 250;
+
 const MAX_STATE_AGE_SECONDS = 5 * 60;
 const CHUNK = 1000;
 
-// Positional-array indices — mirror of worker/src/opensky.ts.
-type RawState = [
-  string,
-  string | null,
-  string,
-  number | null,
-  number,
-  number | null,
-  number | null,
-  number | null,
-  boolean,
-  number | null,
-  number | null,
-  number | null,
-  number[] | null,
-  number | null,
-  string | null,
-  boolean,
-  number,
-];
+const FT_TO_M = 0.3048;
+const KT_TO_MPS = 0.5144444;
+
+// adsb.lol single-aircraft shape (only the fields we use).
+interface AdsbAircraft {
+  hex: string;
+  flight?: string;
+  r?: string; // registration
+  t?: string; // aircraft type
+  lat?: number;
+  lon?: number;
+  alt_baro?: number | "ground";
+  gs?: number;
+  track?: number;
+  baro_rate?: number;
+  seen?: number; // seconds since last seen, at server time
+  seen_pos?: number;
+}
+
+interface AdsbResponse {
+  now: number; // server wall clock, ms
+  ac: AdsbAircraft[];
+}
 
 interface FlightRow {
   icao24: string;
@@ -47,120 +69,74 @@ interface FlightRow {
   last_seen: string;
 }
 
-// OAuth2 token cache. Each function instance keeps one across warm
-// invocations; cold starts re-auth (cheap).
-let cachedToken: { value: string; expiresAt: number } | null = null;
-
-async function getAccessToken(
-  clientId: string | null,
-  clientSecret: string | null,
-): Promise<string | null> {
-  if (!clientId || !clientSecret) return null;
-
-  if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) {
-    return cachedToken.value;
-  }
-
-  const res = await fetch(
-    "https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "client_credentials",
-        client_id: clientId,
-        client_secret: clientSecret,
-      }),
-    },
-  );
+async function fetchAnchor(
+  lat: number,
+  lon: number,
+): Promise<AdsbResponse> {
+  const url = `https://api.adsb.lol/v2/point/${lat}/${lon}/${RADIUS_NM}`;
+  const res = await fetch(url, {
+    headers: { "User-Agent": "mpcs-flight-tracker/0.1" },
+  });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
-    throw new Error(`token ${res.status}: ${body.slice(0, 200)}`);
+    throw new Error(`adsb.lol ${res.status}: ${body.slice(0, 200)}`);
   }
-  const json = (await res.json()) as { access_token: string; expires_in: number };
-  cachedToken = {
-    value: json.access_token,
-    expiresAt: Date.now() + json.expires_in * 1000,
-  };
-  return json.access_token;
+  return (await res.json()) as AdsbResponse;
 }
 
-function transformStates(
-  states: RawState[] | null,
-  now = Math.floor(Date.now() / 1000),
+function transform(
+  aircraft: AdsbAircraft[],
+  nowMs: number,
 ): FlightRow[] {
-  if (!states) return [];
   const rows: FlightRow[] = [];
-  for (const s of states) {
-    const icao24 = s[0];
-    const longitude = s[5];
-    const latitude = s[6];
-    if (!icao24) continue;
-    if (longitude === null || latitude === null) continue;
+  for (const a of aircraft) {
+    if (!a.hex) continue;
+    if (a.lat == null || a.lon == null) continue;
 
-    const freshest = Math.max(s[3] ?? 0, s[4] ?? 0);
-    if (freshest && now - freshest > MAX_STATE_AGE_SECONDS) continue;
+    // `seen` is seconds since last signal. Drop stale entries.
+    if ((a.seen ?? 0) > MAX_STATE_AGE_SECONDS) continue;
 
-    const callsignRaw = s[1];
-    const callsign = callsignRaw ? callsignRaw.trim() || null : null;
-    const lastSeenEpoch = freshest || now;
+    const onGround = a.alt_baro === "ground";
+    const baroFt =
+      typeof a.alt_baro === "number" ? a.alt_baro : null;
+    const lastSeenMs = nowMs - (a.seen ?? 0) * 1000;
 
     rows.push({
-      icao24: icao24.toLowerCase(),
-      callsign,
-      origin_country: s[2] || null,
-      longitude,
-      latitude,
-      baro_altitude: s[7],
-      velocity: s[9],
-      heading: s[10],
-      vertical_rate: s[11],
-      on_ground: Boolean(s[8]),
-      last_seen: new Date(lastSeenEpoch * 1000).toISOString(),
+      icao24: a.hex.toLowerCase(),
+      callsign: a.flight ? a.flight.trim() || null : null,
+      origin_country: null, // adsb.lol doesn't provide country; live with null
+      longitude: a.lon,
+      latitude: a.lat,
+      baro_altitude: baroFt != null ? baroFt * FT_TO_M : null,
+      velocity: a.gs != null ? a.gs * KT_TO_MPS : null,
+      heading: a.track ?? null,
+      vertical_rate: a.baro_rate != null ? (a.baro_rate * FT_TO_M) / 60 : null, // ft/min → m/s
+      on_ground: onGround,
+      last_seen: new Date(lastSeenMs).toISOString(),
     });
   }
   return rows;
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async () => {
   const started = Date.now();
   try {
-    // Credentials may come from (1) the request body — this is how pg_cron
-    // forwards them after reading from Supabase Vault — or (2) Deno env
-    // vars for local dev.
-    const body = await req.json().catch(() => ({} as Record<string, unknown>));
-    const clientId =
-      (body.opensky_client_id as string | undefined) ??
-      Deno.env.get("OPENSKY_CLIENT_ID") ??
-      null;
-    const clientSecret =
-      (body.opensky_client_secret as string | undefined) ??
-      Deno.env.get("OPENSKY_CLIENT_SECRET") ??
-      null;
+    // Fan out across anchor points in parallel.
+    const responses = await Promise.all(
+      ANCHORS.map(([lat, lon]) => fetchAnchor(lat, lon)),
+    );
 
-    const url =
-      `https://opensky-network.org/api/states/all` +
-      `?lamin=${BBOX.lamin}&lomin=${BBOX.lomin}` +
-      `&lamax=${BBOX.lamax}&lomax=${BBOX.lomax}`;
-
-    const token = await getAccessToken(clientId, clientSecret);
-    const headers: Record<string, string> = {};
-    if (token) headers.Authorization = `Bearer ${token}`;
-
-    const res = await fetch(url, { headers });
-    if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      throw new Error(`opensky ${res.status}: ${body.slice(0, 200)}`);
+    // Merge and dedupe by ICAO hex. Overlap between anchors is expected.
+    const byHex = new Map<string, FlightRow>();
+    let rawCount = 0;
+    for (const r of responses) {
+      rawCount += r.ac?.length ?? 0;
+      for (const row of transform(r.ac ?? [], r.now)) {
+        byHex.set(row.icao24, row);
+      }
     }
-    const { states } = (await res.json()) as {
-      time: number;
-      states: RawState[] | null;
-    };
+    const rows = [...byHex.values()];
 
-    const rows = transformStates(states);
-
-    // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are auto-injected by
-    // Supabase into every edge function's environment.
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -180,7 +156,6 @@ Deno.serve(async (req) => {
     for (let i = 0; i < rows.length; i += CHUNK) {
       const slice = rows
         .slice(i, i + CHUNK)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .map(({ last_seen: _ls, ...rest }) => rest);
       const { error } = await supabase.from("observations").insert(slice);
       if (error) throw new Error(`insert observations: ${error.message}`);
@@ -189,12 +164,13 @@ Deno.serve(async (req) => {
     const ms = Date.now() - started;
     console.log(
       `[poll] wrote ${rows.length} flights in ${ms} ms ` +
-        `(raw states: ${states?.length ?? 0})`,
+        `(raw: ${rawCount}, anchors: ${ANCHORS.length})`,
     );
     return Response.json({
       ok: true,
       flights: rows.length,
-      raw: states?.length ?? 0,
+      raw: rawCount,
+      anchors: ANCHORS.length,
       ms,
     });
   } catch (err) {

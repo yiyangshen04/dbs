@@ -3,17 +3,17 @@
 A live map of aircraft over the continental US, updated in real time via a background worker → Supabase Realtime → Next.js frontend.
 
 ## Tech Stack
-- Background worker: Node.js + TypeScript, deployed on **Railway**
+- Background job: **Supabase Edge Function** (Deno) triggered by **pg_cron** every minute
 - Database: **Supabase** (Postgres + Realtime)
 - Frontend: **Next.js 16** (App Router) + Tailwind CSS v4, deployed on **Vercel**
 - Map: **React Leaflet** + OpenStreetMap tiles
 - Charts: **Recharts**
-- External data source: **OpenSky Network** public REST API
+- External data source: **adsb.lol** community ADS-B feed (keyless)
 
 ## Architecture
 
 ```
-OpenSky /api/states/all   ──▶  Railway worker (polls every 12 s)
+adsb.lol /v2/point ──▶  Supabase Edge Function (poll-opensky, fan-out 8 anchors)
                                      │
                                      ▼
                        Supabase Postgres (flights_current + observations)
@@ -25,7 +25,31 @@ OpenSky /api/states/all   ──▶  Railway worker (polls every 12 s)
                                      │
                                      ▼
                                Browser (React Leaflet map)
+
+Scheduling: pg_cron `* * * * *` → pg_net.http_post → Edge Function
 ```
+
+## Deployment Notes
+
+This project originally targeted the MPCS reference architecture (Railway worker
+polling OpenSky Network every 12 s). Two externalities forced a pivot:
+
+1. **OpenSky blocks cloud provider IPs.** Confirmed TCP connect timeouts from
+   both Railway and Supabase Edge to `opensky-network.org:443`. Local machines
+   and Anthropic servers still reach it fine — this is an IP-level block.
+2. **Railway's Node fetch has a chronic undici timeout issue.** Separate
+   problem, same symptom. [Reference thread](https://station.railway.com/questions/node-js-native-fetch-not-working-conne-08832b48).
+
+**Final architecture**:
+- Data source swapped from OpenSky → **adsb.lol** (community feed; no cloud-IP
+  block).
+- Worker swapped from always-on Node on Railway → **Supabase Edge Function**
+  triggered by pg_cron every minute. Everything now runs inside Supabase.
+- Polling interval: 12 s → 60 s (pg_cron minimum granularity).
+
+The original Node worker code is kept under `worker/` for reference and local
+development (`npm run dev` reads from `worker/.env`). It still works fine when
+run from a residential IP.
 
 ## Folders
 | Path | Purpose |
