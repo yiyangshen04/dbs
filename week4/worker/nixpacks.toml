@@ -1,0 +1,7 @@
+# Railway picks this up automatically.
+# Node 20 is the current LTS Railway supports.
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[start]
+cmd = "npm start"

@@ -1,0 +1,29 @@
+# dependencies
+**/node_modules
+**/.pnp
+**/.pnp.*
+
+# build outputs
+**/dist
+**/build
+**/.next/
+**/out/
+
+# env files (never commit)
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.local.example
+
+# vercel
+**/.vercel
+
+# typescript
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# misc
+.DS_Store
+*.pem
+**/npm-debug.log*
+**/.tsx-cache

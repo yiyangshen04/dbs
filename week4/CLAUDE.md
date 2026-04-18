@@ -1,0 +1,71 @@
+# Flight Tracker
+
+A live map of aircraft over the continental US, updated in real time via a background worker → Supabase Realtime → Next.js frontend.
+
+## Tech Stack
+- Background worker: Node.js + TypeScript, deployed on **Railway**
+- Database: **Supabase** (Postgres + Realtime)
+- Frontend: **Next.js 16** (App Router) + Tailwind CSS v4, deployed on **Vercel**
+- Map: **React Leaflet** + OpenStreetMap tiles
+- Charts: **Recharts**
+- External data source: **OpenSky Network** public REST API
+
+## Architecture
+
+```
+OpenSky /api/states/all   ──▶  Railway worker (polls every 12 s)
+                                     │
+                                     ▼
+                       Supabase Postgres (flights_current + observations)
+                                     │
+                       logical replication → Supabase Realtime
+                                     │
+                                     ▼
+                       Next.js 16 on Vercel (WebSocket subscription)
+                                     │
+                                     ▼
+                               Browser (React Leaflet map)
+```
+
+## Folders
+| Path | Purpose |
+|------|---------|
+| `supabase/migrations/` | SQL schema + pg_cron jobs |
+| `worker/` | Polling service deployed to Railway |
+| `web/` | Next.js frontend deployed to Vercel |
+
+## Data Model
+```typescript
+interface Flight {
+  icao24: string;           // 24-bit ICAO address, lowercase hex, PK
+  callsign: string | null;  // trimmed, nullable
+  origin_country: string | null;
+  longitude: number | null;
+  latitude: number | null;
+  baro_altitude: number | null;  // meters
+  velocity: number | null;       // m/s
+  heading: number | null;        // 0..360 degrees
+  vertical_rate: number | null;  // m/s
+  on_ground: boolean;
+  last_seen: string;   // ISO timestamptz
+  updated_at: string;  // ISO timestamptz
+}
+```
+
+## Key Design Decisions
+- **Worker separate from Next.js**: Vercel serverless functions are short-lived and lack reliable cron; Railway is purpose-built for long-running processes.
+- **Two tables**: `flights_current` (one row per aircraft, upserted — what the browser subscribes to) vs `observations` (append-only history — used for per-flight charts).
+- **Realtime only on `flights_current`**: publishing every observation would flood WebSocket subscribers and burn the free-tier 2M msg/mo quota in ~2 days.
+- **pg_cron for TTL**: hourly sweep keeps `observations` bounded; 10-minute sweep removes stale `flights_current` rows.
+- **Service role key stays on Railway**: the frontend only ever uses the anon key.
+
+## Environment Variables
+**`worker/.env`** (Railway):
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `OPENSKY_USERNAME` (optional — free OpenSky account for higher rate limit)
+- `OPENSKY_PASSWORD` (optional)
+
+**`web/.env.local`** (Vercel):
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
