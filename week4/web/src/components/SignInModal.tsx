@@ -24,7 +24,10 @@ export default function SignInModal({ open, onClose }: Props) {
     const { error } = await getBrowserSupabase().auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // With implicit flow, tokens arrive in the URL hash on the landing
+        // page; `detectSessionInUrl: true` in the Supabase client picks them
+        // up on init. No separate callback route needed.
+        emailRedirectTo: `${window.location.origin}/`,
       },
     });
     if (error) {

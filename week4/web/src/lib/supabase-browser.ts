@@ -18,7 +18,10 @@ export function getBrowserSupabase(): SupabaseClient {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      flowType: "pkce",
+      // Implicit flow: magic-link URL carries tokens in the hash. No
+      // code_verifier handoff, so users can click the email link on a
+      // different device / browser than they initiated sign-in from.
+      flowType: "implicit",
     },
     realtime: { params: { eventsPerSecond: 50 } },
   });
