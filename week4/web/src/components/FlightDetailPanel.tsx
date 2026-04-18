@@ -9,12 +9,14 @@ interface Props {
   flight: Flight;
   onClose: () => void;
   onHistoryLoaded?: (obs: Observation[]) => void;
+  favoriteControl?: React.ReactNode;
 }
 
 export default function FlightDetailPanel({
   flight,
   onClose,
   onHistoryLoaded,
+  favoriteControl,
 }: Props) {
   const [history, setHistory] = useState<Observation[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,13 +48,16 @@ export default function FlightDetailPanel({
             {flight.origin_country ?? "Unknown"} · {flight.icao24}
           </p>
         </div>
-        <button
-          onClick={onClose}
-          className="rounded-md border border-slate-300 px-2 py-1 text-xs
-                     hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
-        >
-          Close
-        </button>
+        <div className="flex items-center gap-2">
+          {favoriteControl}
+          <button
+            onClick={onClose}
+            className="rounded-md border border-slate-300 px-2 py-1 text-xs
+                       hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+          >
+            Close
+          </button>
+        </div>
       </header>
 
       <dl className="grid grid-cols-2 gap-2 text-sm">

@@ -4,10 +4,15 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Flight, Observation } from "@/lib/types";
 import { getBrowserSupabase } from "@/lib/supabase-browser";
+import { useFavorites } from "@/lib/use-favorites";
 import SearchBar from "@/components/SearchBar";
 import FlightList from "@/components/FlightList";
 import FlightDetailPanel from "@/components/FlightDetailPanel";
 import StatsDashboard from "@/components/StatsDashboard";
+import FavoritesPanel from "@/components/FavoritesPanel";
+import FavoriteButton from "@/components/FavoriteButton";
+import AuthHeader from "@/components/AuthHeader";
+import SignInModal from "@/components/SignInModal";
 
 // Leaflet touches `window` at import time — must be client-only.
 const FlightMap = dynamic(() => import("@/components/FlightMap"), {
@@ -26,6 +31,8 @@ export default function HomePage() {
   const [selectedHistory, setSelectedHistory] = useState<Observation[] | null>(null);
   const [status, setStatus] = useState<"loading" | "live" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [signInOpen, setSignInOpen] = useState(false);
+  const { favorites, callsignSet, add, remove, signedIn } = useFavorites();
 
   // Initial snapshot.
   useEffect(() => {
@@ -120,7 +127,10 @@ export default function HomePage() {
             · live US airspace
           </span>
         </h1>
-        <StatusChip status={status} errorMsg={errorMsg} />
+        <div className="flex items-center gap-4">
+          <StatusChip status={status} errorMsg={errorMsg} />
+          <AuthHeader />
+        </div>
       </header>
 
       <aside className="flex min-h-0 flex-col overflow-hidden border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
@@ -138,6 +148,18 @@ export default function HomePage() {
             onSelect={handleSelect}
           />
         </div>
+        {signedIn ? (
+          <div className="border-t border-slate-200 p-3 dark:border-slate-800">
+            <h2 className="mb-2 text-xs uppercase tracking-wider text-slate-500">
+              My favorites
+            </h2>
+            <FavoritesPanel
+              favorites={favorites}
+              flights={flights}
+              onSelect={handleSelect}
+            />
+          </div>
+        ) : null}
         <div className="border-t border-slate-200 p-3 dark:border-slate-800">
           <h2 className="mb-2 text-xs uppercase tracking-wider text-slate-500">
             Live stats
@@ -162,6 +184,23 @@ export default function HomePage() {
             flight={selectedFlight}
             onClose={() => setSelected(null)}
             onHistoryLoaded={handleHistoryLoaded}
+            favoriteControl={
+              <FavoriteButton
+                callsign={selectedFlight.callsign?.trim() || null}
+                isFavorite={
+                  !!selectedFlight.callsign &&
+                  callsignSet.has(selectedFlight.callsign.trim())
+                }
+                signedIn={signedIn}
+                onRequireSignIn={() => setSignInOpen(true)}
+                onToggle={() => {
+                  const cs = selectedFlight.callsign?.trim();
+                  if (!cs) return;
+                  if (callsignSet.has(cs)) remove(cs);
+                  else add(cs);
+                }}
+              />
+            }
           />
         ) : (
           <div className="flex h-full items-center justify-center p-6 text-center text-sm text-slate-500">
@@ -169,6 +208,8 @@ export default function HomePage() {
           </div>
         )}
       </aside>
+
+      <SignInModal open={signInOpen} onClose={() => setSignInOpen(false)} />
     </main>
   );
 }
