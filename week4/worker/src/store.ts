@@ -26,11 +26,19 @@ const VELOCITY_EPSILON = 1.0;    // m/s
 const ALT_EPSILON = 10;          // m
 const HEADING_EPSILON = 2;       // degrees
 
-// In-process cache of what we last wrote for each aircraft, so we can skip
-// upserts (and the Realtime broadcast they cause) when nothing meaningful
-// changed. Cleared on process restart — that's fine, the next poll just
-// rewrites everything once.
-const lastSeen = new Map<string, FlightRow>();
+// In-process cache of what we last wrote for each aircraft, plus the
+// wall-clock time we wrote it. The time lets us force a refresh even for
+// stationary aircraft so `prune-stale-current` (pg_cron, 10-min TTL
+// against last_seen) doesn't delete a ground plane that our diff check
+// correctly identified as unchanged.
+interface CacheEntry {
+  row: FlightRow;
+  upsertedAtMs: number;
+}
+const lastSeen = new Map<string, CacheEntry>();
+// Force a refresh every 5 min even if nothing changed — comfortably under
+// the 10-min stale-current TTL.
+const FORCE_REFRESH_MS = 5 * 60 * 1000;
 
 function materiallyChanged(prev: FlightRow, next: FlightRow): boolean {
   if (prev.on_ground !== next.on_ground) return true;
@@ -56,10 +64,12 @@ export async function upsertCurrent(
   if (rows.length === 0) return { upserted: 0, skipped: 0 };
 
   const toWrite: FlightRow[] = [];
+  const now = Date.now();
   let skipped = 0;
   for (const row of rows) {
     const prev = lastSeen.get(row.icao24);
-    if (prev && !materiallyChanged(prev, row)) {
+    const stale = prev && now - prev.upsertedAtMs > FORCE_REFRESH_MS;
+    if (prev && !stale && !materiallyChanged(prev.row, row)) {
       skipped += 1;
       continue;
     }
@@ -83,7 +93,7 @@ export async function upsertCurrent(
 
   // Update cache only after a successful write — if the upsert throws, we
   // retry everything on the next tick rather than desyncing our cache.
-  for (const row of toWrite) lastSeen.set(row.icao24, row);
+  for (const row of toWrite) lastSeen.set(row.icao24, { row, upsertedAtMs: now });
 
   return { upserted: toWrite.length, skipped };
 }
