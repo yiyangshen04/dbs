@@ -23,8 +23,8 @@ let pruneTimer: NodeJS.Timeout | null = null;
 async function tick(): Promise<void> {
   const started = Date.now();
   try {
-    const { states } = await fetchStates();
-    const rows = transformStates(states);
+    const { aircraft, serverNowMs, rawCount } = await fetchStates();
+    const rows = transformStates(aircraft, serverNowMs);
 
     await Promise.all([
       upsertCurrent(supabase, rows),
@@ -34,7 +34,7 @@ async function tick(): Promise<void> {
     const ms = Date.now() - started;
     console.log(
       `[poll] wrote ${rows.length} flights in ${ms} ms ` +
-        `(raw states: ${states?.length ?? 0})`,
+        `(raw: ${rawCount})`,
     );
     consecutiveFailures = 0;
   } catch (err) {

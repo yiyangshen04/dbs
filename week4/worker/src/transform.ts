@@ -1,4 +1,4 @@
-import type { RawState } from "./opensky.js";
+import type { AdsbAircraft } from "./opensky.js";
 import { MAX_STATE_AGE_SECONDS } from "./config.js";
 
 export interface FlightRow {
@@ -7,52 +7,47 @@ export interface FlightRow {
   origin_country: string | null;
   longitude: number | null;
   latitude: number | null;
-  baro_altitude: number | null;
-  velocity: number | null;
-  heading: number | null;
-  vertical_rate: number | null;
+  baro_altitude: number | null;   // meters (converted from feet)
+  velocity: number | null;         // m/s (converted from knots)
+  heading: number | null;          // degrees 0..360
+  vertical_rate: number | null;    // m/s (converted from ft/min)
   on_ground: boolean;
-  last_seen: string;
+  last_seen: string;               // ISO timestamp
 }
 
+const FT_TO_M = 0.3048;
+const KT_TO_MPS = 0.5144444;
+
 export function transformStates(
-  states: RawState[] | null,
-  now: number = Math.floor(Date.now() / 1000),
+  aircraft: AdsbAircraft[],
+  serverNowMs: number,
 ): FlightRow[] {
-  if (!states) return [];
   const rows: FlightRow[] = [];
 
-  for (const s of states) {
-    const icao24 = s[0];
-    const longitude = s[5];
-    const latitude = s[6];
-    const timePosition = s[3];
-    const lastContact = s[4];
+  for (const a of aircraft) {
+    if (!a.hex) continue;
+    if (a.lat == null || a.lon == null) continue;
 
-    if (!icao24) continue;
-    if (longitude === null || latitude === null) continue;
+    // `seen` is seconds since last signal. Drop stale entries.
+    if ((a.seen ?? 0) > MAX_STATE_AGE_SECONDS) continue;
 
-    // Staleness guard. If we haven't heard from this aircraft recently,
-    // don't treat it as "current".
-    const freshest = Math.max(timePosition ?? 0, lastContact ?? 0);
-    if (freshest && now - freshest > MAX_STATE_AGE_SECONDS) continue;
-
-    const callsignRaw = s[1];
-    const callsign = callsignRaw ? callsignRaw.trim() || null : null;
-    const lastSeenEpoch = freshest || now;
+    const onGround = a.alt_baro === "ground";
+    const baroFt = typeof a.alt_baro === "number" ? a.alt_baro : null;
+    const lastSeenMs = serverNowMs - (a.seen ?? 0) * 1000;
 
     rows.push({
-      icao24: icao24.toLowerCase(),
-      callsign,
-      origin_country: s[2] || null,
-      longitude,
-      latitude,
-      baro_altitude: s[7],
-      velocity: s[9],
-      heading: s[10],
-      vertical_rate: s[11],
-      on_ground: Boolean(s[8]),
-      last_seen: new Date(lastSeenEpoch * 1000).toISOString(),
+      icao24: a.hex.toLowerCase(),
+      callsign: a.flight ? a.flight.trim() || null : null,
+      // adsb.lol doesn't provide origin country; leave null.
+      origin_country: null,
+      longitude: a.lon,
+      latitude: a.lat,
+      baro_altitude: baroFt != null ? baroFt * FT_TO_M : null,
+      velocity: a.gs != null ? a.gs * KT_TO_MPS : null,
+      heading: a.track ?? null,
+      vertical_rate: a.baro_rate != null ? (a.baro_rate * FT_TO_M) / 60 : null,
+      on_ground: onGround,
+      last_seen: new Date(lastSeenMs).toISOString(),
     });
   }
 
