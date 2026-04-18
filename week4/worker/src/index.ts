@@ -43,9 +43,13 @@ async function tick(): Promise<void> {
       BACKOFF_MS[Math.min(consecutiveFailures - 1, BACKOFF_MS.length - 1)] ??
       BACKOFF_MS[BACKOFF_MS.length - 1] ??
       POLL_INTERVAL_MS;
+    const e = err as Error & { cause?: unknown };
+    const causeMsg =
+      e.cause instanceof Error ? `${e.cause.name}: ${e.cause.message}` : String(e.cause ?? "");
     console.error(
-      `[poll] failure #${consecutiveFailures}: ${(err as Error).message}. ` +
-        `Backing off ${backoff} ms.`,
+      `[poll] failure #${consecutiveFailures}: ${e.message}` +
+        (causeMsg ? ` (cause: ${causeMsg})` : "") +
+        `. Backing off ${backoff} ms.`,
     );
     // Sleep before the next scheduled tick fires.
     if (!stopping) await new Promise((r) => setTimeout(r, backoff));
