@@ -3,8 +3,9 @@
 A live map of aircraft over the continental US, updated in real time via a background worker → Supabase Realtime → Next.js frontend.
 
 ## Tech Stack
-- Background job: **Supabase Edge Function** (Deno) triggered by **pg_cron** every minute
-- Database: **Supabase** (Postgres + Realtime)
+- Background worker: **Node.js + TypeScript** on **Railway**, polling every 15 s
+- Auth: **Supabase Auth** (magic-link / implicit flow) with per-user favorites
+- Database: **Supabase** (Postgres + Realtime + RLS)
 - Frontend: **Next.js 16** (App Router) + Tailwind CSS v4, deployed on **Vercel**
 - Map: **React Leaflet** + OpenStreetMap tiles
 - Charts: **Recharts**
@@ -13,10 +14,11 @@ A live map of aircraft over the continental US, updated in real time via a backg
 ## Architecture
 
 ```
-adsb.lol /v2/point ──▶  Supabase Edge Function (poll-opensky, fan-out 8 anchors)
+adsb.lol /v2/point ──▶  Railway worker (Node, fan-out 8 anchors, every 15 s)
                                      │
                                      ▼
-                       Supabase Postgres (flights_current + observations)
+                       Supabase Postgres (flights_current + observations
+                                                + user_favorites)
                                      │
                        logical replication → Supabase Realtime
                                      │
@@ -25,31 +27,33 @@ adsb.lol /v2/point ──▶  Supabase Edge Function (poll-opensky, fan-out 8 an
                                      │
                                      ▼
                                Browser (React Leaflet map)
-
-Scheduling: pg_cron `* * * * *` → pg_net.http_post → Edge Function
 ```
 
-## Deployment Notes
+## Standby Path
 
-This project originally targeted the MPCS reference architecture (Railway worker
-polling OpenSky Network every 12 s). Two externalities forced a pivot:
+A Supabase Edge Function (`poll-opensky`) is also deployed with the same
+ingest logic in Deno. It isn't currently scheduled — the Railway worker is
+the primary. To fail over to the edge path, re-enable the pg_cron job:
 
-1. **OpenSky blocks cloud provider IPs.** Confirmed TCP connect timeouts from
-   both Railway and Supabase Edge to `opensky-network.org:443`. Local machines
-   and Anthropic servers still reach it fine — this is an IP-level block.
-2. **Railway's Node fetch has a chronic undici timeout issue.** Separate
-   problem, same symptom. [Reference thread](https://station.railway.com/questions/node-js-native-fetch-not-working-conne-08832b48).
+```sql
+select cron.schedule('poll-opensky', '* * * * *', ...);
+```
 
-**Final architecture**:
-- Data source swapped from OpenSky → **adsb.lol** (community feed; no cloud-IP
-  block).
-- Worker swapped from always-on Node on Railway → **Supabase Edge Function**
-  triggered by pg_cron every minute. Everything now runs inside Supabase.
-- Polling interval: 12 s → 60 s (pg_cron minimum granularity).
+This gave us a smoke-tested fallback during the Railway debugging phase and
+is kept deployed as a safety net.
 
-The original Node worker code is kept under `worker/` for reference and local
-development (`npm run dev` reads from `worker/.env`). It still works fine when
-run from a residential IP.
+## Data-Source Pivot
+
+The project originally polled **OpenSky Network**. OpenSky blocks TCP
+connections from major cloud provider IP ranges (we saw the same
+`ConnectTimeoutError` from both Railway and Supabase Edge — local / Anthropic
+servers still reach it fine, so it's an IP-level block, not our code).
+
+Switched to **adsb.lol**, a community-run ADS-B aggregator with no cloud-IP
+block. Because the hosted service blocks the hostname but does not otherwise
+block Railway's HTTP fetch, Railway came back online the moment we swapped
+the target host. Field mapping and unit conversions live in
+`worker/src/transform.ts` (adsb.lol returns altitude in feet, speed in knots).
 
 ## Folders
 | Path | Purpose |

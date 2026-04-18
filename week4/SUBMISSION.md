@@ -3,9 +3,16 @@
 ## Deliverables
 
 - **Vercel URL**: <https://flight-tracker-lilac-nine.vercel.app>
-- **Background job**: Supabase Edge Function `poll-opensky`, triggered by `pg_cron` every minute
-- **Data source**: adsb.lol (see reflection #2 for why this isn't OpenSky)
+- **Railway worker**: `flight-tracker-worker` project, Node/TypeScript, polls adsb.lol every 15 s
+- **Supabase project**: `nokjkiqzsyqrupmyswkm` — Postgres + Realtime + Auth + RLS
 - **GitHub URL**: <https://github.com/yiyangshen04/dbs/tree/main/week4>
+
+### How a classmate uses it
+
+1. Open the Vercel URL — map loads with ~5 k live flights over the continental US.
+2. Click **Sign in** (top right), enter email, click the magic link → signed in.
+3. Click any aircraft → detail panel → click ☆ **Save** to pin it to the
+   personal favorites list in the left sidebar. Saves persist across reloads.
 
 ---
 
@@ -15,14 +22,14 @@
 
 An aircraft's Mode-S / ADS-B transponder broadcasts a position message at
 978 MHz / 1090 MHz. A network of volunteer ground receivers decodes it and
-forwards it to **adsb.lol**, a community aggregator. Our **Supabase Edge
-Function** `poll-opensky` (Deno runtime) wakes up once per minute, fans out
-eight HTTP `GET /v2/point/{lat}/{lon}/250` requests against adsb.lol to cover
+forwards it to **adsb.lol**, a community aggregator. A **Railway worker**
+(long-running Node/TypeScript process) wakes up every 15 s, fans out eight
+concurrent `GET /v2/point/{lat}/{lon}/250` requests against adsb.lol to cover
 the continental US, deduplicates by ICAO hex, and converts units (feet → m,
 knots → m/s) at the boundary. It then opens a Supabase client with the
-auto-injected service role key and does two DB writes: an `UPSERT` into
-`flights_current` keyed by `icao24`, and an `INSERT` into `observations` for
-the append-only history.
+service role key and does two DB writes: an `UPSERT` into `flights_current`
+keyed by `icao24`, and an `INSERT` into `observations` for the append-only
+history.
 
 The `UPSERT` triggers Postgres logical replication, which Supabase Realtime
 listens on. Realtime re-broadcasts the row change as a `postgres_changes`
@@ -31,32 +38,39 @@ that channel open via a client-side `supabase.channel(...).subscribe()` in
 `page.tsx`; when the event arrives over its WebSocket, the handler updates a
 local `Map<icao24, Flight>` in React state. React re-renders, React Leaflet
 diffs the marker set, and the aircraft's SVG icon moves on the map. The whole
-aircraft-to-pixel path passes through roughly six independent systems:
-transponder → ADS-B receiver → adsb.lol → Supabase Edge Function → Supabase
-Postgres → Supabase Realtime → browser.
+aircraft-to-pixel path passes through six independent systems: transponder →
+ADS-B receiver → adsb.lol → Railway worker → Supabase Postgres → Supabase
+Realtime → browser.
 
-### 2. Why is the background job separate from the Next.js app? What would break if you moved the polling into a Next.js server route?
+### 2. Why is the Railway worker separate from the Next.js app? What would break if you moved the polling into a Next.js server route?
 
-Vercel's serverless functions are built for short-lived request/response: they
-spin up on an incoming HTTP request, have a 10 – 60 s wall-clock limit, and
-shut down. A polling loop that has to fire every minute (or every 12 s, as
-the original design called for) doesn't have a natural HTTP caller. You could
-use Vercel Cron to schedule it, but cron invocations are charged as
-function-seconds, cold-start every time, and are hard-capped at one call per
-minute on the Hobby tier — which is exactly the reliability pattern you're
-trying to avoid when ingesting live data.
+Vercel's serverless functions are built for short-lived request/response:
+they spin up on an incoming HTTP request, have a 10 – 60 s wall-clock limit,
+and shut down. A polling loop that has to fire every 15 s doesn't have a
+natural HTTP caller. You could use Vercel Cron to schedule it, but cron
+invocations cold-start every time and are hard-capped at one call per minute
+on the Hobby tier — which is exactly the reliability pattern you're trying
+to avoid when ingesting live data that ages out within seconds.
 
-Architecturally the bigger point is **decoupling**: the ingest job and the
-frontend have different availability budgets and different deploy cadences.
-This project validated that empirically. The original plan put the worker on
-Railway as a long-running Node process, but OpenSky Network blocks TCP
-connections from Railway's IP ranges (also confirmed against Supabase Edge
-and likely true for most commercial cloud egress). Because the job was
-separate, the fix was a clean swap: delete the Railway deployment, drop a
-Deno edge function in its place, flip the data source to adsb.lol — **zero
-changes to the Next.js app, the DB schema, or the frontend React code**. If
-polling had been wired into a `/api/poll` route, we would have been editing
-the deployed UI just to migrate the ingest layer.
+Architecturally the bigger point is **decoupling**. This project validated
+that empirically in two different ways:
+
+1. The **data source** changed mid-build. We started on OpenSky Network, but
+   OpenSky blocks TCP connections from commercial cloud IP ranges (confirmed
+   from both Railway and Supabase Edge — same `ConnectTimeoutError`). Because
+   the ingest job was a separate service, we swapped to adsb.lol by editing
+   one worker file (`worker/src/opensky.ts`) — no schema change, no frontend
+   change, no redeploy of the Vercel app.
+2. The **compute platform** itself briefly moved. While debugging OpenSky, we
+   shipped a **Supabase Edge Function** triggered by pg_cron as a fallback
+   ingest path. It ran end-to-end without touching the Next.js app. Once the
+   Railway worker worked again (against adsb.lol), we flipped ingest back to
+   Railway by unscheduling the cron — the edge function is still deployed as
+   a warm standby. Swapping ingest platforms with zero frontend churn is
+   exactly what the decoupled architecture buys you.
+
+If polling had been wired into a `/api/poll` route, every one of those
+migrations would have required editing the deployed UI.
 
 ### 3. How does Supabase Realtime deliver updates to the browser, and why is Realtime enabled on `flights_current` but not `observations`?
 
@@ -66,19 +80,18 @@ reads WAL records as rows change, and fans them out to connected browsers
 over WebSocket. Each subscribed client sees only changes on tables in the
 publication. Our frontend opens one channel per tab and filters for
 `postgres_changes` on `public.flights_current`; INSERT / UPDATE / DELETE
-events arrive as JSON with the row before and after, which the client merges
-into its in-memory `Map`.
+events arrive as JSON with the row before and after, and the client merges
+them into its in-memory `Map`.
 
-`flights_current` is in the publication because it is the canonical "latest
-state" table — one row per aircraft, upserted at most once per poll. That
-yields ~1 k row changes per minute, which comfortably fits the 2 M
-messages/month free tier (about 65 % utilization at steady state). The
-`observations` table is specifically **not** published: it is append-only
-history and grows at the same rate, so publishing it would duplicate the
+`flights_current` is in the publication because it is the canonical
+"latest state" table — one row per aircraft, upserted at most once per
+15-second poll. That yields ~5 k row changes every 15 s = ~20 k/min at peak.
+`observations` is specifically **not** published: it is append-only history
+that grows at the same rate, so publishing it would duplicate the Realtime
 message volume while delivering no new information to the UI. The UI already
 has everything it needs from `flights_current`; the history table exists
-only for the per-flight altitude/speed charts, which are pulled on demand via
-a regular API route (`/api/history/[icao24]`) and never need to stream.
+only for the per-flight altitude/speed charts, which are pulled on demand
+via a regular API route (`/api/history/[icao24]`) and never need to stream.
 
 ### 4. Ask Claude (with Supabase MCP) to describe your database. Paste the response. Does it match your mental model?
 
@@ -89,45 +102,42 @@ a regular API route (`/api/history/[icao24]`) and never need to stream.
   {
     "tablename": "flights_current",
     "rls_enabled": true,
-    "index_count": 3,
-    "in_realtime_publication": true,
-    "approx_rows": 1227
+    "indexes": ["pkey(icao24)", "idx_fc_callsign", "idx_fc_last_seen"],
+    "in_realtime_publication": true
   },
   {
     "tablename": "observations",
     "rls_enabled": true,
-    "index_count": 4,
+    "indexes": ["pkey(id)", "idx_obs_icao_time(icao24, observed_at DESC)",
+                "idx_obs_time", "idx_obs_callsign"],
+    "in_realtime_publication": false
+  },
+  {
+    "tablename": "user_favorites",
+    "rls_enabled": true,
+    "indexes": ["pkey(id)", "unique(user_id, callsign)",
+                "idx_uf_user_created", "idx_uf_callsign"],
     "in_realtime_publication": false,
-    "approx_rows": 17351
+    "policies": [
+      "uf select own: auth.uid() = user_id",
+      "uf insert own: auth.uid() = user_id",
+      "uf update own: auth.uid() = user_id",
+      "uf delete own: auth.uid() = user_id"
+    ]
   }
 ]
 ```
 
-And the index definitions:
-
-```
-flights_current_pkey ON (icao24)
-idx_fc_callsign      ON (callsign)
-idx_fc_last_seen     ON (last_seen)
-
-observations_pkey    ON (id)
-idx_obs_icao_time    ON (icao24, observed_at DESC)
-idx_obs_time         ON (observed_at)
-idx_obs_callsign     ON (callsign)
-```
-
-Three scheduled `pg_cron` jobs are also in place: `poll-opensky` (every minute,
-calls the edge function), `prune-observations-hourly` (deletes rows older than
-6 hours), and `prune-stale-current` (removes flights unseen for 10 minutes,
-which is how DELETE events reach the frontend to clear disappeared planes
-from the map).
+Two active `pg_cron` jobs: `prune-observations-hourly` (TTL sweep of the
+history table at :07 each hour) and `prune-stale-current` (deletes
+`flights_current` rows not seen in 10 minutes, which is how DELETE events
+reach the frontend to clear disappeared planes from the map).
 
 This matches the mental model exactly. `flights_current` is the narrow
-upserted latest-state table, in the Realtime publication; `observations` is
-the append-only history with the composite `(icao24, observed_at DESC)` index
-that `/api/history/[icao24]` relies on (ORDER BY observed_at DESC LIMIT 100
-becomes an index-only scan). The `idx_fc_callsign` / `idx_obs_callsign`
-indexes backstop user-facing callsign search; they're flagged as unused in
-`get_advisors` right now only because no one has searched yet on the live
-site. RLS is enabled on both tables with public SELECT policies, matching the
-app's read-only-to-the-world / writes-from-service-role-only design.
+upserted latest-state table in the Realtime publication; `observations` is
+the append-only history with the composite `(icao24, observed_at DESC)`
+index that `/api/history/[icao24]` relies on. The `user_favorites` table is
+user-partitioned via four tight `auth.uid() = user_id` RLS policies — two
+users never see each other's data even though both use the same anon key
+from the browser. RLS is how we get multi-tenancy without server-side
+session bookkeeping.
