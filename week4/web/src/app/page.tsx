@@ -56,26 +56,54 @@ export default function HomePage() {
     };
   }, []);
 
-  // Realtime subscription.
+  // Realtime subscription with coalesced flush.
+  // During worker poll bursts we receive up to 50 postgres_changes events
+  // per second. Applying each one to React state would trigger a re-render
+  // per event — expensive with ~5 k markers. Instead we accumulate
+  // upserts/deletes in a ref and flush them into state every 150 ms.
   useEffect(() => {
     const supabase = getBrowserSupabase();
+    const pendingUpserts = new Map<string, Flight>();
+    const pendingDeletes = new Set<string>();
+    let flushTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const flush = () => {
+      flushTimer = null;
+      if (pendingUpserts.size === 0 && pendingDeletes.size === 0) return;
+      setFlights((prev) => {
+        const next = new Map(prev);
+        for (const icao of pendingDeletes) next.delete(icao);
+        for (const [icao, row] of pendingUpserts) next.set(icao, row);
+        return next;
+      });
+      pendingUpserts.clear();
+      pendingDeletes.clear();
+    };
+
+    const schedule = () => {
+      if (flushTimer == null) flushTimer = setTimeout(flush, 150);
+    };
+
     const channel = supabase
       .channel("flights_current")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "flights_current" },
         (payload) => {
-          setFlights((prev) => {
-            const next = new Map(prev);
-            if (payload.eventType === "DELETE") {
-              const old = payload.old as { icao24?: string };
-              if (old.icao24) next.delete(old.icao24);
-            } else {
-              const row = payload.new as Flight;
-              if (row?.icao24) next.set(row.icao24, row);
+          if (payload.eventType === "DELETE") {
+            const old = payload.old as { icao24?: string };
+            if (old.icao24) {
+              pendingUpserts.delete(old.icao24);
+              pendingDeletes.add(old.icao24);
             }
-            return next;
-          });
+          } else {
+            const row = payload.new as Flight;
+            if (row?.icao24) {
+              pendingDeletes.delete(row.icao24);
+              pendingUpserts.set(row.icao24, row);
+            }
+          }
+          schedule();
         },
       )
       .subscribe((state) => {
@@ -87,6 +115,7 @@ export default function HomePage() {
       });
 
     return () => {
+      if (flushTimer != null) clearTimeout(flushTimer);
       supabase.removeChannel(channel);
     };
   }, []);

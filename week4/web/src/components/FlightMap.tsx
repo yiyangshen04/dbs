@@ -1,7 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import { useEffect, useMemo, useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+  useMap,
+} from "react-leaflet";
 import L, { DivIcon } from "leaflet";
 import type { Flight, Observation } from "@/lib/types";
 
@@ -34,19 +41,60 @@ function iconFor(flight: Flight, selected: boolean): DivIcon {
   });
 }
 
+// Helper component that lives inside MapContainer so it has access to the
+// Leaflet map via useMap(). Reports viewport bounds to the parent on pan /
+// zoom / initial load.
+function BoundsTracker({
+  onBoundsChange,
+}: {
+  onBoundsChange: (b: L.LatLngBounds) => void;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    const handler = () => onBoundsChange(map.getBounds());
+    // Initial capture is deferred to the next macrotask so React isn't in
+    // the middle of a render when we setState in the parent.
+    const initial = setTimeout(handler, 0);
+    map.on("moveend", handler);
+    map.on("zoomend", handler);
+    return () => {
+      clearTimeout(initial);
+      map.off("moveend", handler);
+      map.off("zoomend", handler);
+    };
+  }, [map, onBoundsChange]);
+  return null;
+}
+
 export default function FlightMap({
   flights,
   selectedIcao,
   onSelect,
   history,
 }: Props) {
+  const [bounds, setBounds] = useState<L.LatLngBounds | null>(null);
+
   // Path polyline from recent observations (oldest → newest).
   const pathPoints = useMemo(() => {
     if (!history) return [];
     return history
       .filter((o) => o.latitude != null && o.longitude != null)
-      .map((o) => [o.latitude as number, o.longitude as number] as [number, number]);
+      .map(
+        (o) => [o.latitude as number, o.longitude as number] as [number, number],
+      );
   }, [history]);
+
+  // Render markers only for flights inside the current viewport (plus the
+  // selected one, so focusing on it from the sidebar still works when it's
+  // off-screen). Drops typical marker count from ~5 k to a few hundred.
+  const visibleFlights = useMemo(() => {
+    if (!bounds) return flights;
+    return flights.filter((f) => {
+      if (f.latitude == null || f.longitude == null) return false;
+      if (f.icao24 === selectedIcao) return true;
+      return bounds.contains([f.latitude, f.longitude]);
+    });
+  }, [flights, bounds, selectedIcao]);
 
   return (
     <MapContainer
@@ -56,6 +104,7 @@ export default function FlightMap({
       className="h-full w-full"
       preferCanvas
     >
+      <BoundsTracker onBoundsChange={setBounds} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -68,7 +117,7 @@ export default function FlightMap({
         />
       ) : null}
 
-      {flights.map((f) => {
+      {visibleFlights.map((f) => {
         if (f.latitude == null || f.longitude == null) return null;
         const selected = f.icao24 === selectedIcao;
         return (
