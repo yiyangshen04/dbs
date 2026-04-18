@@ -26,15 +26,15 @@ async function tick(): Promise<void> {
     const { aircraft, serverNowMs, rawCount } = await fetchStates();
     const rows = transformStates(aircraft, serverNowMs);
 
-    await Promise.all([
+    const [{ upserted, skipped }] = await Promise.all([
       upsertCurrent(supabase, rows),
       insertObservations(supabase, rows),
     ]);
 
     const ms = Date.now() - started;
     console.log(
-      `[poll] wrote ${rows.length} flights in ${ms} ms ` +
-        `(raw: ${rawCount})`,
+      `[poll] upserted ${upserted}, skipped ${skipped} unchanged ` +
+        `(raw: ${rawCount}, total seen: ${rows.length}) in ${ms} ms`,
     );
     consecutiveFailures = 0;
   } catch (err) {
