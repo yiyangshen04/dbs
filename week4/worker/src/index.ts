@@ -3,6 +3,7 @@ import { sweepAnchors } from "./sources.js";
 import { toFlightRows } from "./transform.js";
 import {
   createServiceClient,
+  evictStaleCache,
   insertObservations,
   upsertCurrent,
 } from "./store.js";
@@ -69,9 +70,11 @@ async function pruneTick(): Promise<void> {
   try {
     const obs = await pruneObservations(supabase);
     const stale = await pruneStaleCurrent(supabase);
-    if (obs || stale) {
+    const evicted = evictStaleCache();
+    if (obs || stale || evicted) {
       console.log(
-        `[prune] removed ${obs} observations, ${stale} stale current rows`,
+        `[prune] removed ${obs} observations, ${stale} stale current rows, ` +
+          `evicted ${evicted} cache entries`,
       );
     }
   } catch (err) {

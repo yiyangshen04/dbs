@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import type { Flight, Observation } from "@/lib/types";
 import { getBrowserSupabase } from "@/lib/supabase-browser";
 import { useFavorites } from "@/lib/use-favorites";
@@ -41,15 +42,47 @@ export default function HomePage() {
   const [signInOpen, setSignInOpen] = useState(false);
   const { favorites, callsignSet, add, remove, signedIn } = useFavorites();
 
-  // Replace (not merge) so rows deleted while we were disconnected drop out.
+  // Reconcile with a full snapshot. Merge by row recency rather than blind
+  // replace — realtime events that landed while the snapshot request was in
+  // flight are newer than the snapshot's rows, and blindly replacing would
+  // resurrect pruned planes or snap fresh positions backwards.
   const refetchSnapshot = useCallback(async () => {
     try {
       const r = await fetch("/api/flights");
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const data = (await r.json()) as { flights: Flight[] };
-      const m = new Map<string, Flight>();
-      for (const f of data.flights) m.set(f.icao24, f);
-      setFlights(m);
+      if (data.flights.length === 0) {
+        // Table is genuinely empty (ingest stopped >10 min ago).
+        setFlights(new Map());
+        setLastSyncMs(Date.now());
+        return;
+      }
+      let snapshotHighWater = 0;
+      for (const f of data.flights) {
+        const t = Date.parse(f.updated_at);
+        if (t > snapshotHighWater) snapshotHighWater = t;
+      }
+      setFlights((prev) => {
+        const next = new Map<string, Flight>();
+        for (const f of data.flights) {
+          const cur = prev.get(f.icao24);
+          next.set(
+            f.icao24,
+            cur && Date.parse(cur.updated_at) > Date.parse(f.updated_at)
+              ? cur
+              : f,
+          );
+        }
+        // Rows we hold that the snapshot lacks: keep only ones written
+        // around/after the snapshot (added mid-flight); the rest were
+        // pruned server-side and must not resurrect.
+        for (const [icao, cur] of prev) {
+          if (!next.has(icao) && Date.parse(cur.updated_at) >= snapshotHighWater - 90_000) {
+            next.set(icao, cur);
+          }
+        }
+        return next;
+      });
       setLastSyncMs(Date.now());
     } catch (e) {
       console.warn("[snapshot] refetch failed:", e);
@@ -66,6 +99,7 @@ export default function HomePage() {
     let generation = 0;
     let attempt = 0;
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let activeChannel: RealtimeChannel | null = null;
 
     const pendingUpserts = new Map<string, Flight>();
     const pendingDeletes = new Set<string>();
@@ -74,15 +108,21 @@ export default function HomePage() {
     const flush = () => {
       flushTimer = null;
       if (pendingUpserts.size === 0 && pendingDeletes.size === 0) return;
+      // Copy before dispatching: React may run the updater later (or twice
+      // in StrictMode), and the pending buffers are cleared synchronously
+      // below — an updater closing over the live buffers would see them
+      // empty and silently drop the whole batch.
+      const upserts = new Map(pendingUpserts);
+      const deletes = new Set(pendingDeletes);
+      pendingUpserts.clear();
+      pendingDeletes.clear();
       setFlights((prev) => {
         const next = new Map(prev);
-        for (const icao of pendingDeletes) next.delete(icao);
-        for (const [icao, row] of pendingUpserts) next.set(icao, row);
+        for (const icao of deletes) next.delete(icao);
+        for (const [icao, row] of upserts) next.set(icao, row);
         return next;
       });
       setLastSyncMs(Date.now());
-      pendingUpserts.clear();
-      pendingDeletes.clear();
     };
     const schedule = () => {
       if (flushTimer == null) flushTimer = setTimeout(flush, FLUSH_MS);
@@ -122,13 +162,19 @@ export default function HomePage() {
             void refetchSnapshot();
           }
           if (state === "CHANNEL_ERROR" || state === "TIMED_OUT" || state === "CLOSED") {
+            // Supersede this channel FIRST: removeChannel() synchronously
+            // re-invokes this same callback with CLOSED, and without the
+            // generation bump that re-entry would recurse forever.
+            generation += 1;
+            activeChannel = null;
             setStatus("reconnecting");
-            supabase.removeChannel(channel);
+            void supabase.removeChannel(channel);
             attempt += 1;
             const backoff = Math.min(30_000, 2_000 * 2 ** Math.min(attempt, 4));
             retryTimer = setTimeout(connect, backoff);
           }
         });
+      activeChannel = channel;
     };
 
     connect();
@@ -143,7 +189,9 @@ export default function HomePage() {
       if (retryTimer != null) clearTimeout(retryTimer);
       if (flushTimer != null) clearTimeout(flushTimer);
       clearInterval(reconcile);
-      supabase.removeAllChannels();
+      // Remove only OUR channel — removeAllChannels() would tear down the
+      // socket a remounted effect (StrictMode) is subscribing on.
+      if (activeChannel) void supabase.removeChannel(activeChannel);
     };
   }, [refetchSnapshot]);
 

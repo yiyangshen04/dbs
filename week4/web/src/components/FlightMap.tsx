@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -76,7 +76,10 @@ function iconFor(flight: Flight, selected: boolean): DivIcon {
   return icon;
 }
 
-// Project a moving aircraft forward from its last reported fix.
+// Project a moving aircraft forward from its last reported fix. dt is
+// CLAMPED at the cap rather than cut off — cutting off would snap a
+// stale jet ~45 km backwards in a single tick; clamping just freezes it
+// at its projected spot until fresh data (or the TTL DELETE) arrives.
 function displayPosition(f: Flight, nowMs: number): [number, number] | null {
   if (f.latitude == null || f.longitude == null) return null;
   if (
@@ -88,16 +91,41 @@ function displayPosition(f: Flight, nowMs: number): [number, number] | null {
     return [f.latitude, f.longitude];
   }
   const dt = (nowMs - Date.parse(f.last_seen)) / 1000;
-  if (!Number.isFinite(dt) || dt <= 0 || dt > MAX_EXTRAPOLATE_S) {
+  if (!Number.isFinite(dt) || dt <= 0) {
     return [f.latitude, f.longitude];
   }
+  const dtClamped = Math.min(dt, MAX_EXTRAPOLATE_S);
   const rad = (f.heading * Math.PI) / 180;
-  const dist = f.velocity * dt; // meters
+  const dist = f.velocity * dtClamped; // meters
   const dLat = (dist * Math.cos(rad)) / 111_320;
   const cosLat = Math.cos((f.latitude * Math.PI) / 180);
   if (Math.abs(cosLat) < 1e-6) return [f.latitude, f.longitude];
   const dLon = (dist * Math.sin(rad)) / (111_320 * cosLat);
   return [f.latitude + dLat, f.longitude + dLon];
+}
+
+// Overlay wrapper that keeps clicks/wheel from falling through to the map
+// (Leaflet's own handlers live on the container and would pan/zoom).
+function Overlay({
+  className,
+  children,
+}: {
+  className: string;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (el) {
+      L.DomEvent.disableClickPropagation(el);
+      L.DomEvent.disableScrollPropagation(el);
+    }
+  }, []);
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
+  );
 }
 
 // Lives inside MapContainer so it can reach the Leaflet map via useMap().
@@ -125,7 +153,7 @@ function BoundsTracker({
 function RegionButtons() {
   const map = useMap();
   return (
-    <div className="glass-panel absolute right-3 top-3 z-[1000] flex overflow-hidden !rounded-full text-[11px] font-medium">
+    <Overlay className="glass-panel absolute right-3 top-3 z-[1000] flex overflow-hidden !rounded-full text-[11px] font-medium">
       {(Object.keys(REGIONS) as Array<keyof typeof REGIONS>).map((name) => (
         <button
           key={name}
@@ -138,13 +166,13 @@ function RegionButtons() {
           {name}
         </button>
       ))}
-    </div>
+    </Overlay>
   );
 }
 
 function Legend() {
   return (
-    <div className="glass-panel absolute bottom-6 left-3 z-[1000] px-3 py-2">
+    <Overlay className="glass-panel absolute bottom-6 left-3 z-[1000] px-3 py-2">
       <div className="mb-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-muted">
         Altitude
       </div>
@@ -161,7 +189,7 @@ function Legend() {
           ),
         )}
       </div>
-    </div>
+    </Overlay>
   );
 }
 
@@ -213,11 +241,17 @@ export default function FlightMap({
     });
     const hidden = Math.max(0, inView.length - MAX_MARKERS);
     if (hidden > 0) {
-      // Prefer airborne traffic when thinning.
-      inView = inView
+      // Prefer airborne traffic when thinning — but never thin away the
+      // selected aircraft.
+      const kept = inView
         .slice()
         .sort((a, b) => Number(a.on_ground) - Number(b.on_ground))
         .slice(0, MAX_MARKERS);
+      if (selectedIcao && !kept.some((f) => f.icao24 === selectedIcao)) {
+        const sel = inView.find((f) => f.icao24 === selectedIcao);
+        if (sel) kept.push(sel);
+      }
+      inView = kept;
     }
     return { visibleFlights: inView, hiddenCount: hidden };
   }, [flights, bounds, selectedIcao]);
@@ -241,9 +275,9 @@ export default function FlightMap({
       />
 
       {hiddenCount > 0 ? (
-        <div className="glass-panel absolute bottom-6 right-3 z-[1000] px-3 py-1.5 text-[10px] text-muted">
+        <Overlay className="glass-panel absolute bottom-6 right-3 z-[1000] px-3 py-1.5 text-[10px] text-muted">
           {hiddenCount.toLocaleString()} aircraft hidden — zoom in
-        </div>
+        </Overlay>
       ) : null}
 
       {trailSegments.map((s) => (

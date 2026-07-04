@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { FlightRow } from "./transform.js";
 import {
   ALT_EPSILON,
+  CACHE_EVICT_MS,
   FORCE_REFRESH_MS,
   HEADING_EPSILON,
   LAT_LON_EPSILON,
@@ -65,7 +66,8 @@ export async function upsertCurrent(
   let skipped = 0;
   for (const row of rows) {
     const prev = lastWritten.get(row.icao24);
-    const stale = prev && now - prev.upsertedAtMs > FORCE_REFRESH_MS;
+    // Stale check keyed to the stored signal time — see FORCE_REFRESH_MS.
+    const stale = prev && now - Date.parse(prev.row.last_seen) > FORCE_REFRESH_MS;
     if (prev && !stale && !materiallyChanged(prev.row, row)) {
       skipped += 1;
       continue;
@@ -93,6 +95,21 @@ export async function upsertCurrent(
   }
 
   return { written: toWrite, skipped };
+}
+
+// Drop cache entries that haven't been rewritten in CACHE_EVICT_MS — a
+// reappearing aircraft force-refreshes anyway, so stale entries are pure
+// memory leak over a long-running daemon. Called from the prune loop.
+export function evictStaleCache(): number {
+  const cutoff = Date.now() - CACHE_EVICT_MS;
+  let evicted = 0;
+  for (const [icao, entry] of lastWritten) {
+    if (entry.upsertedAtMs < cutoff) {
+      lastWritten.delete(icao);
+      evicted += 1;
+    }
+  }
+  return evicted;
 }
 
 // History keeps only rows whose state changed (what upsertCurrent wrote).

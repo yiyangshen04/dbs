@@ -101,6 +101,10 @@ interface Flight {
   the frontend consumes to clear landed planes).
 - **Stats in SQL**: `stats_overview()` RPC aggregates server-side instead
   of shipping 100k rows to the API route.
+- **DB ingest lock** (`ingest_lock` table): the 1-minute cron fires
+  regardless of sweep duration, so each run atomically claims a TTL'd lock
+  row and skips if the previous sweep is still going — overlapping sweeps
+  would double the request rate against per-minute rate limits.
 - **`origin_country` from the ICAO address block** (Annex 10 allocation
   table subset) — the ADS-B feeds don't carry registration country.
 - **Frontend resilience**: Realtime subscription auto-reconnects with

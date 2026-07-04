@@ -14,9 +14,11 @@ Hawaii). See [CLAUDE.md](./CLAUDE.md) for architecture.
 1. Create a Supabase project at <https://supabase.com/dashboard>.
 2. Enable the `pg_cron` extension: **Database → Extensions → pg_cron → enable**.
 3. In the SQL editor, run `supabase/migrations/0001_init.sql`, then
-   `0002_schedule_poll.sql`, then `0003_full_us_optimize.sql`
-   (all idempotent; 0003 updates the project URL / anon key baked into the
-   cron job — edit those two values if this is a fresh project).
+   `0003_full_us_optimize.sql`, then `0004_user_favorites.sql` (all
+   idempotent). **Skip `0002`** — it is the historical first version of the
+   cron job and 0003 supersedes it. On a fresh project, first edit the
+   project URL and anon key inside 0003's `poll-opensky` cron block —
+   the committed values point at the original course project.
 4. Confirm under **Database → Replication** that `flights_current` is in the
    `supabase_realtime` publication.
 5. Copy the project URL, anon key, and service role key from
@@ -78,5 +80,7 @@ The 250 nm `/point` radius cap means full-US coverage needs a grid:
 26 hex-lattice anchors over CONUS (verified gap-free against a 0.25°
 sample of the CONUS outline) + Anchorage, Fairbanks, Juneau, Honolulu.
 
-## Verification checklist
-See [SUBMISSION.md](./SUBMISSION.md) for the original assignment write-up.
+## Assignment write-up
+[SUBMISSION.md](./SUBMISSION.md) is the original week-4 submission, kept as
+a historical record — it describes the earlier Railway + single-source
+architecture, which this revision replaced.

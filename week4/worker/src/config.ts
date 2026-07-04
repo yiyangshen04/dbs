@@ -47,6 +47,14 @@ export const VELOCITY_EPSILON = 1.0;  // m/s
 export const ALT_EPSILON = 10;        // m
 export const HEADING_EPSILON = 2;     // degrees
 
-// Force a refresh for unchanged (parked) aircraft well under the
-// stale-current TTL so pg_cron doesn't delete rows that are still alive.
-export const FORCE_REFRESH_MS = 5 * 60 * 1000;
+// Rewrite an unchanged (parked) aircraft once its stored last_seen — the
+// signal time, which can already lag MAX_STATE_AGE_SECONDS at write time —
+// is this old. Keyed to last_seen because the stale-current TTL prunes on
+// last_seen; 4 min plus one sweep period stays comfortably inside the
+// 10-minute TTL even with back-off.
+export const FORCE_REFRESH_MS = 4 * 60 * 1000;
+
+// Evict diff-cache entries not rewritten for this long — they can never
+// cause a skip again (any reappearance force-refreshes), so keeping them
+// only leaks memory across the worker's lifetime.
+export const CACHE_EVICT_MS = 30 * 60 * 1000;

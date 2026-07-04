@@ -45,8 +45,17 @@ const RADIUS_NM = 250;
 const ANCHOR_SPACING_MS = 1_150;
 const RETRY_DELAY_MS = 2_500;
 const MAX_STATE_AGE_SECONDS = 5 * 60;
-const FORCE_REFRESH_MS = 5 * 60 * 1000;
+// Rewrite an unchanged aircraft once its stored last_seen (signal time!)
+// is this old. Keyed to last_seen — not write time — because last_seen can
+// already lag by up to MAX_STATE_AGE_SECONDS at write time, and the
+// 10-minute stale TTL prunes on last_seen. 4 min + one sweep period keeps
+// live-but-parked aircraft comfortably inside the TTL.
+const FORCE_REFRESH_MS = 4 * 60 * 1000;
 const CHUNK = 1000;
+// The 1-minute cron fires regardless of sweep duration; the DB-side lock
+// (public.ingest_lock, migration 0003) keeps sweeps from overlapping and
+// hammering the rate-limited aggregators. TTL bounds a crashed run.
+const LOCK_TTL_MS = 3 * 60 * 1000;
 
 const LAT_LON_EPSILON = 0.001; // ~100 m
 const VELOCITY_EPSILON = 1.0;  // m/s
@@ -136,7 +145,8 @@ const ICAO_RANGES: Array<[number, number, string]> = [
   [0x488000, 0x48ffff, "Poland"],
   [0x490000, 0x497fff, "Portugal"],
   [0x498000, 0x49ffff, "Czechia"],
-  [0x4a0000, 0x4a7fff, "Sweden"],
+  [0x4a0000, 0x4a7fff, "Romania"],
+  [0x4a8000, 0x4affff, "Sweden"],
   [0x4b0000, 0x4b7fff, "Switzerland"],
   [0x4b8000, 0x4bffff, "Turkey"],
   [0x4ca000, 0x4cafff, "Ireland"],
@@ -221,59 +231,49 @@ function diff(a: number | null, b: number | null): number {
 
 interface SweepStats {
   ok: boolean;
-  unique: number;
-  written: number;
-  skipped: number;
-  raw: number;
-  anchorsOk: number;
-  anchorsFailed: number;
+  skipped_run?: boolean;
+  unique?: number;
+  written?: number;
+  skipped?: number;
+  raw?: number;
+  anchorsOk?: number;
+  anchorsFailed?: number;
   ms: number;
+}
+
+// Atomically claim the ingest lock: succeeds only if the previous holder's
+// TTL expired or the lock was released. One UPDATE, so two concurrent
+// invocations can't both win.
+async function claimLock(
+  supabase: ReturnType<typeof createClient>,
+): Promise<boolean> {
+  const now = Date.now();
+  const { data, error } = await supabase
+    .from("ingest_lock")
+    .update({ locked_until: new Date(now + LOCK_TTL_MS).toISOString() })
+    .eq("id", 1)
+    .lt("locked_until", new Date(now).toISOString())
+    .select("id");
+  if (error) {
+    throw new Error(
+      `claim ingest_lock: ${error.message} (did migration 0003 run?)`,
+    );
+  }
+  return (data?.length ?? 0) > 0;
+}
+
+async function releaseLock(
+  supabase: ReturnType<typeof createClient>,
+): Promise<void> {
+  const { error } = await supabase
+    .from("ingest_lock")
+    .update({ locked_until: new Date().toISOString() })
+    .eq("id", 1);
+  if (error) console.warn(`[lock] release failed: ${error.message}`);
 }
 
 async function runSweep(): Promise<SweepStats> {
   const started = Date.now();
-
-  // 1) Serial multi-source sweep.
-  const byIcao = new Map<string, FlightRow>();
-  let raw = 0;
-  let anchorsOk = 0;
-  let anchorsFailed = 0;
-
-  for (let i = 0; i < ANCHORS.length; i++) {
-    const [lat, lon] = ANCHORS[i];
-    let result: { list: AdsbAircraft[]; nowMs: number } | null = null;
-    for (let attempt = 0; attempt < 2 && !result; attempt++) {
-      const src = SOURCES[(i + attempt) % SOURCES.length];
-      try {
-        result = await fetchAnchor(src, lat, lon);
-      } catch (err) {
-        if (attempt === 0) {
-          await sleep(RETRY_DELAY_MS);
-        } else {
-          anchorsFailed += 1;
-          console.warn(
-            `[sweep] anchor ${lat},${lon} failed on both sources: ${(err as Error).message}`,
-          );
-        }
-      }
-    }
-    if (result) {
-      anchorsOk += 1;
-      raw += result.list.length;
-      for (const ac of result.list) {
-        const row = toRow(ac, result.nowMs);
-        if (!row) continue;
-        const prev = byIcao.get(row.icao24);
-        // Overlapping anchors: keep the freshest signal.
-        if (prev && Date.parse(prev.last_seen) >= Date.parse(row.last_seen)) continue;
-        byIcao.set(row.icao24, row);
-      }
-    }
-    if (i < ANCHORS.length - 1) await sleep(ANCHOR_SPACING_MS);
-  }
-
-  if (anchorsOk === 0) throw new Error(`all ${ANCHORS.length} anchors failed`);
-  const rows = [...byIcao.values()];
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
@@ -281,71 +281,130 @@ async function runSweep(): Promise<SweepStats> {
     { auth: { persistSession: false } },
   );
 
-  // 2) Stateless diff: read what's currently stored, skip unchanged rows.
-  // Paginated because PostgREST caps a single response.
-  const current = new Map<string, FlightRow & { updated_at: string }>();
-  for (let from = 0; from < 20_000; from += CHUNK) {
-    const { data, error } = await supabase
-      .from("flights_current")
-      .select(
-        "icao24, callsign, origin_country, longitude, latitude, baro_altitude, velocity, heading, vertical_rate, on_ground, last_seen, updated_at",
-      )
-      .order("icao24")
-      .range(from, from + CHUNK - 1);
-    if (error) throw new Error(`read flights_current: ${error.message}`);
-    for (const row of data ?? []) current.set(row.icao24, row);
-    if ((data?.length ?? 0) < CHUNK) break;
+  // 0) Skip if the previous sweep is still running — overlapping sweeps
+  // would double the request rate against per-minute rate limits.
+  if (!(await claimLock(supabase))) {
+    console.log("[poll] previous sweep still running, skipping this tick");
+    return { ok: true, skipped_run: true, ms: Date.now() - started };
   }
 
-  const nowMs = Date.now();
-  const toWrite: FlightRow[] = [];
-  let skipped = 0;
-  for (const row of rows) {
-    const prev = current.get(row.icao24);
-    const stale = prev && nowMs - Date.parse(prev.updated_at) > FORCE_REFRESH_MS;
-    if (prev && !stale && !materiallyChanged(prev, row)) {
-      skipped += 1;
-      continue;
+  try {
+    // 1) Serial multi-source sweep.
+    const byIcao = new Map<string, FlightRow>();
+    let raw = 0;
+    let anchorsOk = 0;
+    let anchorsFailed = 0;
+
+    for (let i = 0; i < ANCHORS.length; i++) {
+      const [lat, lon] = ANCHORS[i];
+      let result: { list: AdsbAircraft[]; nowMs: number } | null = null;
+      for (let attempt = 0; attempt < 2 && !result; attempt++) {
+        const src = SOURCES[(i + attempt) % SOURCES.length];
+        try {
+          result = await fetchAnchor(src, lat, lon);
+        } catch (err) {
+          if (attempt === 0) {
+            await sleep(RETRY_DELAY_MS);
+          } else {
+            anchorsFailed += 1;
+            console.warn(
+              `[sweep] anchor ${lat},${lon} failed on both sources: ${(err as Error).message}`,
+            );
+          }
+        }
+      }
+      if (result) {
+        anchorsOk += 1;
+        raw += result.list.length;
+        for (const ac of result.list) {
+          const row = toRow(ac, result.nowMs);
+          if (!row) continue;
+          const prev = byIcao.get(row.icao24);
+          // Overlapping anchors: keep the freshest signal.
+          if (prev && Date.parse(prev.last_seen) >= Date.parse(row.last_seen)) continue;
+          byIcao.set(row.icao24, row);
+        }
+      }
+      if (i < ANCHORS.length - 1) await sleep(ANCHOR_SPACING_MS);
     }
-    toWrite.push(row);
-  }
 
-  // 3) Upsert live state, then mirror written rows into history with the
-  // actual signal time as observed_at.
-  const updatedAt = new Date().toISOString();
-  for (let i = 0; i < toWrite.length; i += CHUNK) {
-    const slice = toWrite
-      .slice(i, i + CHUNK)
-      .map((r) => ({ ...r, updated_at: updatedAt }));
-    const { error } = await supabase
-      .from("flights_current")
-      .upsert(slice, { onConflict: "icao24" });
-    if (error) throw new Error(`upsert flights_current: ${error.message}`);
-  }
-  for (let i = 0; i < toWrite.length; i += CHUNK) {
-    const slice = toWrite
-      .slice(i, i + CHUNK)
-      .map(({ last_seen, ...rest }) => ({ ...rest, observed_at: last_seen }));
-    const { error } = await supabase.from("observations").insert(slice);
-    if (error) throw new Error(`insert observations: ${error.message}`);
-  }
+    if (anchorsOk === 0) throw new Error(`all ${ANCHORS.length} anchors failed`);
+    const rows = [...byIcao.values()];
 
-  const stats: SweepStats = {
-    ok: true,
-    unique: rows.length,
-    written: toWrite.length,
-    skipped,
-    raw,
-    anchorsOk,
-    anchorsFailed,
-    ms: Date.now() - started,
-  };
-  console.log(
-    `[poll] wrote ${stats.written}, skipped ${stats.skipped} unchanged ` +
-      `(raw ${stats.raw}, unique ${stats.unique}, ` +
-      `anchors ${stats.anchorsOk} ok / ${stats.anchorsFailed} failed) in ${stats.ms} ms`,
-  );
-  return stats;
+    // 2) Stateless diff: read what's currently stored, skip unchanged rows.
+    // Keyset pagination (icao24 > lastKey) — offset pages can skip rows
+    // when the TTL prune deletes between requests.
+    const current = new Map<string, FlightRow & { updated_at: string }>();
+    let lastKey = "";
+    for (let page = 0; page < 20; page++) {
+      let q = supabase
+        .from("flights_current")
+        .select(
+          "icao24, callsign, origin_country, longitude, latitude, baro_altitude, velocity, heading, vertical_rate, on_ground, last_seen, updated_at",
+        )
+        .order("icao24")
+        .limit(CHUNK);
+      if (lastKey) q = q.gt("icao24", lastKey);
+      const { data, error } = await q;
+      if (error) throw new Error(`read flights_current: ${error.message}`);
+      for (const row of data ?? []) current.set(row.icao24, row);
+      if ((data?.length ?? 0) < CHUNK) break;
+      lastKey = data![data!.length - 1].icao24;
+    }
+
+    const nowMs = Date.now();
+    const toWrite: FlightRow[] = [];
+    let skipped = 0;
+    for (const row of rows) {
+      const prev = current.get(row.icao24);
+      // Stale check keyed to the stored signal time — see FORCE_REFRESH_MS.
+      const stale = prev && nowMs - Date.parse(prev.last_seen) > FORCE_REFRESH_MS;
+      if (prev && !stale && !materiallyChanged(prev, row)) {
+        skipped += 1;
+        continue;
+      }
+      toWrite.push(row);
+    }
+
+    // 3) Upsert live state, then mirror written rows into history with the
+    // actual signal time as observed_at.
+    const updatedAt = new Date().toISOString();
+    for (let i = 0; i < toWrite.length; i += CHUNK) {
+      const slice = toWrite
+        .slice(i, i + CHUNK)
+        .map((r) => ({ ...r, updated_at: updatedAt }));
+      const { error } = await supabase
+        .from("flights_current")
+        .upsert(slice, { onConflict: "icao24" });
+      if (error) throw new Error(`upsert flights_current: ${error.message}`);
+    }
+    for (let i = 0; i < toWrite.length; i += CHUNK) {
+      const slice = toWrite
+        .slice(i, i + CHUNK)
+        .map(({ last_seen, ...rest }) => ({ ...rest, observed_at: last_seen }));
+      const { error } = await supabase.from("observations").insert(slice);
+      if (error) throw new Error(`insert observations: ${error.message}`);
+    }
+
+    const stats: SweepStats = {
+      ok: true,
+      unique: rows.length,
+      written: toWrite.length,
+      skipped,
+      raw,
+      anchorsOk,
+      anchorsFailed,
+      ms: Date.now() - started,
+    };
+    console.log(
+      `[poll] wrote ${stats.written}, skipped ${stats.skipped} unchanged ` +
+        `(raw ${stats.raw}, unique ${stats.unique}, ` +
+        `anchors ${stats.anchorsOk} ok / ${stats.anchorsFailed} failed) in ${stats.ms} ms`,
+    );
+    return stats;
+  } finally {
+    await releaseLock(supabase);
+  }
 }
 
 // ---------------------------------------------------------------- handler

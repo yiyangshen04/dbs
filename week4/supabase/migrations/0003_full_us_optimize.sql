@@ -34,13 +34,30 @@ as $fn$
                                   group by 1
                                   order by 2 desc
                                   limit 10) t),
-    'unique_aircraft_3h', (select count(distinct icao24) from observations),
-    'observations_3h',    (select count(*) from observations),
+    'unique_aircraft_3h', (select count(distinct icao24) from observations
+                            where observed_at > now() - interval '3 hours'),
+    'observations_3h',    (select count(*) from observations
+                            where observed_at > now() - interval '3 hours'),
     'generated_at',       now()
   );
 $fn$;
 
 grant execute on function public.stats_overview() to anon, authenticated;
+
+-- 2b) Ingest lock. The 1-minute cron fires regardless of how long the
+--     previous sweep took; a degraded sweep (source timeouts) can exceed
+--     60 s, and overlapping sweeps would double the aggregator request
+--     rate — amplifying the very rate limits the serial design avoids.
+--     The Edge Function claims this row atomically (UPDATE ... WHERE
+--     locked_until < now()) before sweeping and releases it afterwards;
+--     the TTL bounds the damage if a run dies without releasing.
+--     RLS enabled with no policies: only the service role can touch it.
+create table if not exists public.ingest_lock (
+  id           int primary key,
+  locked_until timestamptz not null default 'epoch'
+);
+insert into public.ingest_lock (id) values (1) on conflict (id) do nothing;
+alter table public.ingest_lock enable row level security;
 
 -- 3) Observations TTL 6h → 3h. The per-flight charts read the last ~120
 --    points (~2h at the 1-minute cadence), so 3h is plenty and halves the
