@@ -1,3 +1,7 @@
 .DS_Store
 .claude/
 .vercel
+.env*
+
+# supabase CLI local state
+week4/supabase/.temp/
