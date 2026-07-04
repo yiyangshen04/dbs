@@ -1,6 +1,6 @@
 import "dotenv/config";
-import { fetchStates } from "./opensky.js";
-import { transformStates } from "./transform.js";
+import { sweepAnchors } from "./sources.js";
+import { toFlightRows } from "./transform.js";
 import {
   createServiceClient,
   insertObservations,
@@ -22,24 +22,27 @@ let pruneTimer: NodeJS.Timeout | null = null;
 
 async function tick(): Promise<void> {
   const started = Date.now();
+  let extraDelay = 0;
   try {
-    const { aircraft, serverNowMs, rawCount } = await fetchStates();
-    const rows = transformStates(aircraft, serverNowMs);
+    const { entries, rawCount, anchorsOk, anchorsFailed } =
+      await sweepAnchors();
+    const rows = toFlightRows(entries);
 
-    const [{ upserted, skipped }] = await Promise.all([
-      upsertCurrent(supabase, rows),
-      insertObservations(supabase, rows),
-    ]);
+    // Upsert first, then mirror the written rows into history. If the
+    // history insert fails we lose one best-effort sample, not live state.
+    const { written, skipped } = await upsertCurrent(supabase, rows);
+    await insertObservations(supabase, written);
 
-    const ms = Date.now() - started;
+    const secs = ((Date.now() - started) / 1000).toFixed(1);
     console.log(
-      `[poll] upserted ${upserted}, skipped ${skipped} unchanged ` +
-        `(raw: ${rawCount}, total seen: ${rows.length}) in ${ms} ms`,
+      `[poll] upserted ${written.length}, skipped ${skipped} unchanged ` +
+        `(raw ${rawCount}, unique ${rows.length}, ` +
+        `anchors ${anchorsOk} ok / ${anchorsFailed} failed) in ${secs} s`,
     );
     consecutiveFailures = 0;
   } catch (err) {
     consecutiveFailures += 1;
-    const backoff =
+    extraDelay =
       BACKOFF_MS[Math.min(consecutiveFailures - 1, BACKOFF_MS.length - 1)] ??
       BACKOFF_MS[BACKOFF_MS.length - 1] ??
       POLL_INTERVAL_MS;
@@ -49,12 +52,16 @@ async function tick(): Promise<void> {
     console.error(
       `[poll] failure #${consecutiveFailures}: ${e.message}` +
         (causeMsg ? ` (cause: ${causeMsg})` : "") +
-        `. Backing off ${backoff} ms.`,
+        `. Adding ${extraDelay} ms back-off.`,
     );
-    // Sleep before the next scheduled tick fires.
-    if (!stopping) await new Promise((r) => setTimeout(r, backoff));
   } finally {
-    if (!stopping) pollTimer = setTimeout(tick, POLL_INTERVAL_MS);
+    if (!stopping) {
+      // Fixed cadence measured from sweep start (a sweep takes ~40 s of
+      // the 60 s interval), never sooner than 5 s from now.
+      const elapsed = Date.now() - started;
+      const delay = Math.max(5_000, POLL_INTERVAL_MS - elapsed) + extraDelay;
+      pollTimer = setTimeout(tick, delay);
+    }
   }
 }
 
@@ -87,7 +94,7 @@ process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));
 
 console.log(
-  `[worker] starting — polling every ${POLL_INTERVAL_MS} ms, ` +
+  `[worker] starting — sweeping every ${POLL_INTERVAL_MS} ms, ` +
     `pruning every ${PRUNE_INTERVAL_MS} ms`,
 );
 void tick();

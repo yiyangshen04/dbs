@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
@@ -14,9 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Flight Tracker — live aircraft over the US",
+  title: "US Airspace Monitor — live nationwide flight tracking",
   description:
-    "Live map of aircraft positions over the continental US, powered by OpenSky Network and Supabase Realtime.",
+    "Real-time monitor of aircraft over the entire United States (CONUS, Alaska, Hawaii), powered by community ADS-B feeds and Supabase Realtime.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#060b16",
 };
 
 export default function RootLayout({

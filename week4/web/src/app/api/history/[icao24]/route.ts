@@ -3,6 +3,9 @@ import { createServerSupabase } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 
+// ~2 hours of track at the 1-minute ingest cadence.
+const MAX_POINTS = 120;
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ icao24: string }> },
@@ -14,7 +17,7 @@ export async function GET(
     .select("*")
     .eq("icao24", icao24.toLowerCase())
     .order("observed_at", { ascending: false })
-    .limit(100);
+    .limit(MAX_POINTS);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

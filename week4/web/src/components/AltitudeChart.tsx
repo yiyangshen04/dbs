@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  LineChart,
-  Line,
+  Area,
+  AreaChart,
   XAxis,
   YAxis,
   Tooltip,
@@ -10,6 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import type { Observation } from "@/lib/types";
+import { M_TO_FT } from "@/lib/altitude";
 
 interface Props {
   observations: Observation[];
@@ -18,12 +19,18 @@ interface Props {
 export default function AltitudeChart({ observations }: Props) {
   const data = observations.map((o) => ({
     t: new Date(o.observed_at).getTime(),
-    alt: o.baro_altitude,
+    alt: o.baro_altitude != null ? o.baro_altitude * M_TO_FT : null,
   }));
   return (
     <ResponsiveContainer width="100%" height={140}>
-      <LineChart data={data} margin={{ top: 8, right: 12, bottom: 4, left: 8 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+      <AreaChart data={data} margin={{ top: 8, right: 12, bottom: 4, left: 8 }}>
+        <defs>
+          <linearGradient id="altFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#38bdf8" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="#38bdf8" stopOpacity={0.02} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="#1c2a41" />
         <XAxis
           dataKey="t"
           type="number"
@@ -35,27 +42,43 @@ export default function AltitudeChart({ observations }: Props) {
               minute: "2-digit",
             })
           }
-          tick={{ fontSize: 10 }}
-          stroke="#94a3b8"
+          tick={{ fontSize: 10, fill: "#7d90ab" }}
+          stroke="#1c2a41"
         />
         <YAxis
-          tick={{ fontSize: 10 }}
-          stroke="#94a3b8"
-          label={{ value: "m", angle: -90, position: "insideLeft", fontSize: 10 }}
+          tick={{ fontSize: 10, fill: "#7d90ab" }}
+          stroke="#1c2a41"
+          width={44}
+          tickFormatter={(v) => `${Math.round((v as number) / 1000)}k`}
+          label={{
+            value: "ft",
+            angle: -90,
+            position: "insideLeft",
+            fontSize: 10,
+            fill: "#7d90ab",
+          }}
         />
         <Tooltip
+          contentStyle={{
+            background: "#0b1424",
+            border: "1px solid #1c2a41",
+            borderRadius: 8,
+            fontSize: 12,
+          }}
+          labelStyle={{ color: "#7d90ab" }}
           labelFormatter={(t) => new Date(t as number).toLocaleTimeString()}
-          formatter={(v) => [`${Math.round(v as number)} m`, "Altitude"]}
+          formatter={(v) => [`${Math.round(v as number).toLocaleString()} ft`, "Altitude"]}
         />
-        <Line
+        <Area
           type="monotone"
           dataKey="alt"
-          stroke="#1e3a8a"
+          stroke="#38bdf8"
           strokeWidth={2}
+          fill="url(#altFill)"
           dot={false}
           connectNulls
         />
-      </LineChart>
+      </AreaChart>
     </ResponsiveContainer>
   );
 }

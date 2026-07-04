@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { OBSERVATION_TTL_HOURS } from "./config.js";
+import { OBSERVATION_TTL_HOURS, STALE_CURRENT_MINUTES } from "./config.js";
 
 // Fallback TTL sweep for tiers that don't support pg_cron.
 // Safe to run alongside pg_cron — double-deletes are no-ops.
@@ -20,7 +20,9 @@ export async function pruneObservations(
 export async function pruneStaleCurrent(
   supabase: SupabaseClient,
 ): Promise<number> {
-  const cutoff = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const cutoff = new Date(
+    Date.now() - STALE_CURRENT_MINUTES * 60 * 1000,
+  ).toISOString();
   const { error, count } = await supabase
     .from("flights_current")
     .delete({ count: "exact" })

@@ -37,9 +37,9 @@ export default function FavoriteButton({
       className={
         "inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition " +
         (isFavorite
-          ? "border-amber-400 bg-amber-100 text-amber-900 hover:bg-amber-200 dark:border-amber-500 dark:bg-amber-900/40 dark:text-amber-200"
-          : "border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800") +
-        (disabled ? " opacity-40 cursor-not-allowed" : "")
+          ? "border-selection/60 bg-selection/15 text-selection hover:bg-selection/25"
+          : "border-panel-border text-foreground/80 hover:bg-white/5") +
+        (disabled ? " cursor-not-allowed opacity-40" : "")
       }
     >
       <span aria-hidden="true">{isFavorite ? "★" : "☆"}</span>
