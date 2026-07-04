@@ -2,6 +2,7 @@
 
 import type { Favorite } from "@/lib/use-favorites";
 import type { Flight } from "@/lib/types";
+import { fmtFeet } from "@/lib/altitude";
 
 interface Props {
   favorites: Favorite[];
@@ -12,14 +13,14 @@ interface Props {
 export default function FavoritesPanel({ favorites, flights, onSelect }: Props) {
   if (favorites.length === 0) {
     return (
-      <p className="text-xs text-slate-500">
-        No favorites yet. Open a flight&apos;s detail panel and tap <strong>Save</strong>.
+      <p className="text-xs text-muted">
+        No favorites yet. Open a flight&apos;s detail panel and tap{" "}
+        <strong className="text-foreground/80">☆ Save</strong>.
       </p>
     );
   }
 
   // Map each saved callsign to a live flight (if currently visible).
-  // A callsign may not currently be airborne over the US → we mark those dim.
   const byCallsign = new Map<string, Flight>();
   for (const f of flights.values()) {
     if (f.callsign) byCallsign.set(f.callsign.trim(), f);
@@ -36,21 +37,20 @@ export default function FavoritesPanel({ favorites, flights, onSelect }: Props) 
               disabled={!live}
               className={
                 "w-full rounded-md px-2 py-1 text-left transition " +
-                (live
-                  ? "hover:bg-amber-100 dark:hover:bg-amber-900/30"
-                  : "opacity-50 cursor-not-allowed")
+                (live ? "hover:bg-white/5" : "cursor-not-allowed opacity-40")
               }
-              title={live ? "Click to focus on the map" : "Not currently visible"}
+              title={live ? "Click to focus on the map" : "Not currently in the air"}
             >
               <div className="flex items-baseline justify-between gap-2">
-                <span className="font-mono font-semibold">{fav.callsign}</span>
-                <span className="text-[10px] text-slate-500">
+                <span className="font-mono font-semibold">
+                  <span className="mr-1 text-selection">★</span>
+                  {fav.callsign}
+                </span>
+                <span className="font-mono text-[10px] text-muted">
                   {live
                     ? live.on_ground
-                      ? "ground"
-                      : live.baro_altitude != null
-                        ? `${Math.round(live.baro_altitude)} m`
-                        : "airborne"
+                      ? "GND"
+                      : fmtFeet(live.baro_altitude)
                     : "offline"}
                 </span>
               </div>

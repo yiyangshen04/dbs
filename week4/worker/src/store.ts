@@ -1,5 +1,13 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { FlightRow } from "./transform.js";
+import {
+  ALT_EPSILON,
+  CACHE_EVICT_MS,
+  FORCE_REFRESH_MS,
+  HEADING_EPSILON,
+  LAT_LON_EPSILON,
+  VELOCITY_EPSILON,
+} from "./config.js";
 
 export function createServiceClient(): SupabaseClient {
   const url = process.env.SUPABASE_URL;
@@ -17,28 +25,15 @@ export function createServiceClient(): SupabaseClient {
 // Supabase REST has a payload cap; batch in chunks.
 const CHUNK = 1000;
 
-// Position diff thresholds. Planes in cruise shift their reported position
-// every poll; we still want to broadcast those, but we skip micro-changes
-// and truly stationary aircraft. The thresholds are tight enough that the
-// UI still moves smoothly for visibly-airborne traffic.
-const LAT_LON_EPSILON = 0.001;   // ~100 m
-const VELOCITY_EPSILON = 1.0;    // m/s
-const ALT_EPSILON = 10;          // m
-const HEADING_EPSILON = 2;       // degrees
-
 // In-process cache of what we last wrote for each aircraft, plus the
 // wall-clock time we wrote it. The time lets us force a refresh even for
-// stationary aircraft so `prune-stale-current` (pg_cron, 10-min TTL
-// against last_seen) doesn't delete a ground plane that our diff check
-// correctly identified as unchanged.
+// stationary aircraft so `prune-stale-current` (pg_cron TTL against
+// last_seen) doesn't delete a parked plane whose position never changes.
 interface CacheEntry {
   row: FlightRow;
   upsertedAtMs: number;
 }
-const lastSeen = new Map<string, CacheEntry>();
-// Force a refresh every 5 min even if nothing changed — comfortably under
-// the 10-min stale-current TTL.
-const FORCE_REFRESH_MS = 5 * 60 * 1000;
+const lastWritten = new Map<string, CacheEntry>();
 
 function materiallyChanged(prev: FlightRow, next: FlightRow): boolean {
   if (prev.on_ground !== next.on_ground) return true;
@@ -57,18 +52,22 @@ function diff(a: number | null, b: number | null): number {
   return Math.abs(a - b);
 }
 
+// Upserts rows whose state materially changed (plus periodic forced
+// refreshes) and returns exactly the rows written, so the caller can mirror
+// them into the observations history without re-diffing.
 export async function upsertCurrent(
   supabase: SupabaseClient,
   rows: FlightRow[],
-): Promise<{ upserted: number; skipped: number }> {
-  if (rows.length === 0) return { upserted: 0, skipped: 0 };
+): Promise<{ written: FlightRow[]; skipped: number }> {
+  if (rows.length === 0) return { written: [], skipped: 0 };
 
   const toWrite: FlightRow[] = [];
   const now = Date.now();
   let skipped = 0;
   for (const row of rows) {
-    const prev = lastSeen.get(row.icao24);
-    const stale = prev && now - prev.upsertedAtMs > FORCE_REFRESH_MS;
+    const prev = lastWritten.get(row.icao24);
+    // Stale check keyed to the stored signal time — see FORCE_REFRESH_MS.
+    const stale = prev && now - Date.parse(prev.row.last_seen) > FORCE_REFRESH_MS;
     if (prev && !stale && !materiallyChanged(prev.row, row)) {
       skipped += 1;
       continue;
@@ -76,12 +75,10 @@ export async function upsertCurrent(
     toWrite.push(row);
   }
 
-  if (toWrite.length === 0) return { upserted: 0, skipped };
+  if (toWrite.length === 0) return { written: [], skipped };
 
-  const stamped = toWrite.map((r) => ({
-    ...r,
-    updated_at: new Date().toISOString(),
-  }));
+  const updatedAt = new Date().toISOString();
+  const stamped = toWrite.map((r) => ({ ...r, updated_at: updatedAt }));
 
   for (let i = 0; i < stamped.length; i += CHUNK) {
     const slice = stamped.slice(i, i + CHUNK);
@@ -93,19 +90,42 @@ export async function upsertCurrent(
 
   // Update cache only after a successful write — if the upsert throws, we
   // retry everything on the next tick rather than desyncing our cache.
-  for (const row of toWrite) lastSeen.set(row.icao24, { row, upsertedAtMs: now });
+  for (const row of toWrite) {
+    lastWritten.set(row.icao24, { row, upsertedAtMs: now });
+  }
 
-  return { upserted: toWrite.length, skipped };
+  return { written: toWrite, skipped };
 }
 
+// Drop cache entries that haven't been rewritten in CACHE_EVICT_MS — a
+// reappearing aircraft force-refreshes anyway, so stale entries are pure
+// memory leak over a long-running daemon. Called from the prune loop.
+export function evictStaleCache(): number {
+  const cutoff = Date.now() - CACHE_EVICT_MS;
+  let evicted = 0;
+  for (const [icao, entry] of lastWritten) {
+    if (entry.upsertedAtMs < cutoff) {
+      lastWritten.delete(icao);
+      evicted += 1;
+    }
+  }
+  return evicted;
+}
+
+// History keeps only rows whose state changed (what upsertCurrent wrote).
+// Unchanged aircraft add no chart information, and skipping them keeps the
+// observations table an order of magnitude smaller.
+// `observed_at` is the actual signal time, not the DB write time, so the
+// altitude/speed charts have an honest x-axis.
 export async function insertObservations(
   supabase: SupabaseClient,
-  rows: FlightRow[],
+  written: FlightRow[],
 ): Promise<void> {
-  if (rows.length === 0) return;
-  // observations is the full append-only history — every row goes in
-  // regardless of whether its position "changed" since the last poll.
-  const payload = rows.map(({ last_seen: _last, ...rest }) => rest);
+  if (written.length === 0) return;
+  const payload = written.map(({ last_seen, ...rest }) => ({
+    ...rest,
+    observed_at: last_seen,
+  }));
   for (let i = 0; i < payload.length; i += CHUNK) {
     const slice = payload.slice(i, i + CHUNK);
     const { error } = await supabase.from("observations").insert(slice);

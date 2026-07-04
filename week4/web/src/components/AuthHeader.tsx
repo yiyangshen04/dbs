@@ -10,7 +10,7 @@ export default function AuthHeader() {
   const [modalOpen, setModalOpen] = useState(false);
 
   if (loading) {
-    return <span className="text-xs text-slate-400">…</span>;
+    return <span className="text-xs text-muted">…</span>;
   }
 
   if (!session) {
@@ -18,7 +18,7 @@ export default function AuthHeader() {
       <>
         <button
           onClick={() => setModalOpen(true)}
-          className="rounded-md border border-slate-300 px-3 py-1 text-xs font-medium hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+          className="rounded-md border border-accent/50 px-3 py-1.5 text-xs font-medium text-accent transition hover:bg-accent/10"
         >
           Sign in
         </button>
@@ -30,13 +30,13 @@ export default function AuthHeader() {
   const email = session.user.email;
 
   return (
-    <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-      <span className="font-mono">{email}</span>
+    <div className="flex items-center gap-2 text-xs text-muted">
+      <span className="hidden font-mono md:inline">{email}</span>
       <button
         onClick={async () => {
           await getBrowserSupabase().auth.signOut();
         }}
-        className="rounded-md border border-slate-300 px-2 py-1 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+        className="rounded-md border border-panel-border px-2 py-1 transition hover:bg-white/5 hover:text-foreground"
       >
         Sign out
       </button>

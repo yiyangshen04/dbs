@@ -32,3 +32,15 @@ export interface CountryCount {
   origin_country: string;
   count: number;
 }
+
+// Shape returned by the stats_overview() Postgres function
+// (see supabase/migrations/0003_full_us_optimize.sql).
+export interface StatsOverview {
+  tracked_now: number;
+  airborne: number;
+  avg_velocity_mps: number | null;
+  by_country: CountryCount[];
+  unique_aircraft_3h: number;
+  observations_3h: number;
+  generated_at: string;
+}

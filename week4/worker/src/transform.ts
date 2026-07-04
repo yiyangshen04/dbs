@@ -1,5 +1,6 @@
-import type { AdsbAircraft } from "./opensky.js";
+import type { TimedAircraft } from "./sources.js";
 import { MAX_STATE_AGE_SECONDS } from "./config.js";
+import { countryForIcao } from "./icao-country.js";
 
 export interface FlightRow {
   icao24: string;
@@ -12,44 +13,44 @@ export interface FlightRow {
   heading: number | null;          // degrees 0..360
   vertical_rate: number | null;    // m/s (converted from ft/min)
   on_ground: boolean;
-  last_seen: string;               // ISO timestamp
+  last_seen: string;               // ISO timestamp of the actual signal
 }
 
 const FT_TO_M = 0.3048;
 const KT_TO_MPS = 0.5144444;
 
-export function transformStates(
-  aircraft: AdsbAircraft[],
-  serverNowMs: number,
-): FlightRow[] {
-  const rows: FlightRow[] = [];
+// Anchor circles overlap, so the same aircraft can arrive from several
+// responses; keep the entry with the freshest signal.
+export function toFlightRows(entries: TimedAircraft[]): FlightRow[] {
+  const byIcao = new Map<string, FlightRow>();
 
-  for (const a of aircraft) {
-    if (!a.hex) continue;
-    if (a.lat == null || a.lon == null) continue;
+  for (const { ac, nowMs } of entries) {
+    if (!ac.hex) continue;
+    if (ac.lat == null || ac.lon == null) continue;
+    if ((ac.seen ?? 0) > MAX_STATE_AGE_SECONDS) continue;
 
-    // `seen` is seconds since last signal. Drop stale entries.
-    if ((a.seen ?? 0) > MAX_STATE_AGE_SECONDS) continue;
+    const icao24 = ac.hex.toLowerCase();
+    const onGround = ac.alt_baro === "ground";
+    const baroFt = typeof ac.alt_baro === "number" ? ac.alt_baro : null;
+    const lastSeenMs = nowMs - (ac.seen ?? 0) * 1000;
 
-    const onGround = a.alt_baro === "ground";
-    const baroFt = typeof a.alt_baro === "number" ? a.alt_baro : null;
-    const lastSeenMs = serverNowMs - (a.seen ?? 0) * 1000;
+    const prev = byIcao.get(icao24);
+    if (prev && Date.parse(prev.last_seen) >= lastSeenMs) continue;
 
-    rows.push({
-      icao24: a.hex.toLowerCase(),
-      callsign: a.flight ? a.flight.trim() || null : null,
-      // adsb.lol doesn't provide origin country; leave null.
-      origin_country: null,
-      longitude: a.lon,
-      latitude: a.lat,
+    byIcao.set(icao24, {
+      icao24,
+      callsign: ac.flight ? ac.flight.trim() || null : null,
+      origin_country: countryForIcao(icao24),
+      longitude: ac.lon,
+      latitude: ac.lat,
       baro_altitude: baroFt != null ? baroFt * FT_TO_M : null,
-      velocity: a.gs != null ? a.gs * KT_TO_MPS : null,
-      heading: a.track ?? null,
-      vertical_rate: a.baro_rate != null ? (a.baro_rate * FT_TO_M) / 60 : null,
+      velocity: ac.gs != null ? ac.gs * KT_TO_MPS : null,
+      heading: ac.track ?? null,
+      vertical_rate: ac.baro_rate != null ? (ac.baro_rate * FT_TO_M) / 60 : null,
       on_ground: onGround,
       last_seen: new Date(lastSeenMs).toISOString(),
     });
   }
 
-  return rows;
+  return [...byIcao.values()];
 }
